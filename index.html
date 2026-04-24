@@ -6,67 +6,40 @@
     <title>CPSI ATNUP - Officiel</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --crb: #ED1B2E; --bg: #F4F7F9; --dark: #1A202C; }
+        :root { --crb: #ED1B2E; --bg: #F4F7F9; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
-        
-        /* En-tête */
         .header { background: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--crb); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn-admin-access { font-size: 10px; margin-top: 5px; border: none; background: none; color: #666; text-decoration: underline; cursor: pointer; }
-
         .container { padding: 15px; max-width: 600px; margin: auto; }
-        
-        /* Style des Cartes */
         .card { background: white; border-radius: 5px; padding: 20px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--crb); }
         h2 { font-size: 13px; color: var(--crb); text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 8px; margin-bottom: 15px; font-weight: 800; }
-        
-        /* Formulaires */
         .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-        label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 4px; text-transform: uppercase; }
-        input, select, textarea { padding: 12px; border: 1px solid #CCC; border-radius: 4px; font-size: 14px; background: #FFF; outline: none; }
-        
-        /* Grille d'évaluation */
-        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F3F3F3; }
+        label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 4px; }
+        input, select, textarea { padding: 12px; border: 1px solid #CCC; border-radius: 4px; font-size: 14px; }
+        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F3F3F3; }
         .btns { display: flex; gap: 5px; }
-        .btn-opt { border: 1px solid #DDD; background: #FFF; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; min-width: 40px; }
+        .btn-opt { border: 1px solid #DDD; background: #FFF; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
-        
-        /* Signatures */
         .sig-container { border: 1px solid #DDD; background: #FAFAFA; height: 130px; touch-action: none; border-radius: 4px; margin-top: 5px; }
-        canvas { width: 100%; height: 100%; cursor: crosshair; }
-        
-        /* Boutons */
-        .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        .btn-main:disabled { background: #ccc; }
-
-        /* Modal Admin */
+        canvas { width: 100%; height: 100%; }
+        .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
         #admin_modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:2000; padding:20px; box-sizing:border-box; overflow-y: auto; }
     </style>
 </head>
 <body>
 
 <div id="admin_modal">
-    <button onclick="document.getElementById('admin_modal').style.display='none'" style="width:100%; padding:15px; margin-bottom:20px; background:#f0f0f0; border:1px solid #ccc; font-weight:bold;">← RETOUR À L'ÉVALUATION</button>
+    <button onclick="document.getElementById('admin_modal').style.display='none'" style="width:100%; padding:15px; margin-bottom:20px; font-weight:bold;">← RETOUR</button>
     <div class="card">
-        <h2>Ajouter du Personnel (Sync Sheets)</h2>
-        <div class="form-group">
-            <label>Type de profil</label>
-            <select id="adm_type">
-                <option value="convoyeurs">Maître de Stage (Convoyeur)</option>
-                <option value="chauffeurs">Chauffeur</option>
-                <option value="stagiaires">Stagiaire</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Nom et Prénom</label>
-            <input type="text" id="adm_nom" placeholder="Ex: Jean Dupont">
-        </div>
-        <button class="btn-main" onclick="saveStaff()">Ajouter à la base de données</button>
+        <h2>Ajouter Personnel</h2>
+        <div class="form-group"><label>Type</label><select id="adm_type"><option value="convoyeurs">Maître de Stage</option><option value="chauffeurs">Chauffeur</option><option value="stagiaires">Stagiaire</option></select></div>
+        <div class="form-group"><label>Nom Prénom</label><input type="text" id="adm_nom"></div>
+        <button class="btn-main" onclick="saveStaff()">Synchroniser</button>
     </div>
 </div>
 
 <div class="header">
-    <div style="font-weight:900; color:var(--crb); letter-spacing: 1px;">CROIX-ROUGE DE BELGIQUE</div>
-    <button class="btn-admin-access" onclick="document.getElementById('admin_modal').style.display='block'">⚙️ Gérer le personnel</button>
+    <div style="font-weight:900; color:var(--crb);">CROIX-ROUGE DE BELGIQUE</div>
+    <button onclick="document.getElementById('admin_modal').style.display='block'" style="font-size:10px; background:none; border:none; text-decoration:underline; color:#666;">⚙️ Gérer le personnel</button>
 </div>
 
 <div class="container">
@@ -84,39 +57,36 @@
     </div>
 
     <div class="card">
-        <h2>2. Grille de Compétences ATNUP</h2>
+        <h2>2. Grille de Compétences</h2>
         <div id="items_list"></div>
     </div>
 
     <div class="card">
         <h2>3. Observations & Signatures</h2>
         <div class="form-group">
-            <label>Observations / Commentaires</label>
-            <textarea id="notes" style="height:100px;" placeholder="Points forts, axes d'amélioration..."></textarea>
+            <label>Commentaires détaillés</label>
+            <textarea id="notes" style="height:100px;" placeholder="Écrivez vos observations ici..."></textarea>
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
             <div><label>Signature MS</label><div class="sig-container"><canvas id="sig_ms"></canvas></div></div>
             <div><label>Signature Stagiaire</label><div class="sig-container"><canvas id="sig_st"></canvas></div></div>
         </div>
-        <button class="btn-main" id="btn_final" onclick="processAll()">Valider & Générer Rapport Pro</button>
+        <button class="btn-main" id="btn_final" onclick="processAll()">VALIDER & GÉNÉRER PDF</button>
     </div>
 </div>
 
 <script>
-    // URL DE VOTRE SCRIPT GOOGLE
+    // URL DE VOTRE SCRIPT (MISE À JOUR)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdX9XhT4RKKTORcn52d9glgF7Gbo8Dyl7u4PdlqjbAcw4RycFmE7DxiqAXY4xqzm9N/exec";
     
     const items = ["Check-up ambulance", "Inventaire matériel", "Désinfection", "Itinéraire & GPS", "Feuille de route", "Bilan Patient", "Paramètres vitaux", "Oxygénothérapie", "Manutention", "Transfert Médicalisé", "Motivation", "Empathie", "Esprit d'équipe"];
 
-    // Charger les listes au démarrage
     async function load() {
         try {
             const r = await fetch(SCRIPT_URL);
             const d = await r.json();
-            fill('conv', d.convoyeurs); 
-            fill('chauf', d.chauffeurs); 
-            fill('stag_select', d.stagiaires);
-        } catch(e) { console.error("Erreur de synchro"); }
+            fill('conv', d.convoyeurs); fill('chauf', d.chauffeurs); fill('stag_select', d.stagiaires);
+        } catch(e) { console.log("Erreur chargement listes"); }
     }
 
     function fill(id, l) {
@@ -125,21 +95,16 @@
         if(l) l.forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`);
     }
 
-    // Admin : Envoi personnel
     async function saveStaff() {
         const t = document.getElementById('adm_type').value;
         const n = document.getElementById('adm_nom').value;
-        if(!n) return alert("Nom manquant");
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "ADD_STAFF", type: t, nom: n }) });
-        alert("Enregistré dans Sheets !");
-        document.getElementById('adm_nom').value = "";
-        load();
+        alert("Sync terminée"); load();
     }
 
-    // Construction Grille
     const grid = document.getElementById('items_list');
     items.forEach(it => {
-        grid.innerHTML += `<div class="item-row"><span style="font-size:13px; font-weight:500;">${it}</span><div class="btns">
+        grid.innerHTML += `<div class="item-row"><span style="font-size:13px;">${it}</span><div class="btns">
             <button class="btn-opt" onclick="sel(this)">+</button>
             <button class="btn-opt" onclick="sel(this)">++</button>
             <button class="btn-opt" onclick="sel(this)">+++</button>
@@ -152,7 +117,6 @@
         btn.classList.add('active');
     }
 
-    // Gestion Signatures
     function setupSig(id) {
         const canvas = document.getElementById(id); const ctx = canvas.getContext('2d');
         canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
@@ -170,58 +134,52 @@
         window.addEventListener('mouseup', () => drawing=false); window.addEventListener('touchend', () => drawing=false);
     }
 
-    // GÉNÉRATION PDF PRO & ENVOI DATA
     async function processAll() {
         const btn = document.getElementById('btn_final');
         const stag = document.getElementById('stag_select').value;
+        const obsValue = document.getElementById('notes').value;
         if(!stag) return alert("Sélectionnez un stagiaire");
         
-        btn.innerText = "TRAITEMENT EN COURS..."; btn.disabled = true;
+        btn.innerText = "GÉNÉRATION..."; btn.disabled = true;
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        // --- DESIGN DU PDF ---
+        // PDF Header
         doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255); doc.setFontSize(18); doc.setFont("helvetica", "bold");
-        doc.text("RAPPORT D'ÉVALUATION TERRAIN", 105, 20, {align:'center'});
-        doc.setFontSize(10); doc.text("CROIX-ROUGE DE BELGIQUE - CPSI", 105, 28, {align:'center'});
+        doc.setTextColor(255); doc.setFontSize(16); doc.text("RAPPORT D'ÉVALUATION ATNUP", 105, 25, {align:'center'});
 
-        doc.setTextColor(0); doc.setFontSize(12); doc.text("1. IDENTIFICATION", 20, 55);
-        doc.setLineWidth(0.5); doc.line(20, 57, 190, 57);
-        doc.setFontSize(10); doc.setFont("helvetica", "normal");
-        doc.text(`Stagiaire : ${stag}`, 20, 65);
-        doc.text(`Vecteur : ${document.getElementById('vec').value}`, 20, 72);
-        doc.text(`Équipe : ${document.getElementById('conv').value} (MS) / ${document.getElementById('chauf').value} (CH)`, 110, 65);
-        doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')}`, 110, 72);
+        // Data
+        doc.setTextColor(0); doc.setFontSize(10);
+        doc.text(`Stagiaire : ${stag}`, 20, 50);
+        doc.text(`Équipe : ${document.getElementById('conv').value} / ${document.getElementById('chauf').value}`, 20, 57);
+        doc.text(`Date : ${new Date().toLocaleDateString()}`, 150, 50);
 
-        doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("2. RÉSULTATS DES COMPÉTENCES", 20, 90);
-        doc.line(20, 92, 190, 92);
-        let y = 100;
+        // Grille
+        let y = 75;
+        doc.setFont("helvetica", "bold"); doc.text("COMPÉTENCES", 20, 70);
         document.querySelectorAll('.item-row').forEach(row => {
             const label = row.querySelector('span').innerText;
-            const score = row.querySelector('.btn-opt.active').innerText;
-            doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.text(label, 25, y);
-            doc.setFont("helvetica", "bold"); doc.text(score, 180, y, {align:'right'});
-            doc.setDrawColor(240); doc.line(20, y+2, 190, y+2);
+            const val = row.querySelector('.btn-opt.active').innerText;
+            doc.setFont("helvetica", "normal"); doc.text(label, 25, y);
+            doc.setFont("helvetica", "bold"); doc.text(val, 180, y, {align:'right'});
             y += 8;
         });
 
-        doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("3. OBSERVATIONS", 20, y + 10);
-        doc.line(20, y + 12, 190, y + 12);
-        doc.setFontSize(10); doc.setFont("helvetica", "normal");
-        const obs = doc.splitTextToSize(document.getElementById('notes').value || "Aucune observation particulière.", 170);
-        doc.text(obs, 20, y + 20);
+        // Observations
+        doc.setFont("helvetica", "bold"); doc.text("OBSERVATIONS", 20, y + 10);
+        doc.setFont("helvetica", "normal");
+        const lines = doc.splitTextToSize(obsValue || "Néant", 170);
+        doc.text(lines, 20, y + 18);
 
-        const sigY = 245;
-        doc.setFont("helvetica", "bold"); doc.text("Signature MS", 20, sigY); doc.text("Signature Stagiaire", 130, sigY);
-        doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 20, sigY+5, 50, 25);
-        doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 130, sigY+5, 50, 25);
+        // Signatures
+        const sigY = 250;
+        doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 20, sigY, 50, 20);
+        doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 130, sigY, 50, 20);
 
-        // Sauvegarde PDF
-        doc.save(`Eval_${stag}_${new Date().toLocaleDateString()}.pdf`);
+        doc.save(`Eval_${stag}.pdf`);
         
-        // Envoi vers Google Sheets
+        // Envoi vers Sheets
         await fetch(SCRIPT_URL, { 
             method: 'POST', 
             mode: 'no-cors', 
@@ -229,12 +187,12 @@
                 stagiaire: stag,
                 convoyeur: document.getElementById('conv').value,
                 chauffeur: document.getElementById('chauf').value,
-                notes: document.getElementById('notes').value // Envoi des commentaires
+                notes: obsValue // <--- CECI ENVOIE LES COMMENTAIRES
             })
         });
 
-        alert("Données transmises et PDF généré !");
-        btn.innerText = "Valider & Générer Rapport Pro"; btn.disabled = false;
+        alert("Validé et envoyé !");
+        btn.innerText = "VALIDER & GÉNÉRER PDF"; btn.disabled = false;
     }
 
     window.onload = () => { setupSig('sig_ms'); setupSig('sig_st'); load(); };
