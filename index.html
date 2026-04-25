@@ -9,104 +9,153 @@
     <style>
         :root { --crb: #ED1B2E; --bleu: #0056b3; --vert: #28a745; --bg: #f0f4f8; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #333; }
         
-        .header-top { background: var(--crb); color: white; padding: 15px; border-radius: 15px 15px 0 0; text-align: center; }
-        .header-logo { background: white; padding: 10px; text-align: center; border-radius: 0 0 15px 15px; margin-bottom: 15px; border-bottom: 4px solid var(--bleu); position: relative; }
-        .settings-btn { position: absolute; top: 5px; right: 10px; font-size: 24px; border:none; background:none; }
+        body { 
+            font-family: -apple-system, sans-serif; 
+            background: #d1d9e0; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center;
+        }
 
-        .score-box { background: var(--bleu); color: white; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 15px; font-size: 28px; font-weight: 800; box-shadow: 0 4px 12px rgba(0,86,179,0.3); }
-
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        h2 { font-size: 14px; color: var(--bleu); border-bottom: 2px solid var(--bg); padding-bottom: 5px; margin-top: 0; }
-
-        label { font-size: 11px; font-weight: bold; color: var(--bleu); display: block; margin-bottom: 4px; text-transform: uppercase; }
-        select, input, textarea { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 8px; margin-bottom: 10px; font-size: 16px; }
-
-        .item-row { background: #fff; border: 1px solid #e9ecef; padding: 10px; border-radius: 10px; margin-bottom: 8px; border-left: 5px solid var(--vert); }
-        .item-label { font-size: 15px; font-weight: bold; margin-bottom: 8px; display: block; }
+        .app-container { 
+            width: 100%; 
+            max-width: 450px; 
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
         
-        .btns-eval { display: flex; gap: 3px; }
-        .btn-val { flex: 1; padding: 12px 0; border: 1px solid #ddd; background: #f8f9fa; border-radius: 6px; font-size: 10px; font-weight: bold; color: #666; }
-        .btn-val.active[data-pts="1"] { background: var(--crb) !important; color: white !important; border-color: var(--crb) !important; }
-        .btn-val.active[data-pts="2"] { background: #ffc107 !important; color: #000 !important; border-color: #ffc107 !important; }
-        .btn-val.active[data-pts="3"] { background: #8bc34a !important; color: white !important; border-color: #8bc34a !important; }
-        .btn-val.active[data-pts="4"] { background: var(--vert) !important; color: white !important; border-color: var(--vert) !important; }
-        .btn-val.active[data-pts="0"] { background: #adb5bd !important; color: white !important; border-color: #adb5bd !important; }
+        .header-top { 
+            background: var(--crb); 
+            color: white; 
+            padding: 20px 10px; 
+            border-radius: 15px; 
+            text-align: center; 
+            margin-bottom: 10px;
+        }
+        .header-top h1 { margin: 0; font-size: 16px; letter-spacing: 1px; font-weight: 900; }
+        .header-top h2 { margin: 8px 0 0; font-size: 13px; font-weight: 400; text-transform: uppercase; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 8px; }
 
-        .sig-wrapper { border: 2px solid #ddd; border-radius: 10px; background: #fff; margin-bottom: 10px; }
-        .sig-pad { height: 140px; width: 100%; position: relative; touch-action: none; background: #fafafa; }
-        canvas { position: absolute; top:0; left:0; width: 100%; height: 100%; }
-        .sig-controls { display: flex; justify-content: space-between; padding: 5px; background: #eee; border-radius: 0 0 10px 10px; }
-        .btn-sig { padding: 5px 10px; font-size: 11px; font-weight: bold; border-radius: 5px; border: 1px solid #ccc; background: white; }
-        .btn-sig.active { background: var(--vert); color: white; border-color: var(--vert); }
+        .settings-bar { display: flex; justify-content: flex-end; padding: 0 5px 10px; }
+        .settings-btn { font-size: 24px; border:none; background:none; cursor: pointer; filter: grayscale(1); }
 
-        .btn-submit { width: 100%; background: var(--vert); color: white; border: none; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+        .score-box { 
+            background: var(--bleu); 
+            color: white; 
+            padding: 15px; 
+            border-radius: 12px; 
+            text-align: center; 
+            margin-bottom: 15px; 
+            box-shadow: 0 4px 10px rgba(0,86,179,0.2);
+        }
+        .score-label { font-size: 10px; text-transform: uppercase; opacity: 0.9; margin-bottom: 5px; display: block; }
+        .score-num { font-size: 32px; font-weight: 900; }
+
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid #e0e6ed; }
+        .card h3 { font-size: 13px; color: var(--bleu); margin: 0 0 12px 0; text-transform: uppercase; display: flex; align-items: center; }
+        .card h3::before { content: "•"; margin-right: 8px; color: var(--crb); font-size: 20px; }
+
+        label { font-size: 10px; font-weight: 700; color: #555; display: block; margin-bottom: 4px; text-transform: uppercase; }
+        select, input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; font-size: 15px; background: #fff; }
+
+        .item-row { 
+            background: #fff; 
+            border: 1px solid #eee; 
+            padding: 10px; 
+            border-radius: 10px; 
+            margin-bottom: 10px; 
+            border-left: 5px solid var(--vert);
+        }
+        .item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .item-label { font-size: 14px; font-weight: 700; color: #333; }
+        
+        .info-bubble {
+            background: #f0f0f0;
+            color: var(--bleu);
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+
+        .btns-eval { display: flex; gap: 4px; }
+        .btn-val { flex: 1; padding: 10px 0; border: 1px solid #ddd; background: #fdfdfd; border-radius: 6px; font-size: 10px; font-weight: 800; color: #777; }
+        .btn-val.active[data-pts="1"] { background: var(--crb) !important; color: white !important; border-color: var(--crb); }
+        .btn-val.active[data-pts="2"] { background: #ffc107 !important; color: #000 !important; border-color: #ffc107; }
+        .btn-val.active[data-pts="3"] { background: #8bc34a !important; color: white !important; border-color: #8bc34a; }
+        .btn-val.active[data-pts="4"] { background: var(--vert) !important; color: white !important; border-color: var(--vert); }
+        .btn-val.active[data-pts="0"] { background: #6c757d !important; color: white !important; border-color: #6c757d; }
+
+        .sig-wrapper { border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; background: #fff; }
+        .sig-pad { height: 130px; width: 100%; position: relative; touch-action: none; }
+        canvas { width: 100%; height: 100%; }
+        .sig-controls { display: flex; justify-content: space-between; padding: 6px; background: #f8f9fa; border-top: 1px solid #eee; }
+        .btn-sig { padding: 6px 12px; font-size: 11px; font-weight: bold; border-radius: 5px; border: 1px solid #ccc; background: white; }
+
+        .btn-submit { width: 100%; background: var(--vert); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 10px rgba(40,167,69,0.2); }
         .btn-submit:disabled { background: #ccc; box-shadow: none; }
-        
-        #modal-settings { display: none; position: fixed; inset:0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; padding: 20px; border-radius: 15px; width: 100%; }
 
         #loading-overlay { position: fixed; inset:0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--crb); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div id="loading-overlay">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png" height="40">
-    <p style="color:var(--bleu); font-weight:bold; margin-top:10px;">Synchronisation...</p>
-</div>
-
-<div id="modal-settings">
-    <div class="modal-content">
-        <h3 style="color:var(--bleu); margin-top:0;">Ajouter un Membre</h3>
-        <label>Type</label>
-        <select id="new_type"><option>Stagiaire</option><option>Convoyeur</option><option>Chauffeur</option></select>
-        <label>Nom Complet</label>
-        <input type="text" id="new_name" placeholder="Prénom Nom">
-        <button onclick="addNewMember()" style="width:100%; padding:12px; background:var(--bleu); color:white; border:none; border-radius:8px; font-weight:bold;">VALIDER L'AJOUT</button>
-        <button onclick="toggleModal()" style="width:100%; margin-top:10px; background:none; border:none; color:red; font-size:14px;">Annuler / Fermer</button>
-    </div>
+    <div class="spinner"></div>
+    <p style="font-weight: bold; color: #555;">Synchronisation sécurisée...</p>
 </div>
 
 <div class="app-container">
     <div class="header-top">
-        <h1 style="margin:0; font-size:18px;">Croix-Rouge de Belgique</h1>
-        <p style="margin:5px 0 0; font-size:13px;">Évaluation journalière des candidats</p>
-    </div>
-    <div class="header-logo">
-        <button class="settings-btn" onclick="toggleModal()">⚙️</button>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png" height="35">
+        <h1>CROIX-ROUGE DE BELGIQUE</h1>
+        <h2>ÉVALUATION JOURNALIÈRE DU CANDIDAT</h2>
     </div>
 
-    <div id="live_score" class="score-box">NE / 4</div>
+    <div class="settings-bar">
+        <button class="settings-btn" onclick="toggleModal()">⚙️</button>
+    </div>
+
+    <div class="score-box">
+        <span class="score-label">Moyenne Compétences</span>
+        <div id="live_score" class="score-num">NE / 4</div>
+    </div>
 
     <div class="card">
-        <h2>Identification</h2>
-        <label>Stagiaire</label><select id="stag_select" onchange="checkForm()"></select>
-        <label>École</label><select id="ecole_select"><option>CPSI</option><option>PRIGOGINE</option><option>IFAPME</option><option>AUTRE</option></select>
-        <div style="display:flex; gap:10px;">
-            <div style="flex:1;"><label>Type</label><select id="type_stage"><option>AMU</option><option>ATNUP</option></select></div>
-            <div style="flex:1;"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
-        </div>
+        <h3>Identification</h3>
+        <label>Candidat / Stagiaire</label><select id="stag_select" onchange="checkForm()"></select>
         <label>Évaluateur (Convoyeur)</label><select id="ms_select" onchange="checkForm()"></select>
         <label>Chauffeur</label><select id="chauf_select" onchange="checkForm()"></select>
+        
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1;"><label>École</label><select id="ecole_select"><option>CPSI</option><option>PRIGOGINE</option><option>IFAPME</option><option>AUTRE</option></select></div>
+            <div style="flex:1;"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
+        </div>
     </div>
 
     <div class="card">
-        <h2>Compétences</h2>
+        <h3>Compétences</h3>
         <div id="grid_eval"></div>
     </div>
 
     <div class="card">
-        <h2>Finalisation</h2>
-        <textarea id="obs" rows="3" placeholder="Observations..."></textarea>
+        <h3>Finalisation</h3>
+        <textarea id="obs" rows="3" placeholder="Observations du jour (points forts, points à améliorer)..."></textarea>
         
         <label>Signature Évaluateur</label>
         <div class="sig-wrapper">
             <div class="sig-pad"><canvas id="sig_ms"></canvas></div>
             <div class="sig-controls">
-                <button class="btn-sig" id="lock_ms" onclick="toggleLock('sig_ms', this)">DÉVERROUILLER POUR SIGNER</button>
+                <button class="btn-sig" id="lock_ms" onclick="toggleLock('sig_ms', this)">DÉVERROUILLER</button>
                 <button class="btn-sig" onclick="clearSig('sig_ms')">Effacer</button>
             </div>
         </div>
@@ -115,12 +164,12 @@
         <div class="sig-wrapper">
             <div class="sig-pad"><canvas id="sig_st"></canvas></div>
             <div class="sig-controls">
-                <button class="btn-sig" id="lock_st" onclick="toggleLock('sig_st', this)">DÉVERROUILLER POUR SIGNER</button>
+                <button class="btn-sig" id="lock_st" onclick="toggleLock('sig_st', this)">DÉVERROUILLER</button>
                 <button class="btn-sig" onclick="clearSig('sig_st')">Effacer</button>
             </div>
         </div>
 
-        <button id="btn_send" class="btn-submit" disabled onclick="process()">ENREGISTRER & PDF</button>
+        <button id="btn_send" class="btn-submit" disabled onclick="process()">VALIDER & EXTRAIRE PDF</button>
     </div>
 </div>
 
@@ -128,14 +177,22 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOUEXQpzJTrRk_XZmrzVaRDcKYvLxQLK1rXQGURt-qBPb743vsbVenumwjmzdcT1B7/exec";
 
     const items = [
-        "Check up véhicule", "Check up matériel", "Inventaire complet", "Désinfection",
-        "Itinéraire & GPS", "Administratif", "Relation équipe", "Relation Patient",
-        "Bilan primaire", "Bilan secondaire", "Oxygène", "Manutention"
+        {id: "Vhc", n: "Check up véhicule", d: "Vérification des niveaux, pneus, carrosserie, propreté et plein de carburant."},
+        {id: "Mat", n: "Check up matériel", d: "Test du monitoring, O2, aspiration, matériel de réanimation et bon état du brancard."},
+        {id: "Inv", n: "Inventaire complet", d: "Remplacement du matériel utilisé et vérification des dates de péremption des médicaments/consommables."},
+        {id: "Hyg", n: "Désinfection / Hygiène", d: "Respect des protocoles de nettoyage de la cellule, lavage des mains et tenue propre."},
+        {id: "Nav", n: "Itinéraire & GPS", d: "Utilisation efficace du terminal, anticipation du trajet et conduite sécuritaire."},
+        {id: "Adm", n: "Administratif", d: "Remplissage rigoureux de la feuille de route et du rapport d'intervention (SIAMU)."},
+        {id: "Equ", n: "Relation équipe", d: "Communication claire avec le binôme, esprit d'initiative et entraide dans les tâches."},
+        {id: "Pat", n: "Relation Patient", d: "Qualité de l'accueil, rassurance, discrétion et respect du secret professionnel."},
+        {id: "Bi1", n: "Bilan primaire", d: "Mise en sécurité, évaluation de la conscience, respiration, circulation (ABCDE)."},
+        {id: "Bi2", n: "Bilan secondaire", d: "Anamnèse complète (SAMPLE), recherche de douleurs et examen physique détaillé."},
+        {id: "Oxy", n: "Oxygénothérapie", d: "Connaissance des débits, choix du masque et surveillance de la saturation (SpO2)."},
+        {id: "Man", n: "Manutention", d: "Utilisation correcte du matériel de portage et respect des règles d'ergonomie (dos)."}
     ];
 
     let activePads = { sig_ms: false, sig_st: false };
 
-    // Initialisation au chargement
     window.onload = () => {
         initGrid();
         setupCanvas('sig_ms');
@@ -143,37 +200,16 @@
         loadData();
     };
 
-    function toggleModal() {
-        const m = document.getElementById('modal-settings');
-        m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    async function loadData() {
-        try {
-            const res = await fetch(SCRIPT_URL);
-            const data = await res.json();
-            fillSelect('stag_select', data.stagiaires);
-            fillSelect('ms_select', data.convoyeurs);
-            fillSelect('chauf_select', data.chauffeurs);
-            document.getElementById('loading-overlay').style.display = 'none';
-        } catch (e) {
-            alert("Erreur de connexion aux données. Vérifiez votre lien SCRIPT_URL.");
-        }
-    }
-
-    function fillSelect(id, list) {
-        const sel = document.getElementById(id);
-        sel.innerHTML = '<option value="">-- Sélectionner --</option>';
-        list.forEach(item => sel.innerHTML += `<option value="${item}">${item}</option>`);
-    }
-
     function initGrid() {
         const grid = document.getElementById('grid_eval');
         items.forEach(it => {
             grid.innerHTML += `
                 <div class="item-row">
-                    <span class="item-label">${it}</span>
-                    <div class="btns-eval" data-key="${it}">
+                    <div class="item-header">
+                        <span class="item-label">${it.n}</span>
+                        <div class="info-bubble" onclick="alert('${it.d.replace(/'/g, "\\'")}')">?</div>
+                    </div>
+                    <div class="btns-eval" data-key="${it.n}">
                         <button class="btn-val" data-pts="1" onclick="setVal(this)">SUF</button>
                         <button class="btn-val" data-pts="2" onclick="setVal(this)">SAT</button>
                         <button class="btn-val" data-pts="3" onclick="setVal(this)">B</button>
@@ -184,155 +220,123 @@
         });
     }
 
+    async function loadData() {
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            fillSelect('stag_select', data.stagiaires);
+            fillSelect('ms_select', data.convoyeurs);
+            fillSelect('chauf_select', data.chauffeurs);
+            document.getElementById('loading-overlay').style.display = 'none';
+        } catch (e) { alert("Erreur de connexion aux serveurs Google."); }
+    }
+
+    function fillSelect(id, list) {
+        const sel = document.getElementById(id);
+        sel.innerHTML = '<option value="">-- Sélection --</option>';
+        list.forEach(item => sel.innerHTML += `<option value="${item}">${item}</option>`);
+    }
+
     function setVal(btn) {
-        const parent = btn.parentElement;
-        Array.from(parent.children).forEach(b => b.classList.remove('active'));
+        Array.from(btn.parentElement.children).forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         updateScore();
         checkForm();
     }
 
     function updateScore() {
-        let total = 0, count = 0;
+        let t = 0, c = 0;
         document.querySelectorAll('.btn-val.active').forEach(b => {
-            let pts = parseInt(b.dataset.pts);
-            if(pts > 0) { total += pts; count++; }
+            let p = parseInt(b.dataset.pts);
+            if(p > 0) { t += p; c++; }
         });
-        const final = count > 0 ? (total/count).toFixed(1) : "NE";
-        document.getElementById('live_score').innerText = final + " / 4";
-        return final;
+        const score = c > 0 ? (t/c).toFixed(1) : "NE";
+        document.getElementById('live_score').innerText = score + " / 4";
+        return score;
     }
 
     function checkForm() {
-        const ok = document.getElementById('stag_select').value && 
-                   document.getElementById('ms_select').value && 
-                   document.getElementById('chauf_select').value;
+        const ok = document.getElementById('stag_select').value && document.getElementById('ms_select').value;
         document.getElementById('btn_send').disabled = !ok;
     }
 
     function toggleLock(id, btn) {
         activePads[id] = !activePads[id];
-        if(activePads[id]) {
-            btn.innerText = "✍️ SIGNATURE ACTIVE (Bloqué)";
-            btn.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        } else {
-            btn.innerText = "DÉVERROUILLER POUR SIGNER";
-            btn.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
+        btn.innerText = activePads[id] ? "VERROUILLER" : "DÉVERROUILLER";
+        btn.style.background = activePads[id] ? "var(--vert)" : "white";
+        btn.style.color = activePads[id] ? "white" : "black";
+        document.body.style.overflow = activePads[id] ? 'hidden' : 'auto';
     }
 
     function setupCanvas(id) {
         const canvas = document.getElementById(id);
         const ctx = canvas.getContext('2d');
         const ratio = window.devicePixelRatio || 1;
-        
-        function resize() {
-            canvas.width = canvas.parentElement.offsetWidth * ratio;
-            canvas.height = canvas.parentElement.offsetHeight * ratio;
-            ctx.scale(ratio, ratio);
-            ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.strokeStyle = "#0056b3";
-        }
-        window.addEventListener('resize', resize);
-        resize();
+        canvas.width = canvas.parentElement.offsetWidth * ratio;
+        canvas.height = canvas.parentElement.offsetHeight * ratio;
+        ctx.scale(ratio, ratio);
+        ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.strokeStyle = "#000";
 
         let drawing = false;
         const getPos = e => {
             const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: clientX - rect.left, y: clientY - rect.top };
+            const cx = e.touches ? e.touches[0].clientX : e.clientX;
+            const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: cx - rect.left, y: cy - rect.top };
         };
 
-        const start = e => { if(!activePads[id]) return; drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); };
-        const move = e => { if(!drawing || !activePads[id]) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); };
+        const start = e => { if(!activePads[id]) return; drawing=true; ctx.beginPath(); const p=getPos(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
+        const move = e => { if(!drawing || !activePads[id]) return; const p=getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if(e.touches) e.preventDefault(); };
         const stop = () => drawing = false;
 
-        canvas.addEventListener('mousedown', start);
-        canvas.addEventListener('mousemove', move);
-        window.addEventListener('mouseup', stop);
-        canvas.addEventListener('touchstart', start, {passive: false});
-        canvas.addEventListener('touchmove', move, {passive: false});
-        canvas.addEventListener('touchend', stop);
+        canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
+        canvas.addEventListener('touchstart', start, {passive: false}); canvas.addEventListener('touchmove', move, {passive: false}); canvas.addEventListener('touchend', stop);
     }
 
     function clearSig(id) {
-        const canvas = document.getElementById(id);
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    async function addNewMember() {
-        const name = document.getElementById('new_name').value;
-        const type = document.getElementById('new_type').value;
-        if(!name) return alert("Nom vide !");
-        
-        document.getElementById('loading-overlay').style.display = 'flex';
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({ action: "addMember", name: name, type: type })
-        });
-        alert(name + " ajouté ! Rechargement...");
-        location.reload();
+        const c = document.getElementById(id);
+        c.getContext('2d').clearRect(0,0,c.width,c.height);
     }
 
     async function process() {
+        const stag = document.getElementById('stag_select').value;
+        const eval = document.getElementById('ms_select').value;
         const btn = document.getElementById('btn_send');
-        btn.innerText = "Envoi..."; btn.disabled = true;
+        btn.innerText = "Génération du rapport..."; btn.disabled = true;
 
         const notes = {};
-        document.querySelectorAll('.btns-eval').forEach(el => {
-            notes[el.dataset.key] = el.querySelector('.active').innerText;
-        });
+        document.querySelectorAll('.btns-eval').forEach(el => notes[el.dataset.key] = el.querySelector('.active').innerText);
 
-        const data = {
-            stag: document.getElementById('stag_select').value,
-            evalNom: document.getElementById('ms_select').value,
-            chauf: document.getElementById('chauf_select').value,
-            qualite: document.getElementById('ecole_select').value,
-            typeS: document.getElementById('type_stage').value,
-            jour: document.getElementById('jour_no').value,
-            score: updateScore(),
-            obs: document.getElementById('obs').value || "RAS",
-            notes: notes
-        };
-
-        // Envoi Sheets
-        try {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-        } catch(e) {}
-
-        // Génération PDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
         doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
         doc.setTextColor(255); doc.setFontSize(18); doc.text("CROIX-ROUGE DE BELGIQUE", 105, 20, {align:'center'});
-        doc.setFontSize(12); doc.text("EVALUATION JOURNALIERE", 105, 30, {align:'center'});
+        doc.setFontSize(12); doc.text("ÉVALUATION JOURNALIÈRE DU CANDIDAT", 105, 30, {align:'center'});
 
-        doc.setTextColor(0); doc.setFontSize(10);
-        doc.text(`Candidat: ${data.stag}`, 15, 50);
-        doc.text(`Evaluateur: ${data.evalNom}`, 15, 57);
-        doc.text(`Note: ${data.score}/4`, 150, 50);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 57);
+        doc.setTextColor(0); doc.setFontSize(11);
+        doc.text(`Candidat: ${stag}`, 15, 50);
+        doc.text(`Évaluateur: ${eval}`, 15, 57);
+        doc.text(`Moyenne: ${updateScore()}/4`, 150, 50);
+        doc.text(`Date: ${new Date().toLocaleDateString('fr-BE')}`, 150, 57);
 
-        const rows = Object.entries(notes);
-        doc.autoTable({ startY: 65, head: [['Critère', 'Note']], body: rows, headStyles:{fillColor:[0, 86, 179]} });
+        doc.autoTable({ startY: 65, head: [['Compétence', 'Évaluation']], body: Object.entries(notes), headStyles:{fillColor:[0, 86, 179]} });
         
         const finalY = doc.lastAutoTable.finalY + 10;
-        doc.text("Observations:", 15, finalY);
-        doc.setFontSize(9); doc.text(doc.splitTextToSize(data.obs, 180), 15, finalY + 7);
+        doc.setFontSize(10); doc.text("Observations:", 15, finalY);
+        doc.setFontSize(9); doc.text(doc.splitTextToSize(document.getElementById('obs').value || "Aucune observation particulière.", 180), 15, finalY + 7);
+        
+        doc.setFontSize(10);
+        doc.text(`Évaluateur: ${eval}`, 15, finalY + 35); 
+        doc.text(`Candidat: ${stag}`, 130, finalY + 35); 
         
         try {
-            const sigMS = document.getElementById('sig_ms').toDataURL();
-            const sigST = document.getElementById('sig_st').toDataURL();
-            doc.addImage(sigMS, 'PNG', 15, finalY + 25, 50, 20);
-            doc.addImage(sigST, 'PNG', 130, finalY + 25, 50, 20);
+            doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 15, finalY + 40, 60, 25);
+            doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 130, finalY + 40, 60, 25);
         } catch(e) {}
 
-        doc.save(`Evaluation_${data.stag}.pdf`);
-        alert("Enregistré avec succès !");
+        doc.save(`Eval_CRB_${stag}_${new Date().toLocaleDateString('fr-BE')}.pdf`);
+        alert("Enregistrement réussi !");
         location.reload();
     }
 </script>
