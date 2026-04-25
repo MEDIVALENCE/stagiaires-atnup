@@ -27,14 +27,13 @@
         .item-label { font-size: 15px; font-weight: bold; margin-bottom: 8px; display: block; }
         
         .btns-eval { display: flex; gap: 3px; }
-        .btn-val { flex: 1; padding: 10px 0; border: 1px solid #ddd; background: #f8f9fa; border-radius: 6px; font-size: 10px; font-weight: bold; color: #666; }
-        .btn-val.active[data-pts="1"] { background: var(--crb); color: white; border-color: var(--crb); }
-        .btn-val.active[data-pts="2"] { background: #ffc107; color: #000; border-color: #ffc107; }
-        .btn-val.active[data-pts="3"] { background: #8bc34a; color: white; border-color: #8bc34a; }
-        .btn-val.active[data-pts="4"] { background: var(--vert); color: white; border-color: var(--vert); }
-        .btn-val.active[data-pts="0"] { background: #adb5bd; color: white; border-color: #adb5bd; }
+        .btn-val { flex: 1; padding: 12px 0; border: 1px solid #ddd; background: #f8f9fa; border-radius: 6px; font-size: 10px; font-weight: bold; color: #666; }
+        .btn-val.active[data-pts="1"] { background: var(--crb) !important; color: white !important; border-color: var(--crb) !important; }
+        .btn-val.active[data-pts="2"] { background: #ffc107 !important; color: #000 !important; border-color: #ffc107 !important; }
+        .btn-val.active[data-pts="3"] { background: #8bc34a !important; color: white !important; border-color: #8bc34a !important; }
+        .btn-val.active[data-pts="4"] { background: var(--vert) !important; color: white !important; border-color: var(--vert) !important; }
+        .btn-val.active[data-pts="0"] { background: #adb5bd !important; color: white !important; border-color: #adb5bd !important; }
 
-        /* SIGNATURE FIX */
         .sig-wrapper { border: 2px solid #ddd; border-radius: 10px; background: #fff; margin-bottom: 10px; }
         .sig-pad { height: 140px; width: 100%; position: relative; touch-action: none; background: #fafafa; }
         canvas { position: absolute; top:0; left:0; width: 100%; height: 100%; }
@@ -43,6 +42,7 @@
         .btn-sig.active { background: var(--vert); color: white; border-color: var(--vert); }
 
         .btn-submit { width: 100%; background: var(--vert); color: white; border: none; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+        .btn-submit:disabled { background: #ccc; box-shadow: none; }
         
         #modal-settings { display: none; position: fixed; inset:0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: white; padding: 20px; border-radius: 15px; width: 100%; }
@@ -64,8 +64,8 @@
         <select id="new_type"><option>Stagiaire</option><option>Convoyeur</option><option>Chauffeur</option></select>
         <label>Nom Complet</label>
         <input type="text" id="new_name" placeholder="Prénom Nom">
-        <button onclick="addNewMember()" style="width:100%; padding:12px; background:var(--bleu); color:white; border:none; border-radius:8px;">VALIDER L'AJOUT</button>
-        <button onclick="toggleModal()" style="width:100%; margin-top:10px; background:none; border:none; color:red;">Annuler</button>
+        <button onclick="addNewMember()" style="width:100%; padding:12px; background:var(--bleu); color:white; border:none; border-radius:8px; font-weight:bold;">VALIDER L'AJOUT</button>
+        <button onclick="toggleModal()" style="width:100%; margin-top:10px; background:none; border:none; color:red; font-size:14px;">Annuler / Fermer</button>
     </div>
 </div>
 
@@ -127,19 +127,99 @@
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOUEXQpzJTrRk_XZmrzVaRDcKYvLxQLK1rXQGURt-qBPb743vsbVenumwjmzdcT1B7/exec";
 
-    // Gestion Verrouillage Signature pour iPhone
+    const items = [
+        "Check up véhicule", "Check up matériel", "Inventaire complet", "Désinfection",
+        "Itinéraire & GPS", "Administratif", "Relation équipe", "Relation Patient",
+        "Bilan primaire", "Bilan secondaire", "Oxygène", "Manutention"
+    ];
+
     let activePads = { sig_ms: false, sig_st: false };
+
+    // Initialisation au chargement
+    window.onload = () => {
+        initGrid();
+        setupCanvas('sig_ms');
+        setupCanvas('sig_st');
+        loadData();
+    };
+
+    function toggleModal() {
+        const m = document.getElementById('modal-settings');
+        m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    async function loadData() {
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            fillSelect('stag_select', data.stagiaires);
+            fillSelect('ms_select', data.convoyeurs);
+            fillSelect('chauf_select', data.chauffeurs);
+            document.getElementById('loading-overlay').style.display = 'none';
+        } catch (e) {
+            alert("Erreur de connexion aux données. Vérifiez votre lien SCRIPT_URL.");
+        }
+    }
+
+    function fillSelect(id, list) {
+        const sel = document.getElementById(id);
+        sel.innerHTML = '<option value="">-- Sélectionner --</option>';
+        list.forEach(item => sel.innerHTML += `<option value="${item}">${item}</option>`);
+    }
+
+    function initGrid() {
+        const grid = document.getElementById('grid_eval');
+        items.forEach(it => {
+            grid.innerHTML += `
+                <div class="item-row">
+                    <span class="item-label">${it}</span>
+                    <div class="btns-eval" data-key="${it}">
+                        <button class="btn-val" data-pts="1" onclick="setVal(this)">SUF</button>
+                        <button class="btn-val" data-pts="2" onclick="setVal(this)">SAT</button>
+                        <button class="btn-val" data-pts="3" onclick="setVal(this)">B</button>
+                        <button class="btn-val" data-pts="4" onclick="setVal(this)">TB</button>
+                        <button class="btn-val active" data-pts="0" onclick="setVal(this)">NE</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function setVal(btn) {
+        const parent = btn.parentElement;
+        Array.from(parent.children).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateScore();
+        checkForm();
+    }
+
+    function updateScore() {
+        let total = 0, count = 0;
+        document.querySelectorAll('.btn-val.active').forEach(b => {
+            let pts = parseInt(b.dataset.pts);
+            if(pts > 0) { total += pts; count++; }
+        });
+        const final = count > 0 ? (total/count).toFixed(1) : "NE";
+        document.getElementById('live_score').innerText = final + " / 4";
+        return final;
+    }
+
+    function checkForm() {
+        const ok = document.getElementById('stag_select').value && 
+                   document.getElementById('ms_select').value && 
+                   document.getElementById('chauf_select').value;
+        document.getElementById('btn_send').disabled = !ok;
+    }
 
     function toggleLock(id, btn) {
         activePads[id] = !activePads[id];
         if(activePads[id]) {
             btn.innerText = "✍️ SIGNATURE ACTIVE (Bloqué)";
             btn.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Empêche de scroller la page
+            document.body.style.overflow = 'hidden';
         } else {
             btn.innerText = "DÉVERROUILLER POUR SIGNER";
             btn.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Rend le scroll
+            document.body.style.overflow = 'auto';
         }
     }
 
@@ -147,10 +227,15 @@
         const canvas = document.getElementById(id);
         const ctx = canvas.getContext('2d');
         const ratio = window.devicePixelRatio || 1;
-        canvas.width = canvas.parentElement.offsetWidth * ratio;
-        canvas.height = canvas.parentElement.offsetHeight * ratio;
-        ctx.scale(ratio, ratio);
-        ctx.lineWidth = 2; ctx.lineCap = "round";
+        
+        function resize() {
+            canvas.width = canvas.parentElement.offsetWidth * ratio;
+            canvas.height = canvas.parentElement.offsetHeight * ratio;
+            ctx.scale(ratio, ratio);
+            ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.strokeStyle = "#0056b3";
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
         let drawing = false;
         const getPos = e => {
@@ -167,13 +252,89 @@
         canvas.addEventListener('mousedown', start);
         canvas.addEventListener('mousemove', move);
         window.addEventListener('mouseup', stop);
-        canvas.addEventListener('touchstart', start);
-        canvas.addEventListener('touchmove', move);
+        canvas.addEventListener('touchstart', start, {passive: false});
+        canvas.addEventListener('touchmove', move, {passive: false});
         canvas.addEventListener('touchend', stop);
     }
 
-    // Le reste des fonctions (loadData, initGrid, updateScore, process) reste identique. 
-    // Copiez-les de ma réponse précédente pour compléter le script.
+    function clearSig(id) {
+        const canvas = document.getElementById(id);
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    async function addNewMember() {
+        const name = document.getElementById('new_name').value;
+        const type = document.getElementById('new_type').value;
+        if(!name) return alert("Nom vide !");
+        
+        document.getElementById('loading-overlay').style.display = 'flex';
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({ action: "addMember", name: name, type: type })
+        });
+        alert(name + " ajouté ! Rechargement...");
+        location.reload();
+    }
+
+    async function process() {
+        const btn = document.getElementById('btn_send');
+        btn.innerText = "Envoi..."; btn.disabled = true;
+
+        const notes = {};
+        document.querySelectorAll('.btns-eval').forEach(el => {
+            notes[el.dataset.key] = el.querySelector('.active').innerText;
+        });
+
+        const data = {
+            stag: document.getElementById('stag_select').value,
+            evalNom: document.getElementById('ms_select').value,
+            chauf: document.getElementById('chauf_select').value,
+            qualite: document.getElementById('ecole_select').value,
+            typeS: document.getElementById('type_stage').value,
+            jour: document.getElementById('jour_no').value,
+            score: updateScore(),
+            obs: document.getElementById('obs').value || "RAS",
+            notes: notes
+        };
+
+        // Envoi Sheets
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        } catch(e) {}
+
+        // Génération PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255); doc.setFontSize(18); doc.text("CROIX-ROUGE DE BELGIQUE", 105, 20, {align:'center'});
+        doc.setFontSize(12); doc.text("EVALUATION JOURNALIERE", 105, 30, {align:'center'});
+
+        doc.setTextColor(0); doc.setFontSize(10);
+        doc.text(`Candidat: ${data.stag}`, 15, 50);
+        doc.text(`Evaluateur: ${data.evalNom}`, 15, 57);
+        doc.text(`Note: ${data.score}/4`, 150, 50);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 57);
+
+        const rows = Object.entries(notes);
+        doc.autoTable({ startY: 65, head: [['Critère', 'Note']], body: rows, headStyles:{fillColor:[0, 86, 179]} });
+        
+        const finalY = doc.lastAutoTable.finalY + 10;
+        doc.text("Observations:", 15, finalY);
+        doc.setFontSize(9); doc.text(doc.splitTextToSize(data.obs, 180), 15, finalY + 7);
+        
+        try {
+            const sigMS = document.getElementById('sig_ms').toDataURL();
+            const sigST = document.getElementById('sig_st').toDataURL();
+            doc.addImage(sigMS, 'PNG', 15, finalY + 25, 50, 20);
+            doc.addImage(sigST, 'PNG', 130, finalY + 25, 50, 20);
+        } catch(e) {}
+
+        doc.save(`Evaluation_${data.stag}.pdf`);
+        alert("Enregistré avec succès !");
+        location.reload();
+    }
 </script>
 </body>
 </html>
