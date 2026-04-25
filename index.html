@@ -3,110 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Évaluation ATNUP 2026</title>
+    <title>Suivi ATNUP 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --crb: #ED1B2E; --bg: #F4F7F9; --dark: #333; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--dark); }
-        .header { background: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--crb); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .container { padding: 10px; max-width: 600px; margin: auto; }
-        .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--crb); }
-        h2 { font-size: 13px; color: var(--crb); text-transform: uppercase; margin: 0 0 12px 0; border-bottom: 1px solid #EEE; padding-bottom: 5px; font-weight: 800; }
+        :root { --crb: #ED1B2E; --bg: #F4F7F9; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; }
+        .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid var(--crb); }
+        h2 { font-size: 14px; color: var(--crb); margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         .form-group { margin-bottom: 10px; }
-        label { font-size: 10px; font-weight: bold; color: #666; display: block; margin-bottom: 3px; text-transform: uppercase; }
-        select, textarea, input { padding: 10px; border: 1px solid #DDD; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; background: #FAFAFA; }
-        .item-row { display: flex; flex-direction: column; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
-        .item-label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; font-weight: bold; }
-        .btns { display: flex; gap: 4px; }
-        .btn-opt { border: 1px solid #CCC; background: white; padding: 8px 4px; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1; font-size: 10px; text-align: center; }
+        label { font-size: 11px; font-weight: bold; color: #555; display: block; }
+        select, input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .item-row { padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+        .item-label { font-size: 13px; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; }
+        .btns { display: flex; gap: 5px; }
+        .btn-opt { flex: 1; padding: 8px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
-        .score-badge { background: #333; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 12px; font-size: 16px; border: 2px solid var(--crb); }
-        .sig-container { border: 1px dashed #CCC; background: #FFF; height: 100px; border-radius: 8px; touch-action: none; margin-top: 5px; }
+        .score-badge { background: #333; color: white; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 10px; font-weight: bold; border: 2px solid var(--crb); }
+        .sig-container { border: 1px dashed #ccc; height: 100px; background: #fff; border-radius: 5px; margin-top: 5px; }
         canvas { width: 100%; height: 100%; }
-        .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .btn-main { width: 100%; background: var(--crb); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-main:disabled { background: #ccc; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div style="font-weight:900; color:var(--crb); font-size: 18px;">CROIX-ROUGE DE BELGIQUE</div>
-    <div style="font-size: 11px; font-weight: bold; color: #555;"> - Evaluation journalière du candiat - </div>
-</div>
+    <div style="text-align:center; margin-bottom:15px;">
+        <strong style="color:var(--crb)">SUIVI TECHNIQUE ATNUP 2026</strong><br>
+        <small>Évaluation journalière du stagiaire</small>
+    </div>
 
-<div class="container">
+    <div class="score-badge" id="live_score">NOTE GLOBALE : NE</div>
+
     <div class="card">
-        <h2>1. Identification & Contexte</h2>
+        <h2>1. Contexte</h2>
         <div class="form-group"><label>Stagiaire</label><select id="stag_select" onchange="checkForm()"></select></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="form-group"><label>Type de stage</label><select id="stage_type"><option value="ATNUP">ATNUP</option><option value="AMU">AMU</option><option value="AUTRE">AUTRE</option></select></div>
-            <div class="form-group"><label>Qualité</label><select id="stag_qualite"><option value="Actif">Actif</option><option value="Observateur">Observateur</option></select></div>
+        <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;"><label>Type Stage</label><select id="stage_type"><option>ATNUP</option><option>AMU</option><option>AUTRE</option></select></div>
+            <div class="form-group" style="flex:1;"><label>Qualité</label><select id="stag_qualite"><option>Actif</option><option>Observateur</option></select></div>
         </div>
-        <div class="form-group"><label>Maître de Stage (Évaluateur)</label><select id="ms_select" onchange="checkForm()"></select></div>
-        <div class="form-group"><label>Chauffeur</label><select id="chauf_select"></select></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="form-group"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
-            <div class="form-group"><label>Missions</label><input type="number" id="nb_missions" value="0"></div>
+        <div class="form-group"><label>Maître de Stage (Evaluateur)</label><select id="ms_select" onchange="checkForm()"></select></div>
+        <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
+            <div class="form-group" style="flex:1;"><label>Missions</label><input type="number" id="nb_missions" value="0"></div>
         </div>
     </div>
 
-    <div class="score-badge" id="live_score">COTE GLOBALE DU JOUR : NE</div>
-
     <div class="card">
-        <h2>2. Ambulance & Logistique</h2>
-        <div id="section_ambulance"></div>
+        <h2>2. Grille d'évaluation</h2>
+        <div id="grid_container"></div>
     </div>
 
     <div class="card">
-        <h2>3. Relation & Prise en charge</h2>
-        <div id="section_prise_en_charge"></div>
-    </div>
-
-    <div class="card">
-        <h2>4. Observations & Signatures</h2>
-        <textarea id="obs" rows="4" placeholder="Commentaires du MS..." oninput="checkForm()"></textarea>
+        <h2>3. Observations & Signature</h2>
+        <textarea id="obs" placeholder="Commentaires sur la progression..." oninput="checkForm()"></textarea>
         <div style="margin-top:10px;"><label>Signature MS</label><div class="sig-container"><canvas id="can_ms"></canvas></div></div>
-        <div style="margin-top:10px;"><label>Signature Stagiaire</label><div class="sig-container"><canvas id="can_st"></canvas></div></div>
         <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER & GÉNÉRER PDF</button>
     </div>
-</div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHXq72DrRXZxgfXNRzHnQnD6OCPqRp_FHM9vTXC0WUEj1P7doJ-uB9BD7XQRUIW4-D/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxkDf0HW8Ns1-7J-fD3l-Xtv5YKJ4SRt-2lbQSESY_eJ-_q18iSdIL__CX_nfPVoDk/exec"; // REMPLACER ICI
 
     const defs = {
-        "Check up véhicule": "Vérification des niveaux (huile, lave-glace), état des pneus, éclairage prioritaire (bleus) et carrosserie.",
-        "Check up matériel": "Contrôle opérationnel du DEA, aspirateur de mucosités, radio et oxygène portable.",
-        "Inventaire complet": "Vérification exhaustive selon la liste VESUV : sacs d'intervention, brancard, chaise, et consommables.",
-        "Désinfection": "Application des protocoles d'hygiène de la cellule sanitaire et du matériel utilisé après chaque mission.",
-        "Itinéraire & GPS": "Capacité à encoder une destination, interpréter le trafic et guider le chauffeur sans hésitation.",
-        "Documents": "Rédaction précise de la feuille de route, du rapport d'intervention (tablette ou papier) et respect du secret médical.",
-        "Relation équipe": "Communication professionnelle, respect des ordres et intégration au binôme MS/Chauffeur.",
-        "Relation Patient": "Empathie, dialogue adapté (rassurer), gestion de la famille et des témoins sur place.",
-        "Bilan primaire": "Évaluation systématique ABCDE : recherche immédiate d'une menace vitale (hémorragie, arrêt, obstruction).",
-        "Bilan secondaire": "Anamnèse SAMPLE, prise des paramètres vitaux (TA, FC, SpO2, Glycémie) et évaluation de la douleur (PQRSTU).",
-        "Oxygénothérapie": "Calcul d'autonomie des bouteilles, choix du masque (HC ou lunettes) et réglage correct du débitmètre.",
-        "Manutention": "Utilisation sécurisée du matériel de portage (brancard, chaise portoir) en préservant son dos (ergonomie)."
+        "Check up véhicule": "Vérification des niveaux, pneus, carrosserie et éclairage prioritaire.",
+        "Check up matériel": "Vérification du DEA, oxygène portable, aspirateur et radio.",
+        "Inventaire complet": "Vérification exhaustive de tout le matériel selon la check-list VESUV.",
+        "Désinfection": "Nettoyage de la cellule sanitaire et du matériel après chaque mission.",
+        "Itinéraire & GPS": "Encodage GPS, lecture de carte et guidage fluide du chauffeur.",
+        "Documents": "Rédaction correcte de la feuille de route et du rapport d'intervention.",
+        "Relation équipe": "Communication pro et respect des consignes au sein du binôme.",
+        "Relation Patient": "Empathie, dialogue adapté et gestion de l'entourage.",
+        "Bilan primaire": "Recherche systématique des fonctions vitales (ABCDE).",
+        "Bilan secondaire": "Prise des paramètres vitaux (TA, FC, SpO2) et anamnèse SAMPLE.",
+        "Oxygénothérapie": "Calcul d'autonomie et réglage du débitmètre (masque/lunettes).",
+        "Manutention": "Utilisation sécurisée du brancard/chaise et protection du dos."
     };
 
-    const cat1 = ["Check up véhicule", "Check up matériel", "Inventaire complet", "Désinfection", "Itinéraire & GPS", "Documents"];
-    const cat2 = ["Relation équipe", "Relation Patient", "Bilan primaire", "Bilan secondaire", "Oxygénothérapie", "Manutention"];
+    const items = Object.keys(defs);
 
-    function buildGrid(list, containerId) {
-        const container = document.getElementById(containerId);
-        list.forEach(key => {
-            container.innerHTML += `
-                <div class="item-row" data-name="${key}">
-                    <div class="item-label"><button class="info-btn" onclick="alert('${defs[key]}')">i</button> ${key}</div>
-                    <div class="btns">
-                        <button class="btn-opt" data-pts="1" data-val="SUF" onclick="optClick(this)">SUF</button>
-                        <button class="btn-opt" data-pts="2" data-val="SAT" onclick="optClick(this)">SAT</button>
-                        <button class="btn-opt" data-pts="3" data-val="B" onclick="optClick(this)">B</button>
-                        <button class="btn-opt" data-pts="4" data-val="TB" onclick="optClick(this)">TB</button>
-                        <button class="btn-opt active" data-pts="0" data-val="NE" onclick="optClick(this)">NE</button>
-                    </div>
-                </div>`;
+    function init() {
+        const cont = document.getElementById('grid_container');
+        items.forEach(key => {
+            cont.innerHTML += `
+            <div class="item-row" data-name="${key}">
+                <div class="item-label"><button class="info-btn" onclick="alert('${defs[key]}')">i</button> ${key}</div>
+                <div class="btns">
+                    <button class="btn-opt" data-pts="1" data-val="SUF" onclick="optClick(this)">SUF</button>
+                    <button class="btn-opt" data-pts="2" data-val="SAT" onclick="optClick(this)">SAT</button>
+                    <button class="btn-opt" data-pts="3" data-val="B" onclick="optClick(this)">B</button>
+                    <button class="btn-opt" data-pts="4" data-val="TB" onclick="optClick(this)">TB</button>
+                    <button class="btn-opt active" data-pts="0" data-val="NE" onclick="optClick(this)">NE</button>
+                </div>
+            </div>`;
         });
+        fetchData();
+    }
+
+    async function fetchData() {
+        try {
+            const r = await fetch(SCRIPT_URL);
+            const d = await r.json();
+            fillMenu('stag_select', d.stagiaires);
+            fillMenu('ms_select', d.convoyeurs);
+        } catch(e) { console.log("Liaison Sheets KO"); }
+    }
+
+    function fillMenu(id, list) {
+        const s = document.getElementById(id);
+        s.innerHTML = '<option value="">-- Choisir --</option>';
+        list.forEach(n => s.innerHTML += `<option>${n}</option>`);
     }
 
     function optClick(btn) {
@@ -130,83 +135,40 @@
             else if(avg < 3.5) label = "BIEN";
             else label = "TB";
         }
-        document.getElementById('live_score').innerText = `COTE GLOBALE DU JOUR : ${label} (${avg || '--'}/4)`;
-        return { label, avg };
-    }
-
-    async function init() {
-        buildGrid(cat1, 'section_ambulance');
-        buildGrid(cat2, 'section_prise_en_charge');
-        try {
-            const r = await fetch(SCRIPT_URL);
-            const d = await r.json();
-            fillMenu('stag_select', d.stagiaires);
-            fillMenu('ms_select', d.convoyeurs);
-            fillMenu('chauf_select', d.chauffeurs);
-        } catch(e) {}
-    }
-
-    function fillMenu(id, list) {
-        const sel = document.getElementById(id);
-        sel.innerHTML = '<option value="">-- Sélectionner --</option>';
-        if(list) list.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
+        document.getElementById('live_score').innerText = `NOTE GLOBALE : ${label} (${avg || '--'}/4)`;
+        return label;
     }
 
     function checkForm() {
-        const obs = document.getElementById('obs').value.trim();
         const s = document.getElementById('stag_select').value;
         const m = document.getElementById('ms_select').value;
-        document.getElementById('btn_send').disabled = (obs.length < 2 || s === "" || m === "");
-    }
-
-    function setupCanvas(id) {
-        const c = document.getElementById(id);
-        const ctx = c.getContext('2d');
-        c.width = c.offsetWidth; c.height = c.offsetHeight;
-        let drawing = false;
-        const getP = e => {
-            const r = c.getBoundingClientRect();
-            return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
-        };
-        const start = e => { drawing = true; ctx.beginPath(); const p=getP(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
-        const move = e => { if(drawing) { const p=getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } if(e.touches) e.preventDefault(); };
-        c.addEventListener('mousedown', start); c.addEventListener('mousemove', move);
-        c.addEventListener('touchstart', start, {passive:false}); c.addEventListener('touchmove', move, {passive:false});
-        window.addEventListener('mouseup', () => drawing = false);
+        const o = document.getElementById('obs').value.trim();
+        document.getElementById('btn_send').disabled = (s === "" || m === "" || o === "");
     }
 
     async function submitAll() {
-        const score = calcScore();
-        const stag = document.getElementById('stag_select').value;
-        const ms = document.getElementById('ms_select').value;
-        
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 30, 'F');
-        doc.setTextColor(255); doc.text("EVALUATION ATNUP 2026", 105, 15, {align:'center'});
-        doc.setTextColor(0); doc.text(`Stagiaire: ${stag}`, 20, 40);
-        doc.text(`Maître de Stage: ${ms}`, 20, 50);
-        doc.text(`Note Globale: ${score.label}`, 20, 60);
-        doc.text("Observations:", 20, 180);
-        doc.text(doc.splitTextToSize(document.getElementById('obs').value, 170), 20, 190);
-        doc.save(`Eval_${stag}.pdf`);
-
         const notes = {};
-        document.querySelectorAll('.item-row').forEach(r => notes[r.dataset.name] = r.querySelector('.btn-opt.active').dataset.val);
-        
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ 
-            stag, ms, chauf: document.getElementById('chauf_select').value, 
-            typeS: document.getElementById('stage_type').value, 
-            qual: document.getElementById('stag_qualite').value,
-            jour: document.getElementById('jour_no').value, 
-            score: score.label, obs: document.getElementById('obs').value, notes 
-        })});
+        document.querySelectorAll('.item-row').forEach(r => {
+            notes[r.dataset.name] = r.querySelector('.btn-opt.active').dataset.val;
+        });
 
-        alert("Transmis !");
+        const payload = {
+            stag: document.getElementById('stag_select').value,
+            ms: document.getElementById('ms_select').value,
+            typeS: document.getElementById('stage_type').value,
+            qual: document.getElementById('stag_qualite').value,
+            jour: document.getElementById('jour_no').value,
+            score: calcScore(),
+            obs: document.getElementById('obs').value,
+            notes: notes
+        };
+
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        alert("Evaluation envoyée !");
         location.reload();
     }
 
-    window.onload = () => { init(); setupCanvas('can_ms'); setupCanvas('can_st'); };
+    window.onload = init;
 </script>
 </body>
 </html>
