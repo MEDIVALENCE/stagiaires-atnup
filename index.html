@@ -5,166 +5,233 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Suivi ATNUP 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --crb: #ED1B2E; --bg: #F4F7F9; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; }
-        .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid var(--crb); }
-        h2 { font-size: 14px; color: var(--crb); margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .form-group { margin-bottom: 10px; }
-        label { font-size: 11px; font-weight: bold; color: #555; display: block; }
-        select, input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        .item-row { padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
-        .item-label { font-size: 13px; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; }
-        .btns { display: flex; gap: 5px; }
-        .btn-opt { flex: 1; padding: 8px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
-        .score-badge { background: #333; color: white; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 10px; font-weight: bold; border: 2px solid var(--crb); }
-        .sig-container { border: 1px dashed #ccc; height: 100px; background: #fff; border-radius: 5px; margin-top: 5px; }
-        canvas { width: 100%; height: 100%; }
-        .btn-main { width: 100%; background: var(--crb); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-main:disabled { background: #ccc; }
+        :root { --crb: #ED1B2E; --dark: #1a1a1a; --gray: #f8f9fa; }
+        body { font-family: 'Segoe UI', Helvetica, sans-serif; background: #e9ecef; margin: 0; padding: 10px; color: var(--dark); }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 5px solid var(--crb); }
+        h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--crb); margin: 0 0 15px 0; display: flex; align-items: center; justify-content: space-between; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .full { grid-column: span 2; }
+        label { font-size: 11px; font-weight: 700; color: #666; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: var(--gray); box-sizing: border-box; }
+        .score-box { background: var(--dark); color: white; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px; }
+        .item-row { padding: 12px 0; border-bottom: 1px solid #eee; }
+        .item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .item-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .info-btn { background: #4a90e2; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; font-weight: bold; }
+        .btns-eval { display: flex; gap: 4px; }
+        .btn-val { flex: 1; padding: 10px 5px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: 800; transition: 0.2s; }
+        .btn-val.active { background: var(--crb); color: white; border-color: var(--crb); }
+        .sig-box { border: 2px dashed #ccc; height: 120px; background: #fff; border-radius: 8px; margin-top: 10px; }
+        .btn-submit { width: 100%; background: var(--crb); color: white; border: none; padding: 18px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(237,27,46,0.3); }
+        .btn-submit:disabled { background: #999; box-shadow: none; }
     </style>
 </head>
 <body>
 
-    <div style="text-align:center; margin-bottom:15px;">
-        <strong style="color:var(--crb)">SUIVI TECHNIQUE ATNUP 2026</strong><br>
-        <small>Évaluation journalière du stagiaire</small>
+    <div style="text-align:center; padding: 10px 0;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png" alt="CRB" style="height:40px;">
+        <div style="font-weight:900; letter-spacing:1px; margin-top:5px;">SUIVI TECHNIQUE ATNUP 2026</div>
     </div>
 
-    <div class="score-badge" id="live_score">NOTE GLOBALE : NE</div>
+    <div class="score-box">
+        <div style="font-size:11px; opacity:0.8;">ÉVALUATION GLOBALE DU JOUR</div>
+        <div id="live_score" style="font-size:22px; font-weight:900;">NON ÉVALUÉ (NE)</div>
+    </div>
 
     <div class="card">
-        <h2>1. Contexte</h2>
-        <div class="form-group"><label>Stagiaire</label><select id="stag_select" onchange="checkForm()"></select></div>
-        <div style="display:flex; gap:10px;">
-            <div class="form-group" style="flex:1;"><label>Type Stage</label><select id="stage_type"><option>ATNUP</option><option>AMU</option><option>AUTRE</option></select></div>
-            <div class="form-group" style="flex:1;"><label>Qualité</label><select id="stag_qualite"><option>Actif</option><option>Observateur</option></select></div>
+        <h2>1. Équipage & Contexte</h2>
+        <div class="form-grid">
+            <div class="form-group full"><label>Étudiant(e) Stagiaire</label><select id="stag_select" onchange="updateUI()"></select></div>
+            <div class="form-group"><label>Maître de Stage (MS)</label><select id="ms_select" onchange="updateUI()"></select></div>
+            <div class="form-group"><label>Chauffeur</label><select id="chauf_select"></select></div>
+            <div class="form-group"><label>Type de Stage</label><select id="type_s"><option>ATNUP</option><option>AMU</option><option>AUTRE</option></select></div>
+            <div class="form-group"><label>Qualité</label><select id="qual_s"><option>Actif</option><option>Observateur</option></select></div>
+            <div class="form-group"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
+            <div class="form-group"><label>Nb Missions</label><input type="number" id="nb_miss" value="0"></div>
         </div>
-        <div class="form-group"><label>Maître de Stage (Evaluateur)</label><select id="ms_select" onchange="checkForm()"></select></div>
-        <div style="display:flex; gap:10px;">
-            <div class="form-group" style="flex:1;"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
-            <div class="form-group" style="flex:1;"><label>Missions</label><input type="number" id="nb_missions" value="0"></div>
-        </div>
     </div>
 
     <div class="card">
-        <h2>2. Grille d'évaluation</h2>
-        <div id="grid_container"></div>
+        <h2>2. Compétences Techniques</h2>
+        <div id="grid_eval"></div>
     </div>
 
     <div class="card">
-        <h2>3. Observations & Signature</h2>
-        <textarea id="obs" placeholder="Commentaires sur la progression..." oninput="checkForm()"></textarea>
-        <div style="margin-top:10px;"><label>Signature MS</label><div class="sig-container"><canvas id="can_ms"></canvas></div></div>
-        <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER & GÉNÉRER PDF</button>
+        <h2>3. Observations & Validation</h2>
+        <label>Commentaires détaillés du MS</label>
+        <textarea id="obs" rows="4" placeholder="Points forts et axes d'amélioration..." oninput="updateUI()"></textarea>
+        
+        <div style="margin-top:15px;"><label>Signature du MS</label><div class="sig-box"><canvas id="sig_ms"></canvas></div></div>
+        <div style="margin-top:15px;"><label>Signature Stagiaire</label><div class="sig-box"><canvas id="sig_st"></canvas></div></div>
+        
+        <button id="btn_send" class="btn-submit" disabled onclick="process()">VALIDER & GÉNÉRER LE RAPPORT PDF</button>
     </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxkDf0HW8Ns1-7J-fD3l-Xtv5YKJ4SRt-2lbQSESY_eJ-_q18iSdIL__CX_nfPVoDk/exec"; // REMPLACER ICI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1PP2oUf7HKisLuBf7cA-f6ThXi24ofJvVdSFBldZCuD9CHJempWt5k892n3aTCl3M/exec"; // <--- LIEN EXEC ICI
 
-    const defs = {
-        "Check up véhicule": "Vérification des niveaux, pneus, carrosserie et éclairage prioritaire.",
-        "Check up matériel": "Vérification du DEA, oxygène portable, aspirateur et radio.",
-        "Inventaire complet": "Vérification exhaustive de tout le matériel selon la check-list VESUV.",
-        "Désinfection": "Nettoyage de la cellule sanitaire et du matériel après chaque mission.",
-        "Itinéraire & GPS": "Encodage GPS, lecture de carte et guidage fluide du chauffeur.",
-        "Documents": "Rédaction correcte de la feuille de route et du rapport d'intervention.",
-        "Relation équipe": "Communication pro et respect des consignes au sein du binôme.",
-        "Relation Patient": "Empathie, dialogue adapté et gestion de l'entourage.",
-        "Bilan primaire": "Recherche systématique des fonctions vitales (ABCDE).",
-        "Bilan secondaire": "Prise des paramètres vitaux (TA, FC, SpO2) et anamnèse SAMPLE.",
-        "Oxygénothérapie": "Calcul d'autonomie et réglage du débitmètre (masque/lunettes).",
-        "Manutention": "Utilisation sécurisée du brancard/chaise et protection du dos."
+    const descriptions = {
+        "Check up véhicule": "Vérification mécanique (niveaux, pneus, carrosserie) et éclairage prioritaire.",
+        "Check up matériel": "Contrôle opérationnel du DEA, oxygène portable, aspirateur et radio.",
+        "Inventaire complet": "Vérification exhaustive selon la liste VESUV : sacs, brancard, consommables.",
+        "Désinfection": "Hygiène de la cellule sanitaire et du matériel utilisé après chaque mission.",
+        "Itinéraire & GPS": "Utilisation du GPS, lecture de carte et guidage fluide du chauffeur.",
+        "Documents": "Rédaction correcte : feuille de route, rapport d'intervention et respect du secret médical.",
+        "Relation équipe": "Communication pro, respect de la hiérarchie et intégration dans le binôme MS/Chauffeur.",
+        "Relation Patient": "Empathie, dialogue adapté (rassurer), gestion de l'entourage et des témoins.",
+        "Bilan primaire": "Évaluation systématique ABCDE : recherche de menaces vitales immédiates.",
+        "Bilan secondaire": "Anamnèse SAMPLE, paramètres vitaux (TA, FC, SpO2) et score de douleur.",
+        "Oxygénothérapie": "Calcul d'autonomie des bouteilles et réglage précis du débitmètre.",
+        "Manutention": "Utilisation sécurisée du brancard/chaise et ergonomie pour la protection du dos."
     };
 
-    const items = Object.keys(defs);
-
     function init() {
-        const cont = document.getElementById('grid_container');
-        items.forEach(key => {
-            cont.innerHTML += `
-            <div class="item-row" data-name="${key}">
-                <div class="item-label"><button class="info-btn" onclick="alert('${defs[key]}')">i</button> ${key}</div>
-                <div class="btns">
-                    <button class="btn-opt" data-pts="1" data-val="SUF" onclick="optClick(this)">SUF</button>
-                    <button class="btn-opt" data-pts="2" data-val="SAT" onclick="optClick(this)">SAT</button>
-                    <button class="btn-opt" data-pts="3" data-val="B" onclick="optClick(this)">B</button>
-                    <button class="btn-opt" data-pts="4" data-val="TB" onclick="optClick(this)">TB</button>
-                    <button class="btn-opt active" data-pts="0" data-val="NE" onclick="optClick(this)">NE</button>
-                </div>
-            </div>`;
+        const grid = document.getElementById('grid_eval');
+        Object.keys(descriptions).forEach(key => {
+            grid.innerHTML += `
+                <div class="item-row" data-name="${key}">
+                    <div class="item-header">
+                        <div class="item-title"><button class="info-btn" onclick="alert('${descriptions[key]}')">i</button> ${key}</div>
+                        <div class="btns-eval">
+                            <button class="btn-val" data-pts="1" data-v="SUF" onclick="setVal(this)">SUF</button>
+                            <button class="btn-val" data-pts="2" data-v="SAT" onclick="setVal(this)">SAT</button>
+                            <button class="btn-val" data-pts="3" data-v="B" onclick="setVal(this)">B</button>
+                            <button class="btn-val" data-pts="4" data-v="TB" onclick="setVal(this)">TB</button>
+                            <button class="btn-val active" data-pts="0" data-v="NE" onclick="setVal(this)">NE</button>
+                        </div>
+                    </div>
+                </div>`;
         });
-        fetchData();
+        loadLists();
+        setupSig('sig_ms'); setupSig('sig_st');
     }
 
-    async function fetchData() {
+    async function loadLists() {
         try {
             const r = await fetch(SCRIPT_URL);
             const d = await r.json();
-            fillMenu('stag_select', d.stagiaires);
-            fillMenu('ms_select', d.convoyeurs);
-        } catch(e) { console.log("Liaison Sheets KO"); }
+            const fill = (id, l) => {
+                const s = document.getElementById(id);
+                s.innerHTML = '<option value="">-- Sélectionner --</option>';
+                l.forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`);
+            };
+            fill('stag_select', d.stagiaires);
+            fill('ms_select', d.staff);
+            fill('chauf_select', d.staff);
+        } catch(e) { console.error("Base de données injoignable"); }
     }
 
-    function fillMenu(id, list) {
-        const s = document.getElementById(id);
-        s.innerHTML = '<option value="">-- Choisir --</option>';
-        list.forEach(n => s.innerHTML += `<option>${n}</option>`);
-    }
-
-    function optClick(btn) {
+    function setVal(btn) {
         Array.from(btn.parentElement.children).forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        calcScore();
-        checkForm();
+        updateScore(); updateUI();
     }
 
-    function calcScore() {
-        let total = 0, count = 0;
-        document.querySelectorAll('.btn-opt.active').forEach(b => {
-            let pts = parseInt(b.dataset.pts);
-            if(pts > 0) { total += pts; count++; }
+    function updateScore() {
+        let t = 0, c = 0;
+        document.querySelectorAll('.btn-val.active').forEach(b => {
+            let p = parseInt(b.dataset.pts);
+            if(p > 0) { t += p; c++; }
         });
-        const avg = count > 0 ? (total / count).toFixed(1) : null;
-        let label = "NE";
+        const avg = c > 0 ? (t / c).toFixed(1) : null;
+        let l = "NON ÉVALUÉ (NE)";
         if(avg) {
-            if(avg < 1.5) label = "SUF";
-            else if(avg < 2.5) label = "SAT";
-            else if(avg < 3.5) label = "BIEN";
-            else label = "TB";
+            if(avg < 1.5) l = "SUF"; else if(avg < 2.5) l = "SATISFAISANT (SAT)";
+            else if(avg < 3.5) l = "BIEN (B)"; else l = "TRÈS BIEN (TB)";
         }
-        document.getElementById('live_score').innerText = `NOTE GLOBALE : ${label} (${avg || '--'}/4)`;
-        return label;
+        document.getElementById('live_score').innerText = `${l} ${avg ? '('+avg+'/4)' : ''}`;
+        return l;
     }
 
-    function checkForm() {
-        const s = document.getElementById('stag_select').value;
-        const m = document.getElementById('ms_select').value;
-        const o = document.getElementById('obs').value.trim();
-        document.getElementById('btn_send').disabled = (s === "" || m === "" || o === "");
+    function updateUI() {
+        const ok = document.getElementById('stag_select').value && 
+                   document.getElementById('ms_select').value && 
+                   document.getElementById('obs').value.length > 5;
+        document.getElementById('btn_send').disabled = !ok;
     }
 
-    async function submitAll() {
-        const notes = {};
-        document.querySelectorAll('.item-row').forEach(r => {
-            notes[r.dataset.name] = r.querySelector('.btn-opt.active').dataset.val;
-        });
+    function setupSig(id) {
+        const c = document.getElementById(id); const ctx = c.getContext('2d');
+        c.width = c.offsetWidth; c.height = c.offsetHeight;
+        let draw = false;
+        const pos = e => {
+            const r = c.getBoundingClientRect();
+            return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
+        };
+        c.addEventListener('mousedown', e => { draw = true; ctx.beginPath(); const p=pos(e); ctx.moveTo(p.x,p.y); });
+        c.addEventListener('mousemove', e => { if(draw) { const p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); } });
+        window.addEventListener('mouseup', () => draw = false);
+        c.addEventListener('touchstart', e => { draw = true; ctx.beginPath(); const p=pos(e); ctx.moveTo(p.x,p.y); e.preventDefault(); }, {passive:false});
+        c.addEventListener('touchmove', e => { if(draw) { const p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); } e.preventDefault(); }, {passive:false});
+    }
 
-        const payload = {
+    async function process() {
+        const score = updateScore();
+        const data = {
             stag: document.getElementById('stag_select').value,
             ms: document.getElementById('ms_select').value,
-            typeS: document.getElementById('stage_type').value,
-            qual: document.getElementById('stag_qualite').value,
+            chauf: document.getElementById('chauf_select').value,
+            typeS: document.getElementById('type_s').value,
+            qual: document.getElementById('qual_s').value,
             jour: document.getElementById('jour_no').value,
-            score: calcScore(),
+            score: score,
             obs: document.getElementById('obs').value,
-            notes: notes
+            notes: {}
         };
+        document.querySelectorAll('.item-row').forEach(r => data.notes[r.dataset.name] = r.querySelector('.btn-val.active').dataset.v);
 
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        alert("Evaluation envoyée !");
+        // --- GÉNÉRATION PDF PRO ---
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Header
+        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255); doc.setFontSize(20); doc.text("RAPPORT D'ÉVALUATION JOURNALIER", 105, 20, {align:'center'});
+        doc.setFontSize(12); doc.text("CROIX-ROUGE DE BELGIQUE - ATNUP 2026", 105, 30, {align:'center'});
+
+        // Info Stagiaire
+        doc.setTextColor(0); doc.setFont("helvetica", "bold"); doc.text("IDENTIFICATION", 20, 50);
+        doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+        const info = [
+            ["Stagiaire :", data.stag, "Date :", new Date().toLocaleDateString('fr-FR')],
+            ["Évaluateur (MS) :", data.ms, "Jour n° :", data.jour],
+            ["Chauffeur :", data.chauf, "Missions :", document.getElementById('nb_miss').value],
+            ["Type de stage :", data.typeS, "Qualité :", data.qual]
+        ];
+        doc.autoTable({ startY: 55, body: info, theme: 'plain', styles: {fontSize: 9} });
+
+        // Tableau Compétences
+        doc.setFont("helvetica", "bold"); doc.text("BILAN DES COMPÉTENCES TECHNIQUES", 20, doc.lastAutoTable.finalY + 10);
+        const rows = Object.entries(data.notes).map(([k, v]) => [k, v]);
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 15,
+            head: [['Compétence Technique', 'Niveau de Maîtrise']],
+            body: rows,
+            headStyles: { fillColor: [51, 51, 51] },
+            alternateRowStyles: { fillColor: [245, 245, 245] }
+        });
+
+        // Observations
+        doc.setFont("helvetica", "bold"); doc.text("OBSERVATIONS DU MAÎTRE DE STAGE", 20, doc.lastAutoTable.finalY + 15);
+        doc.setFont("helvetica", "normal");
+        doc.text(doc.splitTextToSize(data.obs, 170), 20, doc.lastAutoTable.finalY + 22);
+
+        // Score Final
+        doc.setFillColor(240, 240, 240); doc.rect(20, doc.lastAutoTable.finalY + 45, 170, 15, 'F');
+        doc.setFont("helvetica", "bold"); doc.text(`NOTE GLOBALE DU JOUR : ${score}`, 105, doc.lastAutoTable.finalY + 55, {align:'center'});
+
+        // Signatures
+        doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 20, 250, 50, 20);
+        doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 140, 250, 50, 20);
+        doc.text("Signature MS", 20, 248); doc.text("Signature Stagiaire", 140, 248);
+
+        doc.save(`Eval_${data.stag}_J${data.jour}.pdf`);
+
+        // Envoi Sheets
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        alert("Rapport généré et envoyé !");
         location.reload();
     }
 
