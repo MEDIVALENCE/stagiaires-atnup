@@ -3,60 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Évaluation Croix-Rouge Pro</title>
+    <title>Évaluation Croix-Rouge</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --crb: #ED1B2E; --bg: #F4F7F9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; }
-        .header { background: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--crb); position: relative; }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-        .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--crb); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 40px; color: #333; }
+        .header { background: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--crb); position: relative; }
+        .container { padding: 15px; max-width: 550px; margin: auto; }
+        .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 5px solid var(--crb); }
         h2 { font-size: 13px; color: var(--crb); text-transform: uppercase; margin-bottom: 15px; font-weight: 800; border-bottom: 1px solid #EEE; padding-bottom: 5px;}
-        .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-        label { font-size: 11px; font-weight: bold; color: #666; margin-bottom: 4px; text-transform: uppercase; }
+        .form-group { margin-bottom: 12px; }
+        label { font-size: 11px; font-weight: bold; color: #666; display: block; margin-bottom: 4px; text-transform: uppercase; }
         input, select, textarea { padding: 10px; border: 1px solid #DDD; border-radius: 6px; font-size: 14px; background: #FAFAFA; width: 100%; box-sizing: border-box; }
         .item-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
-        .item-label { font-size: 13px; font-weight: 600; flex: 1; display: flex; align-items: center; gap: 8px; }
-        
-        /* Style de l'icône (i) cliquable */
-        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        
-        .btns { display: flex; gap: 3px; }
-        .btn-opt { border: 1px solid #CCC; background: white; padding: 6px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; min-width: 42px; }
+        .item-label { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; flex: 1; }
+        /* Bouton INFO (i) amélioré */
+        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-weight: bold; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .btns { display: flex; gap: 4px; }
+        .btn-opt { border: 1px solid #CCC; background: white; padding: 6px; border-radius: 4px; cursor: pointer; font-weight: bold; min-width: 38px; }
         .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
-        .sig-container { border: 1px solid #CCC; background: #FFF; height: 120px; border-radius: 6px; touch-action: none; position: relative; margin-top: 5px; }
+        .sig-container { border: 1px solid #CCC; background: #FFF; height: 120px; border-radius: 6px; touch-action: none; margin-top: 5px; }
         canvas { width: 100%; height: 100%; }
         .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .btn-main:disabled { background: #bbb !important; opacity: 0.7; }
-        .wheel-btn { position: absolute; right: 15px; top: 15px; background: #eee; border-radius: 50%; width: 35px; height: 35px; border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; }
-        #admin_modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:2000; padding:20px; box-sizing:border-box; overflow-y: auto; }
+        .btn-main:disabled { background: #bbb !important; cursor: not-allowed; }
+        .wheel-btn { position: absolute; right: 10px; top: 10px; background: #eee; border-radius: 50%; width: 30px; height: 30px; border: none; cursor: pointer; font-size: 16px; }
+        #admin_modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; padding:20px; box-sizing:border-box; }
     </style>
 </head>
 <body>
 
-<button class="wheel-btn" onclick="document.getElementById('admin_modal').style.display='block'">⚙️</button>
-
-<div id="admin_modal">
-    <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin:0;">⚙️ Admin Personnel</h2>
-        <button onclick="document.getElementById('admin_modal').style.display='none'" style="font-size:25px; border:none; background:none;">&times;</button>
-    </div>
-    <div class="card">
-        <label>Rôle</label>
-        <select id="adm_type" style="margin-bottom:10px;">
-            <option value="convoyeurs">Maître de Stage (MS)</option>
-            <option value="chauffeurs">Chauffeur</option>
-            <option value="stagiaires">Stagiaire</option>
-        </select>
-        <label>Nom et Prénom</label>
-        <input type="text" id="adm_nom" placeholder="Ex: Jean Dupont" style="margin-bottom:10px;">
-        <button class="btn-main" onclick="saveStaff()">SYNCHRONISER</button>
-    </div>
-</div>
-
 <div class="header">
     <div style="font-weight:900; color:var(--crb);">CROIX-ROUGE DE BELGIQUE</div>
-    <div style="font-size: 12px; font-weight: 600;">ÉVALUATION JOURNALIÈRE</div>
+    <button class="wheel-btn" onclick="document.getElementById('admin_modal').style.display='block'">⚙️</button>
 </div>
 
 <div class="container">
@@ -64,11 +42,204 @@
         <h2>1. Contexte</h2>
         <div class="form-group">
             <label>Type de Mission</label>
-            <select id="stage_type">
-                <option value="ATNUP">ATNUP</option>
-                <option value="AMU">AMU</option>
-                <option value="VSL">VSL</option>
-            </select>
+            <select id="stage_type"><option>ATNUP</option><option>AMU</option><option>VSL</option></select>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group"><label>Jour n°</label><input type="number" id="stage_jour" value="1"></div>
+            <div class="form-group"><label>Nb Missions</label><input type="number" id="stage_missions" value="0"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>2. Personnel</h2>
+        <div class="form-group">
+            <label>Stagiaire</label>
+            <select id="stag_select" onchange="validateForm()"><option value="">Chargement...</option></select>
+        </div>
+        <div class="form-group">
+            <label>MS (Convoyeur)</label>
+            <select id="conv" onchange="validateForm()"><option value="">Chargement...</option></select>
+        </div>
+        <div class="form-group">
+            <label>Chauffeur</label>
+            <select id="chauf"><option value="">Chargement...</option></select>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>3. Grille d'Évaluation</h2>
+        <div id="items_list"></div>
+    </div>
+
+    <div class="card">
+        <h2>4. Validation</h2>
+        <div class="form-group">
+            <label>Observations (min. 5 car.)</label>
+            <textarea id="notes" style="height:80px;" oninput="validateForm()"></textarea>
+        </div>
+        <div class="form-group"><label>Signature MS</label><div class="sig-container"><canvas id="sig_ms"></canvas></div></div>
+        <div class="form-group"><label>Signature Stagiaire</label><div class="sig-container"><canvas id="sig_st"></canvas></div></div>
+        <button class="btn-main" id="btn_final" disabled onclick="processAll()">VALIDER & ENVOYER</button>
+    </div>
+</div>
+
+<div id="admin_modal">
+    <h2>Ajouter du Personnel</h2>
+    <select id="adm_type" style="margin-bottom:10px;"><option value="convoyeurs">MS</option><option value="chauffeurs">Chauffeur</option><option value="stagiaires">Stagiaire</option></select>
+    <input type="text" id="adm_nom" placeholder="Nom Prénom" style="margin-bottom:10px;">
+    <button class="btn-main" onclick="saveStaff()">AJOUTER</button>
+    <button onclick="document.getElementById('admin_modal').style.display='none'" style="margin-top:15px; background:none; border:none; color:blue; text-decoration:underline; width:100%;">Fermer</button>
+</div>
+
+<script>
+    // --- CONFIGURATION ---
+    const SCRIPT_URL = "VOTRE_URL_SCRIPT_ICI"; // <--- REMPLACER ICI
+    
+    const definitions = {
+        "Check-up ambulance": "Est capable de remarquer les anomalies et y remédier",
+        "Inventaire matériel": "Maîtrise du VESUV",
+        "Désinfection": "Comprend le pourquoi de la désinfection et en maîtrise les gestes",
+        "Itinéraire & GPS": "Est capable de guider son chauffeur",
+        "Feuille de route": "Complète la feuille de route et utilise la tablette",
+        "Bilan Patient": "Fait l'anamnèse succincte pour savoir pourquoi le patient est transporté",
+        "Paramètres vitaux": "Est capable de prendre les paramètres vitaux dans les règles de l'art",
+        "Oxygénothérapie": "Comprend la raison et effectue les gestes correctement",
+        "Manutention": "Maîtrise de la manipulation du brancard et/ou de la chaise",
+        "Transfert Médicalisé": "Assiste le médecin en fonction des demandes en restant dans son cadre",
+        "Motivation": "Niveau d'implication globale",
+        "Empathie": "Qualité de la relation patient",
+        "Esprit d'équipe": "Collaboration avec l'équipage"
+    };
+
+    // 1. Chargement des données Sheets
+    async function load() {
+        try {
+            console.log("Appel vers Sheets...");
+            const response = await fetch(SCRIPT_URL);
+            const data = await response.json();
+            
+            fill('conv', data.convoyeurs);
+            fill('chauf', data.chauffeurs);
+            fill('stag_select', data.stagiaires);
+            console.log("Données chargées !");
+        } catch (e) {
+            console.error("Erreur liaison :", e);
+            alert("Erreur de liaison ! Vérifiez que l'URL du script est correcte et que le déploiement Google est sur 'Tout le monde'.");
+        }
+    }
+
+    function fill(id, list) {
+        const el = document.getElementById(id);
+        el.innerHTML = '<option value="">-- Choisir --</option>';
+        if (list) list.forEach(name => el.innerHTML += `<option value="${name}">${name}</option>`);
+    }
+
+    // 2. Bouton INFO (i)
+    function showInfo(item) {
+        alert(item + " :\n\n" + definitions[item]);
+    }
+
+    // 3. Grille
+    const grid = document.getElementById('items_list');
+    Object.keys(definitions).forEach(it => {
+        grid.innerHTML += `
+            <div class="item-row">
+                <div class="item-label">
+                    <button class="info-btn" onclick="showInfo('${it}')">i</button>
+                    ${it}
+                </div>
+                <div class="btns">
+                    <button class="btn-opt" data-pts="1" onclick="sel(this)">+</button>
+                    <button class="btn-opt" data-pts="2" onclick="sel(this)">++</button>
+                    <button class="btn-opt" data-pts="3" onclick="sel(this)">+++</button>
+                    <button class="btn-opt active" data-pts="0" onclick="sel(this)">N/E</button>
+                </div>
+            </div>`;
+    });
+
+    function sel(btn) {
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        validateForm();
+    }
+
+    // 4. Validation
+    function validateForm() {
+        const n = document.getElementById('notes').value.trim();
+        const s = document.getElementById('stag_select').value;
+        const m = document.getElementById('conv').value;
+        document.getElementById('btn_final').disabled = (n.length < 5 || s === "" || m === "");
+    }
+
+    // 5. Signatures
+    function initSig(id) {
+        const c = document.getElementById(id);
+        const ctx = c.getContext('2d');
+        c.width = c.offsetWidth; c.height = c.offsetHeight;
+        let drawing = false;
+        const getP = e => {
+            const r = c.getBoundingClientRect();
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+            const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+            return {x, y};
+        };
+        c.addEventListener('touchstart', e => { drawing=true; ctx.beginPath(); const p=getP(e); ctx.moveTo(p.x, p.y); e.preventDefault(); });
+        c.addEventListener('touchmove', e => { if(drawing){ const p=getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } e.preventDefault(); });
+        window.addEventListener('mouseup', () => drawing=false);
+        c.addEventListener('mousedown', e => { drawing=true; ctx.beginPath(); const p=getP(e); ctx.moveTo(getP(e).x, getP(e).y); });
+        c.addEventListener('mousemove', e => { if(drawing){ const p=getP(e); ctx.lineTo(getP(e).x, getP(e).y); ctx.stroke(); } });
+    }
+
+    // 6. Envoi & PDF
+    async function processAll() {
+        const btn = document.getElementById('btn_final');
+        btn.disabled = true; btn.innerText = "ENVOI...";
+        
+        // Calcul score simple
+        let total = 0, count = 0;
+        document.querySelectorAll('.btn-opt.active').forEach(b => {
+            let v = parseInt(b.dataset.pts); if(v>0){ total+=v; count++; }
+        });
+        const avg = count > 0 ? total/count : 0;
+        let scoreTxt = avg > 2.4 ? "+++" : (avg > 1.5 ? "++" : "+");
+        let msg = avg > 2.4 ? "Bravo !" : (avg > 1.5 ? "On y est presque" : "Il faut se reprendre");
+
+        const stag = document.getElementById('stag_select').value;
+        const ms = document.getElementById('conv').value;
+
+        // Génération PDF simplifiée
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("RAPPORT D'EVALUATION", 20, 20);
+        doc.text("Stagiaire : " + stag, 20, 30);
+        doc.text("Observations : " + document.getElementById('notes').value, 20, 40);
+        doc.text("Note : " + scoreTxt, 20, 50);
+        doc.save(`Evaluation_${stag}.pdf`);
+
+        // Envoi Sheets
+        await fetch(SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            body: JSON.stringify({
+                stagiaire: stag, convoyeur: ms, notes: document.getElementById('notes').value,
+                score: scoreTxt, appreciation: msg
+            })
+        });
+
+        alert("Terminé !");
+        location.reload();
+    }
+
+    async function saveStaff() {
+        const n = document.getElementById('adm_nom').value.trim();
+        if(!n) return;
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "ADD_STAFF", type: document.getElementById('adm_type').value, nom: n })});
+        alert("Ajouté !"); load();
+    }
+
+    window.onload = () => { initSig('sig_ms'); initSig('sig_st'); load(); };
+</script>
+</body>
+</html>            </select>
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div class="form-group"><label>Jour n°</label><input type="number" id="stage_jour" value="1"></div>
