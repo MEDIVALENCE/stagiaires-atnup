@@ -9,16 +9,16 @@
     <style>
         :root { --crb: #ED1B2E; --dark: #1a1a1a; --bg: #f0f2f5; --blue: #4a90e2; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 0; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 500px; background: var(--bg); min-height: 100vh; padding: 15px; box-sizing: border-box; padding-bottom: 80px; position: relative; }
         
-        .app-container { width: 100%; max-width: 500px; background: var(--bg); min-height: 100vh; padding: 15px; box-sizing: border-box; padding-bottom: 50px; }
-        
-        .header { text-align: center; padding: 20px 0; background: white; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header { text-align: center; padding: 20px 0; background: white; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: relative;}
         .header img { height: 45px; }
         .header h1 { font-size: 18px; margin: 10px 0 5px 0; color: var(--crb); letter-spacing: 1px; font-weight: 900; }
         .header .subtitle { font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase; }
 
-        .score-box { background: var(--dark); color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; border: 2px solid var(--crb); }
+        .config-btn { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; background: none; border: none; z-index: 10; }
         
+        .score-box { background: var(--dark); color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; border: 2px solid var(--crb); }
         .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid var(--crb); }
         h2 { font-size: 13px; text-transform: uppercase; color: #666; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
 
@@ -26,9 +26,8 @@
         label { font-size: 10px; font-weight: 800; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
         select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; box-sizing: border-box; background: #fafafa; outline: none; }
 
-        /* Dictée vocale */
         .dictation-wrapper { position: relative; }
-        .mic-btn { position: absolute; right: 10px; top: 30px; background: var(--blue); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 5; }
+        .mic-btn { position: absolute; right: 10px; top: 30px; background: var(--blue); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 5; }
         .mic-btn.active { background: var(--crb); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
@@ -40,25 +39,25 @@
         .btn-val { flex: 1; padding: 10px 2px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: 800; }
         .btn-val.active { background: var(--crb); color: white; border-color: var(--crb); }
 
-        /* Signatures */
-        .sig-box { border: 2px dashed #ccc; height: 120px; background: #fff; border-radius: 10px; margin-top: 5px; touch-action: none; position: relative; }
-        canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; cursor: crosshair; }
+        .sig-box { border: 2px dashed #ccc; height: 100px; background: #fff; border-radius: 10px; position: relative; touch-action: none; }
+        canvas { width: 100%; height: 100%; }
 
-        /* Modale d'info */
-        #info_modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 380px; box-shadow: 0 15px-35px rgba(0,0,0,0.3); text-align: center; border-top: 6px solid var(--crb); position: relative; }
+        .contact-bubble { position: fixed; bottom: 20px; right: 20px; background: var(--dark); color: white; padding: 12px 18px; border-radius: 30px; font-size: 11px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid var(--crb); z-index: 999; cursor: pointer; display: flex; align-items: center; gap: 8px;}
 
-        .btn-submit { width: 100%; background: var(--crb); color: white; border: none; padding: 18px; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(237,27,46,0.2); }
-        .btn-submit:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; text-align: center; border-top: 6px solid var(--crb); }
 
-        footer { text-align: center; font-size: 10px; color: #aaa; margin-top: 30px; padding-bottom: 20px; }
-        .req { color: var(--crb); margin-left: 3px; }
+        .btn-submit { width: 100%; background: var(--crb); color: white; border: none; padding: 18px; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+        .req { color: var(--crb); margin-left: 2px; }
+        footer { text-align: center; font-size: 10px; color: #aaa; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="header">
+        <button class="config-btn" onclick="openConfig()">⚙️</button>
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png" alt="CRB">
         <h1>CROIX-ROUGE DE BELGIQUE</h1>
         <div class="subtitle">Évaluation journalière du candidat</div>
@@ -69,32 +68,35 @@
     </div>
 
     <div class="card">
-        <h2>1. Équipage & Contexte</h2>
-        <div class="form-group"><label>Candidat Stagiaire <span class="req">*</span></label><select id="stag_select" onchange="checkForm()"></select></div>
+        <h2>1. Identification</h2>
+        <div class="form-group"><label>Nom du Candidat <span class="req">*</span></label><select id="stag_select" onchange="checkForm()"></select></div>
         
+        <div class="form-group">
+            <label>École / Centre de formation <span class="req">*</span></label>
+            <select id="ecole_select" onchange="checkForm()">
+                <option value="">-- Choisir l'école --</option>
+                <option value="CPSI">CPSI</option>
+                <option value="PRIGOGINE">PRIGOGINE</option>
+                <option value="IFAPME">IFAPME</option>
+                <option value="AUTRE">AUTRE</option>
+            </select>
+        </div>
+
         <div style="display:flex; gap:10px;">
             <div class="form-group" style="flex:1;"><label>Type de stage</label>
-                <select id="stage_type" onchange="toggleAutre()">
-                    <option value="AMU">AMU</option>
-                    <option value="ATNUP">ATNUP</option>
-                    <option value="AUTRE">Autre (mentionner)</option>
-                </select>
+                <select id="stage_type"><option value="AMU">AMU</option><option value="ATNUP">ATNUP</option><option value="AUTRE">AUTRE</option></select>
             </div>
-            <div class="form-group" style="flex:1;"><label>Qualité / Profil</label>
-                <select id="stag_qualite">
-                    <option value="Actif">Actif</option>
-                    <option value="Observateur">Observateur</option>
-                </select>
+            <div class="form-group" style="flex:1;"><label>Qualité</label>
+                <select id="stag_qualite"><option value="Actif">Actif</option><option value="Observateur">Observateur</option></select>
             </div>
         </div>
-        <div id="autre_div" class="form-group" style="display:none;"><label>Préciser le stage</label><input type="text" id="autre_val" placeholder="..."></div>
 
-        <div class="form-group"><label>Maître de Stage (Évaluateur) <span class="req">*</span></label><select id="ms_select" onchange="checkForm()"></select></div>
+        <div class="form-group"><label>Évaluateur Journalier <span class="req">*</span></label><select id="ms_select" onchange="checkForm()"></select></div>
         <div class="form-group"><label>Chauffeur</label><select id="chauf_select"></select></div>
         
         <div style="display:flex; gap:10px;">
             <div class="form-group" style="flex:1;"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
-            <div class="form-group" style="flex:1;"><label>Nb Missions</label><input type="number" id="nb_miss" value="0"></div>
+            <div class="form-group" style="flex:1;"><label>Missions</label><input type="number" id="nb_miss" value="0"></div>
         </div>
     </div>
 
@@ -106,30 +108,53 @@
     <div class="card">
         <h2>3. Validation</h2>
         <div class="dictation-wrapper">
-            <label>Observations du Maître de Stage (OBLIGATOIRE) <span class="req">*</span></label>
-            <textarea id="obs" rows="5" placeholder="Cliquez sur le micro pour dicter..." oninput="checkForm()"></textarea>
+            <label>Observations de l'évaluateur (OBLIGATOIRE) <span class="req">*</span></label>
+            <textarea id="obs" rows="4" placeholder="Appuyez sur le micro pour dicter..." oninput="checkForm()"></textarea>
             <button type="button" class="mic-btn" id="btn_mic" onclick="startDictation()">🎤</button>
         </div>
         
-        <div style="margin-top:15px;"><label>Signature Maître de Stage</label><div class="sig-box"><canvas id="sig_ms"></canvas></div></div>
-        <div style="margin-top:15px;"><label>Signature Candidat</label><div class="sig-box"><canvas id="sig_st"></canvas></div></div>
+        <div style="margin-top:15px; display:flex; gap:10px;">
+            <div style="flex:1;"><label>Sig. Évaluateur</label><div class="sig-box"><canvas id="sig_ms"></canvas></div></div>
+            <div style="flex:1;"><label>Sig. Candidat</label><div class="sig-box"><canvas id="sig_st"></canvas></div></div>
+        </div>
         
-        <button id="btn_send" class="btn-submit" disabled onclick="process()">VALIDER & GÉNÉRER PDF</button>
+        <button id="btn_send" class="btn-submit" disabled onclick="process()">GÉNÉRER LE PDF & ENREGISTRER</button>
     </div>
 
     <footer>© MEDIVALENCE 2026 - Laurent Jaspard</footer>
 </div>
 
-<div id="info_modal" onclick="closeModal()">
+<div class="contact-bubble" onclick="alert('Maître de Stage: Laurent Jaspard\n📞 0471/29.07.15')">
+    <span>📞</span> <span>Contact MS : L. Jaspard</span>
+</div>
+
+<div id="config_modal" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0;">Paramètres des listes</h3>
+        <label>Ajouter un Candidat</label>
+        <div style="display:flex; gap:5px; margin-bottom:15px;">
+            <input type="text" id="new_stag" placeholder="Nom Prénom">
+            <button onclick="addItem('stagiaires', 'new_stag')" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:0 15px;">+</button>
+        </div>
+        <label>Ajouter Personnel (Éval/Chauf)</label>
+        <div style="display:flex; gap:5px; margin-bottom:15px;">
+            <input type="text" id="new_staff" placeholder="Nom Prénom">
+            <button onclick="addItem('staff', 'new_staff')" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:0 15px;">+</button>
+        </div>
+        <button class="btn-submit" onclick="closeConfig()" style="background:var(--dark);">Fermer</button>
+    </div>
+</div>
+
+<div id="info_modal" class="modal" onclick="this.style.display='none'">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <h3 id="modal_title" style="margin-top:0; color:var(--crb); font-size:16px; text-transform:uppercase;"></h3>
+        <h3 id="modal_title" style="color:var(--crb); text-transform:uppercase; font-size:16px;"></h3>
         <p id="modal_text" style="font-size:14px; line-height:1.5; color:#444; margin:20px 0;"></p>
-        <button class="btn-submit" style="margin-top:0; padding:10px;" onclick="closeModal()">Compris</button>
+        <button class="btn-submit" style="margin-top:0;" onclick="document.getElementById('info_modal').style.display='none'">Compris</button>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOl4GMxteYbHAatzmtEt1z3KKNCY6RcWtyN5EayXO9JHht6lOqhIc60BmDGeDpqdlP/exec"; // <--- REMPLACER PAR VOTRE LIEN GOOGLE SCRIPT
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOl4GMxteYbHAatzmtEt1z3KKNCY6RcWtyN5EayXO9JHht6lOqhIc60BmDGeDpqdlP/exec";
 
     const descriptions = {
         "Check up véhicule": "Niveaux, pneus, carrosserie et éclairage prioritaire.",
@@ -146,14 +171,14 @@
         "Manutention": "Effectue les gestes dans les règles et préserve son appareil locomoteur."
     };
 
+    let db = JSON.parse(localStorage.getItem('crb_db')) || { stagiaires: ["Candidat Exemple"], staff: ["Laurent Jaspard"] };
+
     function init() {
         const grid = document.getElementById('grid_eval');
         Object.keys(descriptions).forEach(key => {
             grid.innerHTML += `
                 <div class="item-row" data-name="${key}">
-                    <div class="item-label">
-                        <button class="info-btn" onclick="openModal('${key}')">i</button> ${key}
-                    </div>
+                    <div class="item-label"><button class="info-btn" onclick="openInfo('${key}')">i</button> ${key}</div>
                     <div class="btns-eval">
                         <button class="btn-val" data-pts="1" data-v="SUF" onclick="setVal(this)">SUF</button>
                         <button class="btn-val" data-pts="2" data-v="SAT" onclick="setVal(this)">SAT</button>
@@ -163,73 +188,38 @@
                     </div>
                 </div>`;
         });
+        updateSelects();
         setupSig('sig_ms'); setupSig('sig_st');
-        loadData();
     }
 
-    // Gestion de la Modale
-    function openModal(key) {
+    function updateSelects() {
+        const fill = (id, list) => {
+            const s = document.getElementById(id);
+            s.innerHTML = '<option value="">-- Sélectionner --</option>';
+            list.sort().forEach(i => s.innerHTML += `<option value="${i}">${i}</option>`);
+        };
+        fill('stag_select', db.stagiaires);
+        fill('ms_select', db.staff);
+        fill('chauf_select', db.staff);
+    }
+
+    function openConfig() { document.getElementById('config_modal').style.display = 'flex'; }
+    function closeConfig() { document.getElementById('config_modal').style.display = 'none'; updateSelects(); }
+
+    function addItem(type, inputId) {
+        const val = document.getElementById(inputId).value.trim();
+        if(val) {
+            db[type].push(val);
+            localStorage.setItem('crb_db', JSON.stringify(db));
+            document.getElementById(inputId).value = '';
+            alert("Ajouté à la liste !");
+        }
+    }
+
+    function openInfo(key) {
         document.getElementById('modal_title').innerText = key;
         document.getElementById('modal_text').innerText = descriptions[key];
         document.getElementById('info_modal').style.display = 'flex';
-    }
-    function closeModal() {
-        document.getElementById('info_modal').style.display = 'none';
-    }
-
-    // Dictée Vocale
-    function startDictation() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) { alert("Dictée non supportée sur ce navigateur."); return; }
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'fr-FR';
-        recognition.onstart = () => document.getElementById('btn_mic').classList.add('active');
-        recognition.onend = () => document.getElementById('btn_mic').classList.remove('active');
-        recognition.onresult = (e) => {
-            const t = e.results[0][0].transcript;
-            const area = document.getElementById('obs');
-            area.value += (area.value ? " " : "") + t;
-            checkForm();
-        };
-        recognition.start();
-    }
-
-    function toggleAutre() {
-        document.getElementById('autre_div').style.display = (document.getElementById('stage_type').value === 'AUTRE') ? 'block' : 'none';
-    }
-
-    async function loadData() {
-        try {
-            const r = await fetch(SCRIPT_URL);
-            const d = await r.json();
-            const fill = (id, l) => {
-                const s = document.getElementById(id);
-                s.innerHTML = '<option value="">-- Sélectionner --</option>';
-                l.forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`);
-            };
-            fill('stag_select', d.stagiaires);
-            fill('ms_select', d.staff);
-            fill('chauf_select', d.staff);
-        } catch(e) {}
-    }
-
-    function setupSig(id) {
-        const c = document.getElementById(id); const ctx = c.getContext('2d');
-        const ratio = window.devicePixelRatio || 1;
-        c.width = c.offsetWidth * ratio; c.height = c.offsetHeight * ratio;
-        ctx.scale(ratio, ratio);
-        ctx.lineWidth = 2; ctx.lineCap = 'round';
-        let drawing = false;
-        const getPos = e => {
-            const rect = c.getBoundingClientRect();
-            const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-            const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-            return { x: cx, y: cy };
-        };
-        const start = e => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
-        const move = e => { if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if(e.touches) e.preventDefault(); };
-        c.addEventListener('mousedown', start); c.addEventListener('mousemove', move); window.addEventListener('mouseup', () => drawing = false);
-        c.addEventListener('touchstart', start, {passive:false}); c.addEventListener('touchmove', move, {passive:false}); c.addEventListener('touchend', () => drawing = false);
     }
 
     function setVal(btn) {
@@ -241,8 +231,7 @@
     function updateScore() {
         let t = 0, c = 0;
         document.querySelectorAll('.btn-val.active').forEach(b => {
-            let p = parseInt(b.dataset.pts);
-            if(p > 0) { t += p; c++; }
+            let p = parseInt(b.dataset.pts); if(p > 0) { t += p; c++; }
         });
         const avg = c > 0 ? (t / c).toFixed(1) : null;
         let l = "NE";
@@ -255,47 +244,90 @@
     }
 
     function checkForm() {
-        const obs = document.getElementById('obs').value.trim();
-        const stag = document.getElementById('stag_select').value;
-        const ms = document.getElementById('ms_select').value;
-        document.getElementById('btn_send').disabled = !(obs.length > 5 && stag !== "" && ms !== "");
+        const ok = document.getElementById('stag_select').value && 
+                   document.getElementById('ms_select').value && 
+                   document.getElementById('ecole_select').value && 
+                   document.getElementById('obs').value.trim().length > 5;
+        document.getElementById('btn_send').disabled = !ok;
+    }
+
+    function startDictation() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return alert("Dictée non supportée");
+        const rec = new SpeechRecognition(); rec.lang = 'fr-FR';
+        rec.onstart = () => document.getElementById('btn_mic').classList.add('active');
+        rec.onend = () => document.getElementById('btn_mic').classList.remove('active');
+        rec.onresult = (e) => { document.getElementById('obs').value += " " + e.results[0][0].transcript; checkForm(); };
+        rec.start();
+    }
+
+    function setupSig(id) {
+        const c = document.getElementById(id); const ctx = c.getContext('2d');
+        const ratio = window.devicePixelRatio || 1;
+        c.width = c.offsetWidth * ratio; c.height = c.offsetHeight * ratio;
+        ctx.scale(ratio, ratio);
+        ctx.lineWidth = 2; ctx.lineCap = 'round';
+        let draw = false;
+        const pos = e => {
+            const r = c.getBoundingClientRect();
+            return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
+        };
+        const start = e => { draw = true; ctx.beginPath(); const p = pos(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
+        const move = e => { if(!draw) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if(e.touches) e.preventDefault(); };
+        c.addEventListener('mousedown', start); c.addEventListener('mousemove', move); window.addEventListener('mouseup', () => draw = false);
+        c.addEventListener('touchstart', start, {passive:false}); c.addEventListener('touchmove', move, {passive:false}); c.addEventListener('touchend', () => draw = false);
     }
 
     async function process() {
-        const score = updateScore();
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
         const stag = document.getElementById('stag_select').value;
-        const typeS = document.getElementById('stage_type').value === 'AUTRE' ? document.getElementById('autre_val').value : document.getElementById('stage_type').value;
+        const evalNom = document.getElementById('ms_select').value;
+        const ecole = document.getElementById('ecole_select').value;
+        const jour = document.getElementById('jour_no').value;
+        const score = updateScore();
 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        // PDF Generation
         doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
         doc.setTextColor(255); doc.setFontSize(22); doc.text("CROIX-ROUGE DE BELGIQUE", 105, 20, {align:'center'});
         doc.setFontSize(12); doc.text("ÉVALUATION JOURNALIÈRE DU CANDIDAT", 105, 30, {align:'center'});
+
         doc.setTextColor(0); doc.setFontSize(10);
         doc.text(`Candidat : ${stag}`, 20, 50);
-        doc.text(`Profil : ${document.getElementById('stag_qualite').value}`, 20, 56);
-        doc.text(`Évaluateur (MS) : ${document.getElementById('ms_select').value}`, 20, 62);
-        doc.text(`Type de stage : ${typeS}`, 160, 50);
-        doc.text(`Jour n° : ${document.getElementById('jour_no').value}`, 160, 56);
+        doc.text(`École : ${ecole}`, 20, 56);
+        doc.text(`Évaluateur Journalier : ${evalNom}`, 20, 62);
+        doc.text(`Qualité : ${document.getElementById('stag_qualite').value}`, 160, 50);
+        doc.text(`Jour n° : ${jour}`, 160, 56);
         doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')}`, 160, 62);
 
-        const nTable = [];
-        document.querySelectorAll('.item-row').forEach(r => nTable.push([r.dataset.name, r.querySelector('.btn-val.active').dataset.v]));
-        doc.autoTable({ startY: 75, head: [['Compétence', 'Évaluation']], body: nTable, headStyles: {fillColor:[51,51,51]} });
-        doc.setFont("helvetica", "bold"); doc.text("OBSERVATIONS :", 20, doc.lastAutoTable.finalY + 10);
-        doc.setFont("helvetica", "normal"); doc.text(doc.splitTextToSize(document.getElementById('obs').value, 170), 20, doc.lastAutoTable.finalY + 17);
-        doc.setFillColor(240,240,240); doc.rect(20, 235, 170, 12, 'F');
-        doc.setFont("helvetica", "bold"); doc.text(`NOTE GLOBALE DU JOUR : ${score}`, 105, 243, {align:'center'});
-        doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 20, 260, 45, 18);
-        doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 145, 260, 45, 18);
-        doc.save(`Eval_CRB_${stag}.pdf`);
-        
+        const rows = [];
+        document.querySelectorAll('.item-row').forEach(r => rows.push([r.dataset.name, r.querySelector('.btn-val.active').dataset.v]));
+        doc.autoTable({ startY: 70, head: [['Compétence', 'Note']], body: rows, headStyles:{fillColor:[40,40,40]} });
+
+        const finalY = doc.lastAutoTable.finalY;
+        doc.setFont("helvetica", "bold"); doc.text("OBSERVATIONS :", 20, finalY + 10);
+        doc.setFont("helvetica", "normal"); doc.text(doc.splitTextToSize(document.getElementById('obs').value, 170), 20, finalY + 16);
+
+        doc.setFillColor(240); doc.rect(20, 235, 170, 12, 'F');
+        doc.setFont("helvetica", "bold"); doc.text(`NOTE GLOBALE : ${score}`, 105, 243, {align:'center'});
+
+        doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 20, 260, 40, 18);
+        doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 150, 260, 40, 18);
+        doc.setFontSize(8); doc.text("Signature Évaluateur", 20, 258); doc.text("Signature Candidat", 150, 258);
+
         // Envoi Sheets
         const n = {}; document.querySelectorAll('.item-row').forEach(r => n[r.dataset.name] = r.querySelector('.btn-val.active').dataset.v);
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({stag, ms: document.getElementById('ms_select').value, chauf: document.getElementById('chauf_select').value, typeS, qual: document.getElementById('stag_qualite').value, jour: document.getElementById('jour_no').value, score, obs: document.getElementById('obs').value, notes: n})});
+        try {
+            await fetch(SCRIPT_URL, { 
+                method: 'POST', mode: 'no-cors', 
+                body: JSON.stringify({stag, evalNom, ecole, chauf: document.getElementById('chauf_select').value, typeS: document.getElementById('stage_type').value, qual: document.getElementById('stag_qualite').value, jour, score, obs: document.getElementById('obs').value, notes: n})
+            });
+        } catch(e) { console.error("Erreur Sheets"); }
+
+        doc.save(`Eval_${stag}_J${jour}.pdf`);
         alert("Enregistré et PDF généré !");
         location.reload();
     }
+
     window.onload = init;
 </script>
 </body>
