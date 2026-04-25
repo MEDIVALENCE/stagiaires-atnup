@@ -18,10 +18,11 @@
         .item-row { display: flex; flex-direction: column; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
         .item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
         .item-label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex: 1; }
-        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; flex-shrink: 0; }
-        .btns { display: flex; gap: 4px; justify-content: space-between; }
+        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; font-weight: bold; }
+        .btns { display: flex; gap: 4px; }
         .btn-opt { border: 1px solid #CCC; background: white; padding: 8px 4px; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1; font-size: 10px; text-align: center; }
         .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
+        .score-badge { background: #333; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 12px; font-size: 16px; }
         .sig-container { border: 1px dashed #CCC; background: #FFF; height: 100px; border-radius: 8px; touch-action: none; margin-top: 5px; }
         canvas { width: 100%; height: 100%; }
         .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
@@ -36,15 +37,41 @@
 
 <div class="container">
     <div class="card">
-        <h2>1. Identification</h2>
+        <h2>1. Identification & Contexte</h2>
         <div class="form-group"><label>Stagiaire</label><select id="stag_select" onchange="checkForm()"></select></div>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group">
+                <label>Type de stage</label>
+                <select id="stage_type" onchange="toggleAutre()">
+                    <option value="ATNUP">ATNUP</option>
+                    <option value="AMU">AMU</option>
+                    <option value="AUTRE">AUTRE (Préciser)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Qualité du stagiaire</label>
+                <select id="stag_qualite">
+                    <option value="Actif">Actif</option>
+                    <option value="Observateur">Observateur</option>
+                </select>
+            </div>
+        </div>
+        <div id="autre_preciser_div" class="form-group" style="display:none;">
+            <label>Préciser le type de stage</label>
+            <input type="text" id="stage_autre_val" placeholder="...">
+        </div>
+
         <div class="form-group"><label>Maître de Stage (MS)</label><select id="ms_select" onchange="checkForm()"></select></div>
         <div class="form-group"><label>Chauffeur</label><select id="chauf_select"></select></div>
+        
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div class="form-group"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
             <div class="form-group"><label>Missions</label><input type="number" id="nb_missions" value="0"></div>
         </div>
     </div>
+
+    <div class="score-badge" id="live_score">NOTE GLOBALE : NE</div>
 
     <div class="card">
         <h2>2. Ambulance & Itinéraire</h2>
@@ -61,49 +88,77 @@
         <textarea id="obs" rows="3" placeholder="Remarques du maître de stage..." oninput="checkForm()"></textarea>
         <div style="margin-top:10px;"><label>Signature MS</label><div class="sig-container"><canvas id="can_ms"></canvas></div></div>
         <div style="margin-top:10px;"><label>Signature Stagiaire</label><div class="sig-container"><canvas id="can_st"></canvas></div></div>
-        <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER LE TABLEAU DE SUIVI</button>
+        <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER ET GÉNÉRER PDF</button>
     </div>
 </div>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHo0nkuxqod94L_zCvF5FPAtN3qn7c50yHjgfdiNl5Ag9JmQSXoW-AatdxQbYJN_0_/exec"; 
 
-    // Compétences extraites du carnet ATNUP 2026 [cite: 3, 9, 14, 21]
-    const cat1 = {
-        "Check up véhicule": "Check up mécanique du véhicule",
-        "Check up matériel": "Matériel embarqué et contrôle de fonctionnement",
-        "Inventaire complet": "Check up approfondi et inventaire complet",
-        "Désinfection": "Respect et entretien du matériel",
-        "Itinéraire & GPS": "Utilisation du G.P.S. et réalisation d'un itinéraire",
-        "Documents": "Feuille de route et rapport d'intervention"
+    const defs = {
+        "Check up véhicule": "Vérification mécanique : Niveaux, pneus, éclairage, carrosserie.",
+        "Check up matériel": "Vérification du matériel embarqué et sacs d'intervention.",
+        "Inventaire complet": "Réalisation d'un inventaire approfondi selon la check-list VESUV.",
+        "Désinfection": "Respect des protocoles d'hygiène et entretien du matériel utilisé.",
+        "Itinéraire & GPS": "Utilisation du GPS et lecture de carte pour guider le chauffeur.",
+        "Documents": "Rédaction correcte de la feuille de route et utilisation de la tablette.",
+        "Relation équipe": "Communication adaptée et respectueuse avec l'équipage.",
+        "Relation Patient": "Empathie, dialogue adapté avec le patient et sa famille.",
+        "Bilan primaire": "Évaluation ABCDE et identification des menaces vitales.",
+        "Bilan secondaire": "Anamnèse (SAMPLE) et prise des paramètres (TA, Pouls, SpO2).",
+        "Oxygénothérapie": "Choix du dispositif et réglage du débit selon prescription.",
+        "Manutention": "Utilisation correcte du brancard/chaise et ergonomie (dos droit)."
     };
 
-    const cat2 = {
-        "Relation équipe": "Contact adapté avec l'équipe médicale / ambulancière",
-        "Relation Patient": "Dialogue et contact adapté avec le patient et la famille",
-        "Bilan primaire": "Évaluation du bilan primaire",
-        "Bilan secondaire": "Anamnèse complète et paramètres (SpO2, Pouls, TA)",
-        "Oxygénothérapie": "Administration continue de l'O2 dans le cadre du traitement",
-        "Manutention": "Techniques de manutention avec ou sans matériel (ergonomie)"
-    };
+    const cat1 = ["Check up véhicule", "Check up matériel", "Inventaire complet", "Désinfection", "Itinéraire & GPS", "Documents"];
+    const cat2 = ["Relation équipe", "Relation Patient", "Bilan primaire", "Bilan secondaire", "Oxygénothérapie", "Manutention"];
 
-    function buildGrid(obj, containerId) {
+    function toggleAutre() {
+        document.getElementById('autre_preciser_div').style.display = (document.getElementById('stage_type').value === 'AUTRE') ? 'block' : 'none';
+    }
+
+    function buildGrid(list, containerId) {
         const container = document.getElementById(containerId);
-        Object.keys(obj).forEach(key => {
+        list.forEach(key => {
             container.innerHTML += `
                 <div class="item-row" data-name="${key}">
                     <div class="item-header">
-                        <div class="item-label"><button class="info-btn" onclick="alert('${obj[key]}')">i</button> ${key}</div>
+                        <div class="item-label"><button class="info-btn" onclick="alert('${defs[key]}')">i</button> ${key}</div>
                     </div>
                     <div class="btns">
-                        <button class="btn-opt" data-val="SUF" onclick="optClick(this)">SUF</button>
-                        <button class="btn-opt" data-val="SAT" onclick="optClick(this)">SAT</button>
-                        <button class="btn-opt" data-val="B" onclick="optClick(this)">BIEN</button>
-                        <button class="btn-opt" data-val="TB" onclick="optClick(this)">TB</button>
-                        <button class="btn-opt active" data-val="NE" onclick="optClick(this)">NE</button>
+                        <button class="btn-opt" data-pts="1" data-val="SUF" onclick="optClick(this)">SUF</button>
+                        <button class="btn-opt" data-pts="2" data-val="SAT" onclick="optClick(this)">SAT</button>
+                        <button class="btn-opt" data-pts="3" data-val="B" onclick="optClick(this)">B</button>
+                        <button class="btn-opt" data-pts="4" data-val="TB" onclick="optClick(this)">TB</button>
+                        <button class="btn-opt active" data-pts="0" data-val="NE" onclick="optClick(this)">NE</button>
                     </div>
                 </div>`;
         });
+    }
+
+    function optClick(btn) {
+        Array.from(btn.parentElement.children).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        calcScore();
+        checkForm();
+    }
+
+    function calcScore() {
+        let total = 0, count = 0;
+        document.querySelectorAll('.btn-opt.active').forEach(b => {
+            let pts = parseInt(b.dataset.pts);
+            if(pts > 0) { total += pts; count++; }
+        });
+        const avg = count > 0 ? (total / count).toFixed(1) : null;
+        let label = "NE";
+        if(avg) {
+            if(avg < 1.5) label = "SUF";
+            else if(avg < 2.5) label = "SAT";
+            else if(avg < 3.5) label = "BIEN";
+            else label = "TB";
+        }
+        document.getElementById('live_score').innerText = `NOTE GLOBALE : ${label} (${avg || '--'}/4)`;
+        return { label, avg };
     }
 
     async function init() {
@@ -115,18 +170,12 @@
             fillMenu('stag_select', d.stagiaires);
             fillMenu('ms_select', d.convoyeurs);
             fillMenu('chauf_select', d.chauffeurs);
-        } catch(e) { console.log("Liaison Sheets indisponible"); }
-    }
-
-    function optClick(btn) {
-        Array.from(btn.parentElement.children).forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        checkForm();
+        } catch(e) { console.log("Erreur synchro Sheets"); }
     }
 
     function fillMenu(id, list) {
         const sel = document.getElementById(id);
-        sel.innerHTML = '<option value="">-- Choisir --</option>';
+        sel.innerHTML = '<option value="">-- Sélectionner --</option>';
         if(list) list.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
     }
 
@@ -146,64 +195,61 @@
             const r = c.getBoundingClientRect();
             return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
         };
-        const start = e => { drawing = true; ctx.beginPath(); const p = getP(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
-        const move = e => { if(drawing) { const p = getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } if(e.touches) e.preventDefault(); };
-        c.addEventListener('mousedown', start); c.addEventListener('mousemove', move);
-        c.addEventListener('touchstart', start, {passive:false}); c.addEventListener('touchmove', move, {passive:false});
+        c.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); const p=getP(e); ctx.moveTo(p.x, p.y); });
+        c.addEventListener('mousemove', e => { if(drawing) { const p=getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } });
+        c.addEventListener('touchstart', e => { drawing = true; ctx.beginPath(); const p=getP(e); ctx.moveTo(p.x, p.y); e.preventDefault(); }, {passive:false});
+        c.addEventListener('touchmove', e => { if(drawing) { const p=getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } e.preventDefault(); }, {passive:false});
         window.addEventListener('mouseup', () => drawing = false);
     }
 
     async function submitAll() {
-        const btn = document.getElementById('btn_send');
-        btn.disabled = true; btn.innerText = "GÉNÉRATION PDF...";
-
+        const score = calcScore();
+        const stag = document.getElementById('stag_select').value;
+        const typeStage = document.getElementById('stage_type').value === 'AUTRE' ? document.getElementById('stage_autre_val').value : document.getElementById('stage_type').value;
+        const qualite = document.getElementById('stag_qualite').value;
+        
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const stag = document.getElementById('stag_select').value;
-        const jour = document.getElementById('jour_no').value;
-
-        // Header PDF Style ATNUP
-        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 35, 'F');
-        doc.setTextColor(255); doc.setFontSize(16); doc.text("TABLEAU DE SUIVI TECHNIQUE - ATNUP", 105, 15, {align:'center'});
-        doc.setFontSize(10); doc.text(`NOM DU STAGIAIRE : ${stag.toUpperCase()}`, 105, 25, {align:'center'});
+        
+        // Header PDF
+        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255); doc.setFontSize(18); doc.text("RAPPORT DE STAGE ATNUP 2026", 105, 15, {align:'center'});
+        doc.setFontSize(14); doc.text(`NOTE GLOBALE : ${score.label}`, 105, 28, {align:'center'});
 
         doc.setTextColor(0); doc.setFontSize(10);
-        doc.text(`MS : ${document.getElementById('ms_select').value}`, 20, 45);
-        doc.text(`Jour n° : ${jour}`, 160, 45);
-        doc.setLineWidth(0.5); doc.line(20, 48, 190, 48);
+        doc.text(`STAGIAIRE : ${stag}`, 20, 50);
+        doc.text(`TYPE : ${typeStage} (${qualite})`, 20, 57);
+        doc.text(`JOUR N° : ${document.getElementById('jour_no').value}`, 150, 50);
+        doc.text(`MISSIONS : ${document.getElementById('nb_missions').value}`, 150, 57);
+        doc.line(20, 62, 190, 62);
 
-        let y = 60;
-        doc.setFont("helvetica", "bold");
-        doc.text("SAVOIR-FAIRE TECHNIQUES", 25, y); doc.text("NIVEAU", 180, y, {align:'right'});
-        y += 8;
-        
-        doc.setFont("helvetica", "normal");
+        let y = 75;
         document.querySelectorAll('.item-row').forEach(row => {
             const val = row.querySelector('.btn-opt.active').dataset.val;
             doc.text(row.dataset.name, 25, y);
-            doc.setFont("helvetica", "bold");
-            doc.text(val, 180, y, {align:'right'});
+            doc.setFont("helvetica", "bold"); doc.text(val, 180, y, {align:'right'});
             doc.setFont("helvetica", "normal");
-            y += 7;
-            if(y > 270) { doc.addPage(); y = 20; }
+            y += 8;
         });
 
-        doc.setFont("helvetica", "bold"); doc.text("REMARQUES DU MAITRE DE STAGE :", 20, y + 10);
+        doc.setFont("helvetica", "bold"); doc.text("REMARQUES :", 20, y + 10);
         doc.setFont("helvetica", "normal");
         doc.text(doc.splitTextToSize(document.getElementById('obs').value, 170), 20, y + 18);
 
-        doc.addImage(document.getElementById('can_ms').toDataURL(), 'PNG', 20, 250, 50, 20);
-        doc.addImage(document.getElementById('can_st').toDataURL(), 'PNG', 140, 250, 50, 20);
-        doc.text("Signature MS", 20, 248); doc.text("Signature Stagiaire", 140, 248);
+        doc.addImage(document.getElementById('can_ms').toDataURL(), 'PNG', 20, 245, 60, 25);
+        doc.addImage(document.getElementById('can_st').toDataURL(), 'PNG', 130, 245, 60, 25);
+        doc.text("Signature MS", 20, 243); doc.text("Signature Stagiaire", 130, 243);
 
-        doc.save(`ATNUP_2026_${stag}_J${jour}.pdf`);
-
+        doc.save(`Evaluation_${stag}_J${document.getElementById('jour_no').value}.pdf`);
+        
         // Envoi Sheets
         const notes = {};
         document.querySelectorAll('.item-row').forEach(r => notes[r.dataset.name] = r.querySelector('.btn-opt.active').dataset.val);
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ stag, jour, notes, obs: document.getElementById('obs').value })});
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ 
+            stag, typeStage, qualite, jour: document.getElementById('jour_no').value, notes, score: score.label, obs: document.getElementById('obs').value 
+        })});
 
-        alert("Évaluation validée et PDF généré !");
+        alert("Terminé !");
         location.reload();
     }
 
