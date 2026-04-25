@@ -25,58 +25,28 @@
         .sig-container { border: 1px dashed #CCC; background: #FFF; height: 100px; border-radius: 8px; touch-action: none; margin-top: 5px; }
         canvas { width: 100%; height: 100%; }
         .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        .btn-main:disabled { background: #ccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div style="font-weight:900; color:var(--crb); font-size: 18px;">CROIX-ROUGE DE BELGIQUE</div>
-    <div style="font-size: 11px; font-weight: bold; color: #555;">SUIVI TECHNIQUE ATNUP 2026</div>
+    <div style="font-size: 11px; font-weight: bold; color: #555;"> - Evaluation journalière du candiat - </div>
 </div>
 
 <div class="container">
     <div class="card">
         <h2>1. Identification & Contexte</h2>
-        <div class="form-group">
-            <label>Stagiaire</label>
-            <select id="stag_select" onchange="checkForm()"></select>
-        </div>
-        
+        <div class="form-group"><label>Stagiaire</label><select id="stag_select" onchange="checkForm()"></select></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="form-group">
-                <label>Type de stage</label>
-                <select id="stage_type" onchange="toggleAutre()">
-                    <option value="ATNUP">ATNUP</option>
-                    <option value="AMU">AMU</option>
-                    <option value="AUTRE">AUTRE (Préciser)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Qualité du stagiaire</label>
-                <select id="stag_qualite">
-                    <option value="Actif">Actif</option>
-                    <option value="Observateur">Observateur</option>
-                </select>
-            </div>
+            <div class="form-group"><label>Type de stage</label><select id="stage_type"><option value="ATNUP">ATNUP</option><option value="AMU">AMU</option><option value="AUTRE">AUTRE</option></select></div>
+            <div class="form-group"><label>Qualité</label><select id="stag_qualite"><option value="Actif">Actif</option><option value="Observateur">Observateur</option></select></div>
         </div>
-        <div id="autre_preciser_div" class="form-group" style="display:none;">
-            <label>Préciser le type de stage</label>
-            <input type="text" id="stage_autre_val" placeholder="...">
-        </div>
-
-        <div class="form-group">
-            <label>Maître de Stage (Évaluateur)</label>
-            <select id="ms_select" onchange="checkForm()"></select>
-        </div>
-        <div class="form-group">
-            <label>Chauffeur</label>
-            <select id="chauf_select"></select>
-        </div>
-        
+        <div class="form-group"><label>Maître de Stage (Évaluateur)</label><select id="ms_select" onchange="checkForm()"></select></div>
+        <div class="form-group"><label>Chauffeur</label><select id="chauf_select"></select></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="form-group"><label>Jour de stage n°</label><input type="number" id="jour_no" value="1"></div>
-            <div class="form-group"><label>Nombre de missions</label><input type="number" id="nb_missions" value="0"></div>
+            <div class="form-group"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
+            <div class="form-group"><label>Missions</label><input type="number" id="nb_missions" value="0"></div>
         </div>
     </div>
 
@@ -94,46 +64,33 @@
 
     <div class="card">
         <h2>4. Observations & Signatures</h2>
-        <label>Remarques du Maître de Stage (Évolution du jour)</label>
-        <textarea id="obs" rows="4" placeholder="Points forts, points à améliorer..." oninput="checkForm()"></textarea>
-        
-        <div style="margin-top:15px;">
-            <label>Signature du Maître de Stage</label>
-            <div class="sig-container"><canvas id="can_ms"></canvas></div>
-        </div>
-        <div style="margin-top:15px;">
-            <label>Signature du Stagiaire</label>
-            <div class="sig-container"><canvas id="can_st"></canvas></div>
-        </div>
-        
+        <textarea id="obs" rows="4" placeholder="Commentaires du MS..." oninput="checkForm()"></textarea>
+        <div style="margin-top:10px;"><label>Signature MS</label><div class="sig-container"><canvas id="can_ms"></canvas></div></div>
+        <div style="margin-top:10px;"><label>Signature Stagiaire</label><div class="sig-container"><canvas id="can_st"></canvas></div></div>
         <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER & GÉNÉRER PDF</button>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHXq72DrRXZxgfXNRzHnQnD6OCPqRp_FHM9vTXC0WUEj1P7doJ-uB9BD7XQRUIW4-D/exec"; // <--- METTRE VOTRE LIEN GOOGLE SCRIPT ICI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHXq72DrRXZxgfXNRzHnQnD6OCPqRp_FHM9vTXC0WUEj1P7doJ-uB9BD7XQRUIW4-D/exec"; 
 
     const defs = {
-        "Check up véhicule": "Vérification mécanique complète : Niveaux (huile, lave-glace), état des pneus, carrosserie et fonctionnement de l'éclairage/gyrophares.",
-        "Check up matériel": "Vérification de la présence et du fonctionnement du matériel embarqué (défibrillateur, aspirateur de mucosités, sacs d'intervention).",
-        "Inventaire complet": "Réalisation d'un inventaire approfondi et rangement selon la check-list VESUV ou protocole local.",
-        "Désinfection": "Respect des protocoles d'hygiène pré/post intervention, entretien du matériel utilisé et de la cellule sanitaire.",
-        "Itinéraire & GPS": "Utilisation efficace du G.P.S., lecture de carte et capacité à guider le chauffeur en anticipant le trafic.",
-        "Documents": "Rédaction correcte et lisible de la feuille de route et rapport d'intervention (format papier ou tablette électronique).",
-        "Relation équipe": "Contact adapté, respectueux et professionnel avec ses collègues et l'équipe médicale (SMUR).",
-        "Relation Patient": "Empathie, écoute, dialogue rassurant et contact adapté avec le patient et sa famille (secret professionnel).",
-        "Bilan primaire": "Évaluation systématique selon l'ABCDE, identification et gestion des menaces vitales immédiates.",
-        "Bilan secondaire": "Anamnèse complète (SAMPLE/PQRSTU) et prise précise des paramètres vitaux (TA, Pouls, SpO2, Fréquence respi).",
-        "Oxygénothérapie": "Choix du dispositif adapté (lunettes, masque HC), réglage du débit et surveillance de l'efficacité du traitement.",
-        "Manutention": "Utilisation sécurisée du brancard, de la chaise portoir et respect des principes d'ergonomie pour la protection du dos."
+        "Check up véhicule": "Vérification des niveaux (huile, lave-glace), état des pneus, éclairage prioritaire (bleus) et carrosserie.",
+        "Check up matériel": "Contrôle opérationnel du DEA, aspirateur de mucosités, radio et oxygène portable.",
+        "Inventaire complet": "Vérification exhaustive selon la liste VESUV : sacs d'intervention, brancard, chaise, et consommables.",
+        "Désinfection": "Application des protocoles d'hygiène de la cellule sanitaire et du matériel utilisé après chaque mission.",
+        "Itinéraire & GPS": "Capacité à encoder une destination, interpréter le trafic et guider le chauffeur sans hésitation.",
+        "Documents": "Rédaction précise de la feuille de route, du rapport d'intervention (tablette ou papier) et respect du secret médical.",
+        "Relation équipe": "Communication professionnelle, respect des ordres et intégration au binôme MS/Chauffeur.",
+        "Relation Patient": "Empathie, dialogue adapté (rassurer), gestion de la famille et des témoins sur place.",
+        "Bilan primaire": "Évaluation systématique ABCDE : recherche immédiate d'une menace vitale (hémorragie, arrêt, obstruction).",
+        "Bilan secondaire": "Anamnèse SAMPLE, prise des paramètres vitaux (TA, FC, SpO2, Glycémie) et évaluation de la douleur (PQRSTU).",
+        "Oxygénothérapie": "Calcul d'autonomie des bouteilles, choix du masque (HC ou lunettes) et réglage correct du débitmètre.",
+        "Manutention": "Utilisation sécurisée du matériel de portage (brancard, chaise portoir) en préservant son dos (ergonomie)."
     };
 
     const cat1 = ["Check up véhicule", "Check up matériel", "Inventaire complet", "Désinfection", "Itinéraire & GPS", "Documents"];
     const cat2 = ["Relation équipe", "Relation Patient", "Bilan primaire", "Bilan secondaire", "Oxygénothérapie", "Manutention"];
-
-    function toggleAutre() {
-        document.getElementById('autre_preciser_div').style.display = (document.getElementById('stage_type').value === 'AUTRE') ? 'block' : 'none';
-    }
 
     function buildGrid(list, containerId) {
         const container = document.getElementById(containerId);
@@ -171,9 +128,9 @@
             if(avg < 1.5) label = "SUF";
             else if(avg < 2.5) label = "SAT";
             else if(avg < 3.5) label = "BIEN";
-            else label = "TRÈS BIEN (TB)";
+            else label = "TB";
         }
-        document.getElementById('live_score').innerText = `COTE GLOBALE DU JOUR : ${label} ${avg ? '('+avg+'/4)' : ''}`;
+        document.getElementById('live_score').innerText = `COTE GLOBALE DU JOUR : ${label} (${avg || '--'}/4)`;
         return { label, avg };
     }
 
@@ -186,7 +143,7 @@
             fillMenu('stag_select', d.stagiaires);
             fillMenu('ms_select', d.convoyeurs);
             fillMenu('chauf_select', d.chauffeurs);
-        } catch(e) { console.log("Liaison base de données non établie."); }
+        } catch(e) {}
     }
 
     function fillMenu(id, list) {
@@ -219,67 +176,33 @@
     }
 
     async function submitAll() {
-        const btn = document.getElementById('btn_send');
-        btn.disabled = true; btn.innerText = "TRANSFERT EN COURS...";
-        
         const score = calcScore();
         const stag = document.getElementById('stag_select').value;
         const ms = document.getElementById('ms_select').value;
-        const typeS = document.getElementById('stage_type').value === 'AUTRE' ? document.getElementById('stage_autre_val').value : document.getElementById('stage_type').value;
-        const qual = document.getElementById('stag_qualite').value;
-        const jour = document.getElementById('jour_no').value;
-        const obs = document.getElementById('obs').value;
-
-        // Générer le PDF
+        
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
-        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255); doc.setFontSize(18); doc.text("RAPPORT JOURNALIER ATNUP 2026", 105, 15, {align:'center'});
-        doc.setFontSize(14); doc.text(`NOTE FINALE : ${score.label}`, 105, 28, {align:'center'});
+        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 30, 'F');
+        doc.setTextColor(255); doc.text("EVALUATION ATNUP 2026", 105, 15, {align:'center'});
+        doc.setTextColor(0); doc.text(`Stagiaire: ${stag}`, 20, 40);
+        doc.text(`Maître de Stage: ${ms}`, 20, 50);
+        doc.text(`Note Globale: ${score.label}`, 20, 60);
+        doc.text("Observations:", 20, 180);
+        doc.text(doc.splitTextToSize(document.getElementById('obs').value, 170), 20, 190);
+        doc.save(`Eval_${stag}.pdf`);
 
-        doc.setTextColor(0); doc.setFontSize(10);
-        doc.text(`STAGIAIRE : ${stag}`, 20, 50);
-        doc.text(`ÉVALUATEUR (MS) : ${ms}`, 20, 57);
-        doc.text(`TYPE DE STAGE : ${typeS} (${qual})`, 20, 64);
-        doc.text(`JOUR N° : ${jour}`, 150, 50);
-        doc.text(`MISSIONS : ${document.getElementById('nb_missions').value}`, 150, 57);
-        doc.line(20, 68, 190, 68);
-
-        let y = 80;
-        doc.setFontSize(9);
-        document.querySelectorAll('.item-row').forEach(row => {
-            const val = row.querySelector('.btn-opt.active').dataset.val;
-            doc.text(row.dataset.name, 25, y);
-            doc.setFont("helvetica", "bold"); doc.text(val, 180, y, {align:'right'});
-            doc.setFont("helvetica", "normal");
-            y += 8;
-        });
-
-        doc.setFont("helvetica", "bold"); doc.text("COMMENTAIRES DU MAÎTRE DE STAGE :", 20, y + 10);
-        doc.setFont("helvetica", "normal");
-        doc.text(doc.splitTextToSize(obs, 170), 20, y + 18);
-
-        doc.addImage(document.getElementById('can_ms').toDataURL(), 'PNG', 20, 250, 55, 25);
-        doc.addImage(document.getElementById('can_st').toDataURL(), 'PNG', 130, 250, 55, 25);
-        doc.text("Signature MS (Évaluateur)", 20, 248); doc.text("Signature Stagiaire", 130, 248);
-
-        doc.save(`Eval_${stag}_J${jour}.pdf`);
-        
-        // Envoi vers Google Sheets
         const notes = {};
         document.querySelectorAll('.item-row').forEach(r => notes[r.dataset.name] = r.querySelector('.btn-opt.active').dataset.val);
         
-        await fetch(SCRIPT_URL, { 
-            method: 'POST', 
-            mode: 'no-cors', 
-            body: JSON.stringify({ 
-                stag, ms, chauf: document.getElementById('chauf_select').value, 
-                typeS, qual, jour, score: score.label, obs, notes 
-            })
-        });
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ 
+            stag, ms, chauf: document.getElementById('chauf_select').value, 
+            typeS: document.getElementById('stage_type').value, 
+            qual: document.getElementById('stag_qualite').value,
+            jour: document.getElementById('jour_no').value, 
+            score: score.label, obs: document.getElementById('obs').value, notes 
+        })});
 
-        alert("Évaluation transmise avec succès !");
+        alert("Transmis !");
         location.reload();
     }
 
