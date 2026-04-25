@@ -1,49 +1,250 @@
-function setupSig(id) {
-    const canvas = document.getElementById(id);
-    const ctx = canvas.getContext('2d');
-    
-    // Ajuste la taille réelle du dessin à la taille affichée
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    
-    let drawing = false;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Évaluation Stagiaire - Croix-Rouge</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root { --crb: #ED1B2E; --bg: #F4F7F9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; color: #333; }
+        .header { background: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--crb); position: relative; }
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--crb); }
+        h2 { font-size: 13px; color: var(--crb); text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 10px; margin-bottom: 15px; font-weight: 800; }
+        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+        label { font-size: 11px; font-weight: bold; color: #666; margin-bottom: 5px; text-transform: uppercase; }
+        input, select, textarea { padding: 12px; border: 1px solid #DDD; border-radius: 6px; font-size: 15px; background: #FAFAFA; }
+        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F0F0F0; }
+        .btns { display: flex; gap: 4px; }
+        .btn-opt { border: 1px solid #CCC; background: white; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; min-width: 45px; }
+        .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
+        .sig-container { border: 2px dashed #CCC; background: #FFF; height: 150px; border-radius: 6px; margin-top: 5px; touch-action: none; position: relative; }
+        canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+        .btn-main { background: var(--crb); color: white; width: 100%; padding: 20px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        
+        /* Modal Admin */
+        #admin_modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:2000; padding:20px; box-sizing:border-box; overflow-y: auto; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .wheel-btn { position: absolute; right: 15px; top: 15px; background: #EEE; border-radius: 50%; width: 40px; height: 40px; border: none; font-size: 20px; cursor: pointer; z-index: 1000; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        footer { text-align: center; font-size: 10px; color: #999; margin-top: 20px; }
+    </style>
+</head>
+<body>
 
-    const getP = e => {
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches ? e.touches[0] : e;
-        return {
-            x: touch.clientX - rect.left,
-            y: touch.clientY - rect.top
+<button class="wheel-btn" onclick="document.getElementById('admin_modal').style.display='block'">⚙️</button>
+
+<div id="admin_modal">
+    <div class="admin-header">
+        <h2 style="margin:0;">⚙️ Encodage Personnel</h2>
+        <button onclick="document.getElementById('admin_modal').style.display='none'" style="border:none; background:none; font-size:25px;">×</button>
+    </div>
+    <div class="card">
+        <div class="form-group">
+            <label>Type de personnel</label>
+            <select id="adm_type">
+                <option value="convoyeurs">Maître de Stage (MS)</option>
+                <option value="chauffeurs">Chauffeur</option>
+                <option value="stagiaires">Stagiaire</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Nom et Prénom</label>
+            <input type="text" id="adm_nom" placeholder="Ex: Jean Dupont">
+        </div>
+        <button class="btn-main" onclick="saveStaff()">SYNCHRONISER</button>
+    </div>
+</div>
+
+<div class="header">
+    <div style="font-weight:900; color:var(--crb); letter-spacing: 1px;">CROIX-ROUGE DE BELGIQUE</div>
+    <div style="font-size: 14px; font-weight: 600; color: #444; margin-top: 5px;">Formulaire journalier d'évaluation du stagiaire</div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2>1. Détails du Stage</h2>
+        <div class="form-group">
+            <label>Type de Stage</label>
+            <select id="stage_type">
+                <option value="ATNUP">ATNUP</option>
+                <option value="AMU">AMU</option>
+                <option value="VSL">VSL</option>
+            </select>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group">
+                <label>Jour de Stage n°</label>
+                <input type="number" id="stage_jour" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label>Nombre de Missions</label>
+                <input type="number" id="stage_missions" value="0" min="0">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>2. Identification</h2>
+        <div class="form-group">
+            <label>Nom du Stagiaire</label>
+            <select id="stag_select"></select>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group">
+                <label>Statut</label>
+                <select id="stag_statut">
+                    <option value="Actif">ACTIF</option>
+                    <option value="Observateur">OBSERVATEUR</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>GSM (Privé)</label>
+                <input type="password" id="stag_gsm" placeholder="Modifier" onfocus="this.type='tel'" onblur="this.type='password'">
+            </div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group"><label>MS (Convoyeur)</label><select id="conv"></select></div>
+            <div class="form-group"><label>Chauffeur</label><select id="chauf"></select></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>3. Grille de Compétences</h2>
+        <div id="items_list"></div>
+    </div>
+
+    <div class="card">
+        <h2>4. Validation</h2>
+        <div class="form-group">
+            <label>Observations & Commentaires</label>
+            <textarea id="notes" style="height:100px;"></textarea>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 15px;">
+            <div><label>Signature MS</label><div class="sig-container"><canvas id="sig_ms"></canvas></div></div>
+            <div><label>Signature Stagiaire</label><div class="sig-container"><canvas id="sig_st"></canvas></div></div>
+        </div>
+        <button class="btn-main" id="btn_final" onclick="processAll()">VALIDER & GÉNÉRER PDF</button>
+    </div>
+
+    <footer>© Medivalence 2026 - L. Jaspard</footer>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdX9XhT4RKKTORcn52d9glgF7Gbo8Dyl7u4PdlqjbAcw4RycFmE7DxiqAXY4xqzm9N/exec";
+    
+    const items = ["Check-up ambulance", "Inventaire matériel", "Désinfection", "Itinéraire & GPS", "Feuille de route", "Bilan Patient", "Paramètres vitaux", "Oxygénothérapie", "Manutention", "Transfert Médicalisé", "Motivation", "Empathie", "Esprit d'équipe"];
+
+    async function load() {
+        try {
+            const r = await fetch(SCRIPT_URL);
+            const d = await r.json();
+            fill('conv', d.convoyeurs); fill('chauf', d.chauffeurs); fill('stag_select', d.stagiaires);
+        } catch(e) { console.log("Erreur chargement listes"); }
+    }
+
+    function fill(id, l) {
+        const s = document.getElementById(id);
+        s.innerHTML = '<option value="">-- Sélection --</option>';
+        if(l) l.forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`);
+    }
+
+    async function saveStaff() {
+        const type = document.getElementById('adm_type').value;
+        const nom = document.getElementById('adm_nom').value;
+        if(!nom) return alert("Indiquez un nom");
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "ADD_STAFF", type: type, nom: nom }) });
+        alert("Synchronisé !");
+        document.getElementById('adm_nom').value = "";
+        document.getElementById('admin_modal').style.display = 'none';
+        load();
+    }
+
+    const grid = document.getElementById('items_list');
+    items.forEach(it => {
+        grid.innerHTML += `<div class="item-row"><span>${it}</span><div class="btns">
+            <button class="btn-opt" onclick="sel(this)">+</button>
+            <button class="btn-opt" onclick="sel(this)">++</button>
+            <button class="btn-opt" onclick="sel(this)">+++</button>
+            <button class="btn-opt active" onclick="sel(this)">N/E</button>
+        </div></div>`;
+    });
+
+    function sel(btn) {
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function setupSig(id) {
+        const canvas = document.getElementById(id);
+        const ctx = canvas.getContext('2d');
+        const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+        resize();
+        let drawing = false;
+        const getP = (e) => {
+            const r = canvas.getBoundingClientRect();
+            const cx = e.touches ? e.touches[0].clientX : e.clientX;
+            const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: cx - r.left, y: cy - r.top };
         };
-    };
+        const start = (e) => { drawing = true; ctx.beginPath(); const p = getP(e); ctx.moveTo(p.x, p.y); if(e.cancelable) e.preventDefault(); };
+        const move = (e) => { if(!drawing) return; const p = getP(e); ctx.lineTo(p.x, p.y); ctx.lineWidth = 2; ctx.stroke(); if(e.cancelable) e.preventDefault(); };
+        canvas.addEventListener('touchstart', start, {passive:false});
+        canvas.addEventListener('touchmove', move, {passive:false});
+        window.addEventListener('mouseup', () => drawing=false);
+        canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move);
+    }
 
-    const start = e => {
-        drawing = true;
-        ctx.beginPath();
-        const p = getP(e);
-        ctx.moveTo(p.x, p.y);
-        if (e.cancelable) e.preventDefault();
-    };
+    async function processAll() {
+        const btn = document.getElementById('btn_final');
+        const stag = document.getElementById('stag_select').value;
+        if(!stag) return alert("Sélectionnez un stagiaire");
+        
+        btn.innerText = "ENVOI..."; btn.disabled = true;
 
-    const move = e => {
-        if (!drawing) return;
-        const p = getP(e);
-        ctx.lineTo(p.x, p.y);
-        ctx.lineWidth = 2;
-        ctx.lineCap = "round";
-        ctx.stroke();
-        if (e.cancelable) e.preventDefault();
-    };
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255); doc.setFontSize(14); 
+        doc.text(`RAPPORT D'ÉVALUATION - ${document.getElementById('stage_type').value}`, 105, 20, {align:'center'});
+        doc.setFontSize(10); doc.text(`Jour de stage : ${document.getElementById('stage_jour').value} | Missions : ${document.getElementById('stage_missions').value}`, 105, 30, {align:'center'});
 
-    const stop = () => { drawing = false; };
+        doc.setTextColor(0); doc.text(`Stagiaire : ${stag} (${document.getElementById('stag_statut').value})`, 20, 50);
+        doc.text(`GSM : ${document.getElementById('stag_gsm').value}`, 20, 57);
 
-    // Événements Tactiles (Mobile)
-    canvas.addEventListener('touchstart', start, { passive: false });
-    canvas.addEventListener('touchmove', move, { passive: false });
-    canvas.addEventListener('touchend', stop);
+        let y = 75;
+        document.querySelectorAll('.item-row').forEach(row => {
+            doc.text(row.querySelector('span').innerText, 25, y);
+            doc.text(row.querySelector('.btn-opt.active').innerText, 180, y, {align:'right'});
+            y += 8;
+        });
 
-    // Événements Souris (PC)
-    canvas.addEventListener('mousedown', start);
-    canvas.addEventListener('mousemove', move);
-    window.addEventListener('mouseup', stop);
-}
+        doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 20, 240, 50, 25);
+        doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 130, 240, 50, 25);
+        doc.save(`Eval_${stag}.pdf`);
+        
+        await fetch(SCRIPT_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify({
+                type_stage: document.getElementById('stage_type').value,
+                jour_stage: document.getElementById('stage_jour').value,
+                missions: document.getElementById('stage_missions').value,
+                stagiaire: stag,
+                statut: document.getElementById('stag_statut').value,
+                gsm: document.getElementById('stag_gsm').value,
+                convoyeur: document.getElementById('conv').value,
+                chauffeur: document.getElementById('chauf').value,
+                notes: document.getElementById('notes').value
+            })
+        });
+
+        alert("Terminé !");
+        btn.innerText = "VALIDER & GÉNÉRER PDF"; btn.disabled = false;
+    }
+
+    window.onload = () => { setupSig('sig_ms'); setupSig('sig_st'); load(); };
+</script>
+</body>
+</html>
