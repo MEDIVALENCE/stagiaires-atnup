@@ -3,137 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Évaluation Croix-Rouge Pro</title>
+    <title>Évaluation ATNUP 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --crb: #ED1B2E; --bg: #F4F7F9; --dark: #333; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--dark); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--dark); }
         .header { background: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--crb); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-        .card { background: white; border-radius: 10px; padding: 18px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--crb); }
-        h2 { font-size: 14px; color: var(--crb); text-transform: uppercase; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #EEE; padding-bottom: 5px; font-weight: 800; }
-        .form-group { margin-bottom: 12px; }
-        label { font-size: 11px; font-weight: bold; color: #666; display: block; margin-bottom: 4px; text-transform: uppercase; }
-        select, textarea, input { padding: 12px; border: 1px solid #DDD; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; background: #FAFAFA; }
-        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
-        .item-label { font-size: 13px; font-weight: 600; flex: 1; display: flex; align-items: center; gap: 10px; }
-        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; flex-shrink: 0; font-weight: bold; }
-        .btns { display: flex; gap: 5px; }
-        .btn-opt { border: 1px solid #CCC; background: white; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; min-width: 40px; transition: 0.2s; }
-        .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); box-shadow: 0 2px 4px rgba(237,27,46,0.3); }
-        .sig-container { border: 2px dashed #CCC; background: #FFF; height: 120px; border-radius: 8px; touch-action: none; margin-top: 5px; }
+        .container { padding: 10px; max-width: 600px; margin: auto; }
+        .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--crb); }
+        h2 { font-size: 13px; color: var(--crb); text-transform: uppercase; margin: 0 0 12px 0; border-bottom: 1px solid #EEE; padding-bottom: 5px; font-weight: 800; }
+        .form-group { margin-bottom: 10px; }
+        label { font-size: 10px; font-weight: bold; color: #666; display: block; margin-bottom: 3px; text-transform: uppercase; }
+        select, textarea, input { padding: 10px; border: 1px solid #DDD; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; background: #FAFAFA; }
+        .item-row { display: flex; flex-direction: column; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
+        .item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .item-label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex: 1; }
+        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; flex-shrink: 0; }
+        .btns { display: flex; gap: 4px; justify-content: space-between; }
+        .btn-opt { border: 1px solid #CCC; background: white; padding: 8px 4px; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1; font-size: 10px; text-align: center; }
+        .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
+        .sig-container { border: 1px dashed #CCC; background: #FFF; height: 100px; border-radius: 8px; touch-action: none; margin-top: 5px; }
         canvas { width: 100%; height: 100%; }
-        .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(237,27,46,0.2); }
-        .btn-main:disabled { background: #bbb !important; cursor: not-allowed; box-shadow: none; }
+        .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="font-weight:900; color:var(--crb); letter-spacing: 1px;">CROIX-ROUGE DE BELGIQUE</div>
-    <div style="font-size: 11px; font-weight: bold; color: #555;">ÉVALUATION JOURNALIÈRE STAGIAIRE</div>
+    <div style="font-weight:900; color:var(--crb);">CARNET DE STAGE ATNUP 2026</div>
+    <div style="font-size: 10px; font-weight: bold; color: #555;">TABLEAU DE SUIVI DES SAVOIR-FAIRE</div>
 </div>
 
 <div class="container">
     <div class="card">
         <h2>1. Identification</h2>
-        <div class="form-group">
-            <label>Stagiaire</label>
-            <select id="stag_select" onchange="checkForm()"><option value="">Chargement des noms...</option></select>
-        </div>
-        <div class="form-group">
-            <label>Convoyeur (Maître de stage du jour)</label>
-            <select id="ms_select" onchange="checkForm()"><option value="">Chargement des noms...</option></select>
-        </div>
-        <div class="form-group">
-            <label>Chauffeur</label>
-            <select id="chauf_select"><option value="">Chargement des noms...</option></select>
-        </div>
+        <div class="form-group"><label>Stagiaire</label><select id="stag_select" onchange="checkForm()"></select></div>
+        <div class="form-group"><label>Maître de Stage (MS)</label><select id="ms_select" onchange="checkForm()"></select></div>
+        <div class="form-group"><label>Chauffeur</label><select id="chauf_select"></select></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="form-group">
-                <label>Jour de stage n°</label>
-                <input type="number" id="jour_no" value="1" min="1">
-            </div>
-            <div class="form-group">
-                <label>Nombre de missions</label>
-                <input type="number" id="nb_missions" value="0" min="0">
-            </div>
+            <div class="form-group"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
+            <div class="form-group"><label>Missions</label><input type="number" id="nb_missions" value="0"></div>
         </div>
     </div>
 
     <div class="card">
-        <h2>2. Compétences Techniques</h2>
-        <div id="grid_items"></div>
+        <h2>2. Ambulance & Itinéraire</h2>
+        <div id="section_ambulance"></div>
     </div>
 
     <div class="card">
-        <h2>3. Bilan & Signatures</h2>
-        <div class="form-group">
-            <label>Observations & Remarques</label>
-            <textarea id="obs" rows="4" placeholder="Écrivez ici vos commentaires sur la journée..." oninput="checkForm()"></textarea>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr; gap:15px;">
-            <div>
-                <label>Signature Maître de Stage</label>
-                <div class="sig-container"><canvas id="can_ms"></canvas></div>
-            </div>
-            <div>
-                <label>Signature Stagiaire</label>
-                <div class="sig-container"><canvas id="can_st"></canvas></div>
-            </div>
-        </div>
-        <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER & GÉNÉRER LE RAPPORT PDF</button>
+        <h2>3. Relation & Prise en charge</h2>
+        <div id="section_prise_en_charge"></div>
+    </div>
+
+    <div class="card">
+        <h2>4. Bilan & Signatures</h2>
+        <textarea id="obs" rows="3" placeholder="Remarques du maître de stage..." oninput="checkForm()"></textarea>
+        <div style="margin-top:10px;"><label>Signature MS</label><div class="sig-container"><canvas id="can_ms"></canvas></div></div>
+        <div style="margin-top:10px;"><label>Signature Stagiaire</label><div class="sig-container"><canvas id="can_st"></canvas></div></div>
+        <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER LE TABLEAU DE SUIVI</button>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHo0nkuxqod94L_zCvF5FPAtN3qn7c50yHjgfdiNl5Ag9JmQSXoW-AatdxQbYJN_0_/exec"; // <--- REMPLACER CECI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHo0nkuxqod94L_zCvF5FPAtN3qn7c50yHjgfdiNl5Ag9JmQSXoW-AatdxQbYJN_0_/exec"; 
 
-    const items = {
-        "Check-up ambulance": "Est capable de remarquer les anomalies et y remédier",
-        "Inventaire matériel": "Maîtrise du VESUV",
-        "Désinfection": "Comprend le pourquoi de la désinfection et en maîtrise les gestes",
-        "Itinéraire & GPS": "Est capable de guider son chauffeur",
-        "Feuille de route": "Complète la feuille de route et utilise la tablette correctement",
-        "Bilan Patient": "Fait l'anamnèse succincte et comprend pourquoi le patient est transporté",
-        "Paramètres vitaux": "Est capable de prendre les paramètres vitaux dans les règles de l'art",
-        "Oxygénothérapie": "Comprend la raison et effectue les gestes correctement",
-        "Manutention": "Maîtrise de la manipulation du brancard et/ou de la chaise",
-        "Transfert Médicalisé": "Assiste le médecin en fonction des demandes en restant dans son cadre de profession"
+    // Compétences extraites du carnet ATNUP 2026 [cite: 3, 9, 14, 21]
+    const cat1 = {
+        "Check up véhicule": "Check up mécanique du véhicule",
+        "Check up matériel": "Matériel embarqué et contrôle de fonctionnement",
+        "Inventaire complet": "Check up approfondi et inventaire complet",
+        "Désinfection": "Respect et entretien du matériel",
+        "Itinéraire & GPS": "Utilisation du G.P.S. et réalisation d'un itinéraire",
+        "Documents": "Feuille de route et rapport d'intervention"
     };
 
+    const cat2 = {
+        "Relation équipe": "Contact adapté avec l'équipe médicale / ambulancière",
+        "Relation Patient": "Dialogue et contact adapté avec le patient et la famille",
+        "Bilan primaire": "Évaluation du bilan primaire",
+        "Bilan secondaire": "Anamnèse complète et paramètres (SpO2, Pouls, TA)",
+        "Oxygénothérapie": "Administration continue de l'O2 dans le cadre du traitement",
+        "Manutention": "Techniques de manutention avec ou sans matériel (ergonomie)"
+    };
+
+    function buildGrid(obj, containerId) {
+        const container = document.getElementById(containerId);
+        Object.keys(obj).forEach(key => {
+            container.innerHTML += `
+                <div class="item-row" data-name="${key}">
+                    <div class="item-header">
+                        <div class="item-label"><button class="info-btn" onclick="alert('${obj[key]}')">i</button> ${key}</div>
+                    </div>
+                    <div class="btns">
+                        <button class="btn-opt" data-val="SUF" onclick="optClick(this)">SUF</button>
+                        <button class="btn-opt" data-val="SAT" onclick="optClick(this)">SAT</button>
+                        <button class="btn-opt" data-val="B" onclick="optClick(this)">BIEN</button>
+                        <button class="btn-opt" data-val="TB" onclick="optClick(this)">TB</button>
+                        <button class="btn-opt active" data-val="NE" onclick="optClick(this)">NE</button>
+                    </div>
+                </div>`;
+        });
+    }
+
     async function init() {
+        buildGrid(cat1, 'section_ambulance');
+        buildGrid(cat2, 'section_prise_en_charge');
         try {
             const r = await fetch(SCRIPT_URL);
             const d = await r.json();
             fillMenu('stag_select', d.stagiaires);
             fillMenu('ms_select', d.convoyeurs);
             fillMenu('chauf_select', d.chauffeurs);
-        } catch(e) { alert("Erreur de synchronisation avec Sheets."); }
+        } catch(e) { console.log("Liaison Sheets indisponible"); }
     }
-
-    function fillMenu(id, list) {
-        const sel = document.getElementById(id);
-        sel.innerHTML = '<option value="">-- Sélectionner --</option>';
-        if(list) list.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
-    }
-
-    const grid = document.getElementById('grid_items');
-    Object.keys(items).forEach(key => {
-        grid.innerHTML += `
-            <div class="item-row">
-                <div class="item-label">
-                    <button class="info-btn" onclick="alert('${items[key]}')">i</button>
-                    ${key}
-                </div>
-                <div class="btns">
-                    <button class="btn-opt" data-val="1" onclick="optClick(this)">+</button>
-                    <button class="btn-opt" data-val="2" onclick="optClick(this)">++</button>
-                    <button class="btn-opt" data-val="3" onclick="optClick(this)">+++</button>
-                    <button class="btn-opt active" data-val="0" onclick="optClick(this)">N/E</button>
-                </div>
-            </div>`;
-    });
 
     function optClick(btn) {
         Array.from(btn.parentElement.children).forEach(b => b.classList.remove('active'));
@@ -141,11 +124,17 @@
         checkForm();
     }
 
+    function fillMenu(id, list) {
+        const sel = document.getElementById(id);
+        sel.innerHTML = '<option value="">-- Choisir --</option>';
+        if(list) list.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
+    }
+
     function checkForm() {
         const obs = document.getElementById('obs').value.trim();
         const s = document.getElementById('stag_select').value;
         const m = document.getElementById('ms_select').value;
-        document.getElementById('btn_send').disabled = (obs.length < 5 || s === "" || m === "");
+        document.getElementById('btn_send').disabled = (obs.length < 2 || s === "" || m === "");
     }
 
     function setupCanvas(id) {
@@ -153,88 +142,68 @@
         const ctx = c.getContext('2d');
         c.width = c.offsetWidth; c.height = c.offsetHeight;
         let drawing = false;
-        const pos = e => {
+        const getP = e => {
             const r = c.getBoundingClientRect();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
-            const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
-            return {x, y};
+            return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
         };
-        const start = e => { drawing = true; ctx.beginPath(); const p = pos(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
-        const move = e => { if(!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if(e.touches) e.preventDefault(); };
+        const start = e => { drawing = true; ctx.beginPath(); const p = getP(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
+        const move = e => { if(drawing) { const p = getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } if(e.touches) e.preventDefault(); };
         c.addEventListener('mousedown', start); c.addEventListener('mousemove', move);
         c.addEventListener('touchstart', start, {passive:false}); c.addEventListener('touchmove', move, {passive:false});
         window.addEventListener('mouseup', () => drawing = false);
-        window.addEventListener('touchend', () => drawing = false);
     }
 
     async function submitAll() {
         const btn = document.getElementById('btn_send');
-        btn.disabled = true; btn.innerText = "GÉNÉRATION DU RAPPORT...";
-
-        const stag = document.getElementById('stag_select').value;
-        const ms = document.getElementById('ms_select').value;
-        const chauf = document.getElementById('chauf_select').value;
-        const jour = document.getElementById('jour_no').value;
-        const miss = document.getElementById('nb_missions').value;
-        const obs = document.getElementById('obs').value;
+        btn.disabled = true; btn.innerText = "GÉNÉRATION PDF...";
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+        const stag = document.getElementById('stag_select').value;
+        const jour = document.getElementById('jour_no').value;
 
-        // DESIGN PDF
-        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
-        doc.text("RAPPORT D'ÉVALUATION", 105, 20, {align:'center'});
-        doc.setFontSize(12); doc.text("CROIX-ROUGE DE BELGIQUE", 105, 30, {align:'center'});
+        // Header PDF Style ATNUP
+        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 35, 'F');
+        doc.setTextColor(255); doc.setFontSize(16); doc.text("TABLEAU DE SUIVI TECHNIQUE - ATNUP", 105, 15, {align:'center'});
+        doc.setFontSize(10); doc.text(`NOM DU STAGIAIRE : ${stag.toUpperCase()}`, 105, 25, {align:'center'});
 
-        doc.setTextColor(0); doc.setFontSize(14); doc.text("1. IDENTIFICATION", 20, 55);
-        doc.setLineWidth(0.5); doc.line(20, 57, 190, 57);
+        doc.setTextColor(0); doc.setFontSize(10);
+        doc.text(`MS : ${document.getElementById('ms_select').value}`, 20, 45);
+        doc.text(`Jour n° : ${jour}`, 160, 45);
+        doc.setLineWidth(0.5); doc.line(20, 48, 190, 48);
+
+        let y = 60;
+        doc.setFont("helvetica", "bold");
+        doc.text("SAVOIR-FAIRE TECHNIQUES", 25, y); doc.text("NIVEAU", 180, y, {align:'right'});
+        y += 8;
         
-        doc.setFontSize(11); doc.setFont("helvetica", "bold");
-        doc.text("Stagiaire :", 20, 65); doc.setFont("helvetica", "normal"); doc.text(stag, 60, 65);
-        doc.setFont("helvetica", "bold"); doc.text("Maître de Stage :", 20, 72); doc.setFont("helvetica", "normal"); doc.text(ms, 60, 72);
-        doc.setFont("helvetica", "bold"); doc.text("Chauffeur :", 20, 79); doc.setFont("helvetica", "normal"); doc.text(chauf || "/", 60, 79);
-        doc.setFont("helvetica", "bold"); doc.text("Jour de stage :", 130, 65); doc.setFont("helvetica", "normal"); doc.text(jour, 160, 65);
-        doc.setFont("helvetica", "bold"); doc.text("Missions :", 130, 72); doc.setFont("helvetica", "normal"); doc.text(miss, 160, 72);
-
-        doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text("2. GRILLE DE COMPÉTENCES", 20, 95);
-        doc.line(20, 97, 190, 97);
-        
-        let y = 105;
-        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
         document.querySelectorAll('.item-row').forEach(row => {
-            const label = row.querySelector('.item-label').innerText.replace('i', '').trim();
-            const val = row.querySelector('.btn-opt.active').innerText;
-            doc.setFont("helvetica", "bold"); doc.text(label, 25, y);
-            doc.setFont("helvetica", "bold"); doc.setTextColor(237, 27, 46);
+            const val = row.querySelector('.btn-opt.active').dataset.val;
+            doc.text(row.dataset.name, 25, y);
+            doc.setFont("helvetica", "bold");
             doc.text(val, 180, y, {align:'right'});
-            doc.setTextColor(0); doc.setFont("helvetica", "normal");
-            y += 8;
+            doc.setFont("helvetica", "normal");
+            y += 7;
+            if(y > 270) { doc.addPage(); y = 20; }
         });
 
-        doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text("3. OBSERVATIONS", 20, y + 10);
-        doc.line(20, y + 12, 190, y + 12);
-        doc.setFontSize(10); doc.setFont("helvetica", "normal");
-        const splitObs = doc.splitTextToSize(obs, 170);
-        doc.text(splitObs, 20, y + 20);
+        doc.setFont("helvetica", "bold"); doc.text("REMARQUES DU MAITRE DE STAGE :", 20, y + 10);
+        doc.setFont("helvetica", "normal");
+        doc.text(doc.splitTextToSize(document.getElementById('obs').value, 170), 20, y + 18);
 
-        const sigY = 245;
-        doc.setFont("helvetica", "bold"); doc.text("Signature MS", 20, sigY);
-        doc.rect(20, sigY + 2, 70, 30);
-        doc.addImage(document.getElementById('can_ms').toDataURL(), 'PNG', 20, sigY + 2, 70, 30);
-        
-        doc.text("Signature Stagiaire", 120, sigY);
-        doc.rect(120, sigY + 2, 70, 30);
-        doc.addImage(document.getElementById('can_st').toDataURL(), 'PNG', 120, sigY + 2, 70, 30);
+        doc.addImage(document.getElementById('can_ms').toDataURL(), 'PNG', 20, 250, 50, 20);
+        doc.addImage(document.getElementById('can_st').toDataURL(), 'PNG', 140, 250, 50, 20);
+        doc.text("Signature MS", 20, 248); doc.text("Signature Stagiaire", 140, 248);
 
-        doc.save(`Evaluation_${stag}_Jour${jour}.pdf`);
+        doc.save(`ATNUP_2026_${stag}_J${jour}.pdf`);
 
-        await fetch(SCRIPT_URL, {
-            method: 'POST', mode: 'no-cors',
-            body: JSON.stringify({ stag: stag, ms: ms, jour: jour, miss: miss, obs: obs })
-        });
+        // Envoi Sheets
+        const notes = {};
+        document.querySelectorAll('.item-row').forEach(r => notes[r.dataset.name] = r.querySelector('.btn-opt.active').dataset.val);
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ stag, jour, notes, obs: document.getElementById('obs').value })});
 
-        alert("Rapport généré avec succès !");
+        alert("Évaluation validée et PDF généré !");
         location.reload();
     }
 
