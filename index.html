@@ -3,108 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Évaluation Croix-Rouge</title>
+    <title>Évaluation Croix-Rouge Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --crb: #ED1B2E; --bg: #F4F7F9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
-        .header { background: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--crb); }
-        .container { padding: 15px; max-width: 500px; margin: auto; }
-        .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 5px solid var(--crb); }
-        h2 { font-size: 13px; color: var(--crb); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid #EEE; }
+        :root { --crb: #ED1B2E; --bg: #F4F7F9; --dark: #333; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--dark); }
+        .header { background: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--crb); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .card { background: white; border-radius: 10px; padding: 18px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--crb); }
+        h2 { font-size: 14px; color: var(--crb); text-transform: uppercase; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #EEE; padding-bottom: 5px; font-weight: 800; }
         .form-group { margin-bottom: 12px; }
-        label { font-size: 11px; font-weight: bold; color: #666; display: block; margin-bottom: 4px; }
-        select, textarea { padding: 10px; border: 1px solid #DDD; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
-        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F0F0F0; }
-        .item-label { font-size: 12px; font-weight: 600; flex: 1; display: flex; align-items: center; gap: 8px; }
-        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; }
-        .btns { display: flex; gap: 4px; }
-        .btn-opt { border: 1px solid #CCC; background: white; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
-        .sig-container { border: 1px solid #CCC; background: #FFF; height: 100px; border-radius: 6px; touch-action: none; margin-top: 5px; }
+        label { font-size: 11px; font-weight: bold; color: #666; display: block; margin-bottom: 4px; text-transform: uppercase; }
+        select, textarea, input { padding: 12px; border: 1px solid #DDD; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; background: #FAFAFA; }
+        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
+        .item-label { font-size: 13px; font-weight: 600; flex: 1; display: flex; align-items: center; gap: 10px; }
+        .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; flex-shrink: 0; font-weight: bold; }
+        .btns { display: flex; gap: 5px; }
+        .btn-opt { border: 1px solid #CCC; background: white; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; min-width: 40px; transition: 0.2s; }
+        .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); box-shadow: 0 2px 4px rgba(237,27,46,0.3); }
+        .sig-container { border: 2px dashed #CCC; background: #FFF; height: 120px; border-radius: 8px; touch-action: none; margin-top: 5px; }
         canvas { width: 100%; height: 100%; }
-        .btn-main { background: var(--crb); color: white; width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .btn-main:disabled { background: #bbb !important; }
+        .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(237,27,46,0.2); }
+        .btn-main:disabled { background: #bbb !important; cursor: not-allowed; box-shadow: none; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="font-weight:900; color:var(--crb);">CROIX-ROUGE : ÉVALUATION</div>
+    <div style="font-weight:900; color:var(--crb); letter-spacing: 1px;">CROIX-ROUGE DE BELGIQUE</div>
+    <div style="font-size: 11px; font-weight: bold; color: #555;">ÉVALUATION JOURNALIÈRE STAGIAIRE</div>
 </div>
 
 <div class="container">
     <div class="card">
-        <h2>1. Personnel</h2>
+        <h2>1. Identification</h2>
         <div class="form-group">
             <label>Stagiaire</label>
-            <select id="stag_select" onchange="checkForm()"><option value="">Chargement...</option></select>
+            <select id="stag_select" onchange="checkForm()"><option value="">Chargement des noms...</option></select>
         </div>
         <div class="form-group">
-            <label>Maître de Stage</label>
-            <select id="ms_select" onchange="checkForm()"><option value="">Chargement...</option></select>
+            <label>Convoyeur (Maître de stage du jour)</label>
+            <select id="ms_select" onchange="checkForm()"><option value="">Chargement des noms...</option></select>
+        </div>
+        <div class="form-group">
+            <label>Chauffeur</label>
+            <select id="chauf_select"><option value="">Chargement des noms...</option></select>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group">
+                <label>Jour de stage n°</label>
+                <input type="number" id="jour_no" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label>Nombre de missions</label>
+                <input type="number" id="nb_missions" value="0" min="0">
+            </div>
         </div>
     </div>
 
     <div class="card">
-        <h2>2. Compétences</h2>
+        <h2>2. Compétences Techniques</h2>
         <div id="grid_items"></div>
     </div>
 
     <div class="card">
         <h2>3. Bilan & Signatures</h2>
         <div class="form-group">
-            <label>Commentaires (Obligatoire - min 5 car.)</label>
-            <textarea id="obs" rows="3" oninput="checkForm()"></textarea>
+            <label>Observations & Remarques</label>
+            <textarea id="obs" rows="4" placeholder="Écrivez ici vos commentaires sur la journée..." oninput="checkForm()"></textarea>
         </div>
-        <div class="form-group">
-            <label>Signature MS</label>
-            <div class="sig-container"><canvas id="can_ms"></canvas></div>
+        <div style="display:grid; grid-template-columns: 1fr; gap:15px;">
+            <div>
+                <label>Signature Maître de Stage</label>
+                <div class="sig-container"><canvas id="can_ms"></canvas></div>
+            </div>
+            <div>
+                <label>Signature Stagiaire</label>
+                <div class="sig-container"><canvas id="can_st"></canvas></div>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Signature Stagiaire</label>
-            <div class="sig-container"><canvas id="can_st"></canvas></div>
-        </div>
-        <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER & GÉNÉRER PDF</button>
+        <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER & GÉNÉRER LE RAPPORT PDF</button>
     </div>
 </div>
 
 <script>
-    // --- CONFIGURATION ---
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHo0nkuxqod94L_zCvF5FPAtN3qn7c50yHjgfdiNl5Ag9JmQSXoW-AatdxQbYJN_0_/exec"; // <--- REMPLACER UNIQUEMENT CECI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHo0nkuxqod94L_zCvF5FPAtN3qn7c50yHjgfdiNl5Ag9JmQSXoW-AatdxQbYJN_0_/exec"; // <--- REMPLACER CECI
 
     const items = {
-        "Check-up ambulance": "Remarquer les anomalies et y remédier",
+        "Check-up ambulance": "Est capable de remarquer les anomalies et y remédier",
         "Inventaire matériel": "Maîtrise du VESUV",
-        "Désinfection": "Maîtrise des gestes de décontamination",
-        "Itinéraire & GPS": "Capable de guider son chauffeur",
-        "Feuille de route": "Utilisation de la tablette et papier",
-        "Bilan Patient": "Anamnèse correcte",
-        "Paramètres vitaux": "Prise de tension, saturation, etc.",
-        "Oxygénothérapie": "Calcul et pose correcte",
-        "Manutention": "Brancardage et chaise",
-        "Transfert Médicalisé": "Assistance au médecin"
+        "Désinfection": "Comprend le pourquoi de la désinfection et en maîtrise les gestes",
+        "Itinéraire & GPS": "Est capable de guider son chauffeur",
+        "Feuille de route": "Complète la feuille de route et utilise la tablette correctement",
+        "Bilan Patient": "Fait l'anamnèse succincte et comprend pourquoi le patient est transporté",
+        "Paramètres vitaux": "Est capable de prendre les paramètres vitaux dans les règles de l'art",
+        "Oxygénothérapie": "Comprend la raison et effectue les gestes correctement",
+        "Manutention": "Maîtrise de la manipulation du brancard et/ou de la chaise",
+        "Transfert Médicalisé": "Assiste le médecin en fonction des demandes en restant dans son cadre de profession"
     };
 
-    // Initialisation
     async function init() {
         try {
             const r = await fetch(SCRIPT_URL);
             const d = await r.json();
             fillMenu('stag_select', d.stagiaires);
             fillMenu('ms_select', d.convoyeurs);
-        } catch(e) { 
-            alert("Erreur de lien avec Sheets. Vérifiez SCRIPT_URL."); 
-        }
+            fillMenu('chauf_select', d.chauffeurs);
+        } catch(e) { alert("Erreur de synchronisation avec Sheets."); }
     }
 
     function fillMenu(id, list) {
         const sel = document.getElementById(id);
-        sel.innerHTML = '<option value="">-- Choisir --</option>';
+        sel.innerHTML = '<option value="">-- Sélectionner --</option>';
         if(list) list.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
     }
 
-    // Génération Grille
     const grid = document.getElementById('grid_items');
     Object.keys(items).forEach(key => {
         grid.innerHTML += `
@@ -135,7 +148,6 @@
         document.getElementById('btn_send').disabled = (obs.length < 5 || s === "" || m === "");
     }
 
-    // Signatures
     function setupCanvas(id) {
         const c = document.getElementById(id);
         const ctx = c.getContext('2d');
@@ -143,57 +155,86 @@
         let drawing = false;
         const pos = e => {
             const r = c.getBoundingClientRect();
-            return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+            const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+            return {x, y};
         };
         const start = e => { drawing = true; ctx.beginPath(); const p = pos(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
         const move = e => { if(!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if(e.touches) e.preventDefault(); };
         c.addEventListener('mousedown', start); c.addEventListener('mousemove', move);
-        c.addEventListener('touchstart', start); c.addEventListener('touchmove', move);
+        c.addEventListener('touchstart', start, {passive:false}); c.addEventListener('touchmove', move, {passive:false});
         window.addEventListener('mouseup', () => drawing = false);
         window.addEventListener('touchend', () => drawing = false);
     }
 
-    // PDF & Envoi
     async function submitAll() {
         const btn = document.getElementById('btn_send');
-        btn.disabled = true; btn.innerText = "PATIENTEZ...";
+        btn.disabled = true; btn.innerText = "GÉNÉRATION DU RAPPORT...";
 
         const stag = document.getElementById('stag_select').value;
         const ms = document.getElementById('ms_select').value;
+        const chauf = document.getElementById('chauf_select').value;
+        const jour = document.getElementById('jour_no').value;
+        const miss = document.getElementById('nb_missions').value;
         const obs = document.getElementById('obs').value;
-
-        // Calcul Score
-        let total = 0, count = 0;
-        document.querySelectorAll('.btn-opt.active').forEach(b => {
-            let v = parseInt(b.dataset.val); if(v>0){ total+=v; count++; }
-        });
-        const avg = count > 0 ? total/count : 0;
-        let scoreTxt = avg > 2.4 ? "+++" : (avg > 1.5 ? "++" : "+");
-        let msg = avg > 2.4 ? "Félicitations, continue !" : (avg > 1.5 ? "En progression" : "Il faut se reprendre en main");
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFontSize(16); doc.text("ÉVALUATION CROIX-ROUGE", 105, 20, {align:'center'});
-        doc.setFontSize(11);
-        doc.text(`Stagiaire : ${stag}`, 20, 40);
-        doc.text(`Maître de stage : ${ms}`, 20, 48);
-        doc.text(`Note Globale : ${scoreTxt}`, 20, 56);
-        doc.text("Observations :", 20, 70);
-        doc.text(doc.splitTextToSize(obs, 170), 20, 78);
-        
-        doc.text(`Signé par MS (${ms}) :`, 20, 210);
-        doc.addImage(document.getElementById('can_ms').toDataURL(), 'PNG', 20, 215, 50, 20);
-        doc.text(`Signé par Stagiaire (${stag}) :`, 130, 210);
-        doc.addImage(document.getElementById('can_st').toDataURL(), 'PNG', 130, 215, 50, 20);
 
-        doc.save(`Eval_${stag}.pdf`);
+        // DESIGN PDF
+        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
+        doc.text("RAPPORT D'ÉVALUATION", 105, 20, {align:'center'});
+        doc.setFontSize(12); doc.text("CROIX-ROUGE DE BELGIQUE", 105, 30, {align:'center'});
+
+        doc.setTextColor(0); doc.setFontSize(14); doc.text("1. IDENTIFICATION", 20, 55);
+        doc.setLineWidth(0.5); doc.line(20, 57, 190, 57);
+        
+        doc.setFontSize(11); doc.setFont("helvetica", "bold");
+        doc.text("Stagiaire :", 20, 65); doc.setFont("helvetica", "normal"); doc.text(stag, 60, 65);
+        doc.setFont("helvetica", "bold"); doc.text("Maître de Stage :", 20, 72); doc.setFont("helvetica", "normal"); doc.text(ms, 60, 72);
+        doc.setFont("helvetica", "bold"); doc.text("Chauffeur :", 20, 79); doc.setFont("helvetica", "normal"); doc.text(chauf || "/", 60, 79);
+        doc.setFont("helvetica", "bold"); doc.text("Jour de stage :", 130, 65); doc.setFont("helvetica", "normal"); doc.text(jour, 160, 65);
+        doc.setFont("helvetica", "bold"); doc.text("Missions :", 130, 72); doc.setFont("helvetica", "normal"); doc.text(miss, 160, 72);
+
+        doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text("2. GRILLE DE COMPÉTENCES", 20, 95);
+        doc.line(20, 97, 190, 97);
+        
+        let y = 105;
+        doc.setFontSize(10);
+        document.querySelectorAll('.item-row').forEach(row => {
+            const label = row.querySelector('.item-label').innerText.replace('i', '').trim();
+            const val = row.querySelector('.btn-opt.active').innerText;
+            doc.setFont("helvetica", "bold"); doc.text(label, 25, y);
+            doc.setFont("helvetica", "bold"); doc.setTextColor(237, 27, 46);
+            doc.text(val, 180, y, {align:'right'});
+            doc.setTextColor(0); doc.setFont("helvetica", "normal");
+            y += 8;
+        });
+
+        doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text("3. OBSERVATIONS", 20, y + 10);
+        doc.line(20, y + 12, 190, y + 12);
+        doc.setFontSize(10); doc.setFont("helvetica", "normal");
+        const splitObs = doc.splitTextToSize(obs, 170);
+        doc.text(splitObs, 20, y + 20);
+
+        const sigY = 245;
+        doc.setFont("helvetica", "bold"); doc.text("Signature MS", 20, sigY);
+        doc.rect(20, sigY + 2, 70, 30);
+        doc.addImage(document.getElementById('can_ms').toDataURL(), 'PNG', 20, sigY + 2, 70, 30);
+        
+        doc.text("Signature Stagiaire", 120, sigY);
+        doc.rect(120, sigY + 2, 70, 30);
+        doc.addImage(document.getElementById('can_st').toDataURL(), 'PNG', 120, sigY + 2, 70, 30);
+
+        doc.save(`Evaluation_${stag}_Jour${jour}.pdf`);
 
         await fetch(SCRIPT_URL, {
             method: 'POST', mode: 'no-cors',
-            body: JSON.stringify({ stag: stag, ms: ms, obs: obs, score: scoreTxt })
+            body: JSON.stringify({ stag: stag, ms: ms, jour: jour, miss: miss, obs: obs })
         });
 
-        alert("PDF généré et données sauvegardées !");
+        alert("Rapport généré avec succès !");
         location.reload();
     }
 
