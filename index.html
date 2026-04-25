@@ -9,47 +9,47 @@
     <style>
         :root { --crb: #ED1B2E; --dark: #1a1a1a; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 500px; padding-bottom: 50px; }
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-top: 5px solid var(--crb); }
-        .header { text-align: center; margin-bottom: 15px; background: white; padding: 15px; border-radius: 15px; }
+        .app-container { width: 100%; max-width: 500px; padding-bottom: 30px; }
+        .header { text-align: center; margin-bottom: 15px; background: white; padding: 15px; border-radius: 15px; position: relative; border-bottom: 4px solid var(--crb); }
         .header img { height: 45px; }
-        .score-box { background: var(--dark); color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; font-size: 24px; font-weight: 900; border: 2px solid var(--crb); }
-        label { font-size: 10px; font-weight: 800; color: #555; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 12px; font-size: 14px; box-sizing: border-box; background: #fafafa; }
-        
-        /* Items & Tooltips */
-        .item-row { padding: 12px 0; border-bottom: 1px solid #f0f0f0; position: relative; }
-        .item-label { font-size: 13px; font-weight: 700; color: #333; display: flex; align-items: center; gap: 5px; cursor: help; margin-bottom: 8px;}
-        .item-label::after { content: 'ⓘ'; font-size: 12px; color: var(--crb); }
-        .tooltip { display: none; background: #333; color: white; font-size: 11px; padding: 8px; border-radius: 5px; position: absolute; z-index: 10; width: 90%; top: 30px; }
-        .item-row:active .tooltip, .item-label:hover + .tooltip { display: block; }
-        
-        .btns-eval { display: flex; gap: 4px; }
-        .btn-val { flex: 1; padding: 10px 2px; border: 1px solid #ddd; background: white; border-radius: 8px; font-size: 10px; font-weight: 800; cursor: pointer; }
-        .btn-val.active { background: var(--crb); color: white; border-color: var(--crb); }
-        .sig-box { border: 2px dashed #ccc; height: 100px; background: #fff; border-radius: 10px; touch-action: none; }
-        canvas { width: 100%; height: 100%; }
-        .btn-submit { width: 100%; background: var(--crb); color: white; border: none; padding: 18px; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .btn-submit:disabled { background: #ccc; }
+        .settings-btn { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; text-decoration: none; color: #666; }
+        .score-box { background: var(--crb); color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; font-size: 26px; font-weight: 900; box-shadow: 0 4px 10px rgba(237, 27, 46, 0.3); }
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h2 { font-size: 14px; color: var(--crb); text-transform: uppercase; margin-bottom: 15px; border-left: 4px solid var(--crb); padding-left: 10px; }
+        label { font-size: 11px; font-weight: 800; color: #555; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 12px; font-size: 14px; box-sizing: border-box; }
+        .item-row { padding: 15px 0; border-bottom: 1px solid #eee; }
+        .item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .item-label { font-size: 16px; font-weight: 800; color: var(--dark); }
+        .btn-info { background: #eee; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold; cursor: pointer; color: #666; }
+        .btns-eval { display: flex; gap: 5px; }
+        .btn-val { flex: 1; padding: 12px 2px; border: 1px solid #ddd; background: #fff; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer; }
+        .btn-val.active { background: var(--dark); color: white; border-color: var(--dark); }
+        .btn-val.active[data-pts="0"] { background: #999; }
+        .sig-box { border: 2px dashed #ccc; height: 120px; background: #fff; border-radius: 10px; touch-action: none; }
+        .btn-submit { width: 100%; background: var(--crb); color: white; border: none; padding: 20px; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(237, 27, 46, 0.4); }
+        .footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; line-height: 1.6; }
+        .footer a { color: var(--crb); text-decoration: none; font-weight: bold; }
         #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
     </style>
 </head>
 <body>
 
 <div id="loading-overlay">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png" height="50">
-    <p>Synchronisation avec Sheets...</p>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png" height="60">
+    <p style="font-weight:bold; color:var(--crb); margin-top:20px;">Chargement sécurisé...</p>
 </div>
 
 <div class="app-container">
     <div class="header">
+        <a href="javascript:void(0)" onclick="alert('Coordination : Laurent JASPARD\nTél: 0471/29.07.15')" class="settings-btn">⚙️</a>
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png">
-        <h1 style="font-size: 16px; color: var(--crb); margin-top:10px;">ÉVALUATION QUOTIDIENNE</h1>
     </div>
 
-    <div id="live_score" class="score-box">NOTE : NE / 4</div>
+    <div id="live_score" class="score-box">SCORE : NE / 4</div>
 
     <div class="card">
+        <h2>Informations Mission</h2>
         <label>Stagiaire</label>
         <select id="stag_select" onchange="checkForm()"></select>
         
@@ -61,78 +61,88 @@
             <option value="AUTRE">AUTRE</option>
         </select>
 
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1;"><label>Type de Stage</label><select id="type_stage"><option value="AMU">AMU</option><option value="ATNUP">ATNUP</option></select></div>
+            <div style="flex:1;"><label>Numéro du Jour</label><input type="number" id="jour_no" value="1"></div>
+        </div>
+
         <label>Évaluateur (Convoyeur MS)</label>
         <select id="ms_select" onchange="checkForm()"></select>
         
         <label>Chauffeur</label>
         <select id="chauf_select" onchange="checkForm()"></select>
-        
-        <div style="display:flex; gap:10px;">
-            <div style="flex:1;"><label>Type Stage</label><select id="type_stage"><option value="AMU">AMU</option><option value="ATNUP">ATNUP</option></select></div>
-            <div style="flex:1;"><label>Nb Missions</label><input type="number" id="nb_missions" value="1"></div>
-        </div>
     </div>
 
     <div class="card">
-        <label>Compétences (cliquez sur le nom pour l'aide)</label>
+        <h2>Compétences du jour</h2>
         <div id="grid_eval"></div>
     </div>
 
     <div class="card">
-        <label>Observations</label>
-        <textarea id="obs" rows="3" placeholder="Commentaires..."></textarea>
-        <div style="display:flex; gap:10px;">
-            <div style="flex:1;"><label>Sig. Éval</label><div class="sig-box"><canvas id="sig_ms"></canvas></div></div>
-            <div style="flex:1;"><label>Sig. Cand</label><div class="sig-box"><canvas id="sig_st"></canvas></div></div>
-        </div>
+        <h2>Validation finale</h2>
+        <label>Commentaires / Remarques</label>
+        <textarea id="obs" rows="4" placeholder="Points d'attention..."></textarea>
+        
+        <label>Signature Évaluateur</label>
+        <div class="sig-box"><canvas id="sig_ms"></canvas></div>
         <br>
-        <button id="btn_send" class="btn-submit" disabled onclick="process()">VALIDER & ENVOYER</button>
+        <label>Signature Stagiaire</label>
+        <div class="sig-box"><canvas id="sig_st"></canvas></div>
+        <br>
+        <button id="btn_send" class="btn-submit" disabled onclick="process()">TRANSMETTRE AU SHEETS</button>
+    </div>
+
+    <div class="footer">
+        © MEDIVALENCE 2026 - Laurent Jaspard<br>
+        Coordination et évaluation des stages : <br>
+        <a href="tel:0471290715">Laurent JASPARD - 0471/29.07.15</a>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyIyyNJjIvzQrWE2IX9QtamCQXSFbRllZkDhWz_7aRawSG78vTOfAv20yiMZAyaLxh/exec"; // <--- METTEZ VOTRE URL /exec ICI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7GPTJk8f8Ozz2ZqQ4fi2dcjJrJt224cuduvSRRhtcAY4TFhvCbch65Z-XOIFCAofr/exec"; 
 
     const items = [
-        { name: "Check up véhicule", help: "Niveaux, état carrosserie, propreté cabine." },
-        { name: "Check up matériel", help: "Vérification oxygène, brancard, sacs d'intervention." },
-        { name: "Inventaire complet", help: "Dates de péremption, stocks consommables." },
-        { name: "Désinfection", help: "Nettoyage cellule après mission, hygiène des mains." },
-        { name: "Itinéraire & GPS", help: "Lecture carte, utilisation du terminal, rapidité trajet." },
-        { name: "Administratif", help: "Feuille de route, rapport d'intervention, mutuelle." },
-        { name: "Relation équipe", help: "Communication, entraide, respect de la hiérarchie." },
-        { name: "Relation Patient", help: "Empathie, rassurance, communication verbale." },
-        { name: "Bilan primaire", help: "ABCDE, fonctions vitales, rapidité d'exécution." },
-        { name: "Bilan secondaire", help: "Anamnèse, examen physique complet, paramètres." },
-        { name: "Oxygène", help: "Calcul autonomie, choix du masque, débit adéquat." },
-        { name: "Manutention", help: "Ergonomie, sécurité brancard, manipulation chaise." }
+        { n: "Check up véhicule", d: "Niveaux, état carrosserie, propreté cabine." },
+        { n: "Check up matériel", d: "Oxygène, brancard, sacs d'intervention." },
+        { n: "Inventaire complet", d: "Péremptions, consommables." },
+        { n: "Désinfection", d: "Cellule sanitaire, hygiène mains." },
+        { n: "Itinéraire & GPS", d: "Lecture carte, terminal, trajet." },
+        { n: "Administratif", d: "Feuille de route, rapport, mutuelle." },
+        { n: "Relation équipe", d: "Communication, entraide." },
+        { n: "Relation Patient", d: "Rassurance, empathie." },
+        { n: "Bilan primaire", d: "ABCDE, fonctions vitales." },
+        { n: "Bilan secondaire", d: "Anamnèse, examen physique." },
+        { n: "Oxygène", d: "Calcul autonomie, débit, masque." },
+        { n: "Manutention", d: "Ergonomie, brancard, chaise." }
     ];
 
     async function loadData() {
         try {
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
-            fillDrop('stag_select', data.stagiaires);
-            fillDrop('ms_select', data.convoyeurs);
-            fillDrop('chauf_select', data.chauffeurs);
+            fill(document.getElementById('stag_select'), data.stagiaires);
+            fill(document.getElementById('ms_select'), data.convoyeurs);
+            fill(document.getElementById('chauf_select'), data.chauffeurs);
             document.getElementById('loading-overlay').style.display='none';
-        } catch(e) { alert("Erreur de synchronisation !"); }
+        } catch(e) { alert("Erreur de liaison !"); }
     }
 
-    function fillDrop(id, list) {
-        const s = document.getElementById(id);
-        s.innerHTML = '<option value="">-- Choisir --</option>';
-        list.forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`);
+    function fill(sel, list) {
+        sel.innerHTML = '<option value="">-- Sélectionner --</option>';
+        list.forEach(n => { if(n) sel.innerHTML += `<option value="${n}">${n}</option>`; });
     }
 
     function initGrid() {
         const grid = document.getElementById('grid_eval');
-        items.forEach(item => {
+        items.forEach(it => {
             grid.innerHTML += `
                 <div class="item-row">
-                    <div class="item-label">${item.name}</div>
-                    <div class="tooltip">${item.help}</div>
-                    <div class="btns-eval" data-key="${item.name}">
+                    <div class="item-header">
+                        <span class="item-label">${it.n}</span>
+                        <button class="btn-info" onclick="alert('${it.d}')">i</button>
+                    </div>
+                    <div class="btns-eval" data-key="${it.n}">
                         <button class="btn-val" data-pts="1" onclick="setVal(this)">SUF</button>
                         <button class="btn-val" data-pts="2" onclick="setVal(this)">SAT</button>
                         <button class="btn-val" data-pts="3" onclick="setVal(this)">B</button>
@@ -146,7 +156,8 @@
     function setVal(btn) {
         Array.from(btn.parentElement.children).forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        updateScore(); checkForm();
+        updateScore();
+        checkForm();
     }
 
     function updateScore() {
@@ -154,13 +165,15 @@
         document.querySelectorAll('.btn-val.active').forEach(b => {
             let p=parseInt(b.dataset.pts); if(p>0){ t+=p; c++; }
         });
-        const s = c>0 ? (t/c).toFixed(1) + " / 4" : "NE / 4";
-        document.getElementById('live_score').innerText = `NOTE : ${s}`;
-        return s;
+        const res = c>0 ? (t/c).toFixed(1) : "NE";
+        document.getElementById('live_score').innerText = `SCORE : ${res} / 4`;
+        return res;
     }
 
     function checkForm() {
-        const ok = document.getElementById('stag_select').value && document.getElementById('ms_select').value && document.getElementById('chauf_select').value;
+        const ok = document.getElementById('stag_select').value && 
+                   document.getElementById('ms_select').value && 
+                   document.getElementById('chauf_select').value;
         document.getElementById('btn_send').disabled = !ok;
     }
 
@@ -168,7 +181,7 @@
         const c = document.getElementById(id); const ctx = c.getContext('2d');
         const r = window.devicePixelRatio || 1;
         c.width = c.offsetWidth * r; c.height = c.offsetHeight * r;
-        ctx.scale(r, r); ctx.lineWidth = 2;
+        ctx.scale(r, r); ctx.lineWidth = 2; ctx.lineJoin = 'round';
         let d = false;
         const p = e => { const b = c.getBoundingClientRect(); return { x: (e.touches ? e.touches[0].clientX : e.clientX) - b.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - b.top }; };
         c.onmousedown = e => { d=true; ctx.beginPath(); const v=p(e); ctx.moveTo(v.x,v.y); };
@@ -179,17 +192,18 @@
     }
 
     async function process() {
-        const btn = document.getElementById('btn_send'); btn.innerText = "Envoi..."; btn.disabled = true;
-        const notes = {}; document.querySelectorAll('.btns-eval').forEach(el => notes[el.dataset.key] = el.querySelector('.active').innerText);
+        const btn = document.getElementById('btn_send'); btn.innerText = "Envoi en cours..."; btn.disabled = true;
+        const notes = {}; 
+        document.querySelectorAll('.btns-eval').forEach(el => notes[el.dataset.key] = el.querySelector('.active').innerText);
         
         const data = {
             stag: document.getElementById('stag_select').value,
             evalNom: document.getElementById('ms_select').value,
             chauf: document.getElementById('chauf_select').value,
-            qualite: document.getElementById('ecole_select').value, // Ecole
-            typeS: document.getElementById('type_stage').value, // AMU/ATNUP
-            jour: document.getElementById('nb_missions').value,
-            score: updateScore(),
+            qualite: document.getElementById('ecole_select').value,
+            typeS: document.getElementById('type_stage').value,
+            jour: document.getElementById('jour_no').value,
+            score: updateScore() + " / 4",
             obs: document.getElementById('obs').value || "RAS",
             notes: notes
         };
@@ -197,13 +211,27 @@
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
         
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.text("RAPPORT CRB", 10, 10);
-        doc.text(`Candidat: ${data.stag} - Ecole: ${data.qualite}`, 10, 20);
-        doc.text(`Note: ${data.score}`, 10, 30);
-        doc.autoTable({ startY: 40, head: [['Compétence', 'Note']], body: Object.entries(notes) });
-        doc.save(`Eval_${data.stag}.pdf`);
+        doc.setFillColor(237, 27, 46); doc.rect(0,0,210,30,'F');
+        doc.setTextColor(255); doc.setFontSize(18); doc.text("EVALUATION STAGIAIRE - CROIX-ROUGE", 105, 15, {align:'center'});
         
-        alert("Enregistré avec succès !");
+        doc.setTextColor(0); doc.setFontSize(11);
+        doc.text(`Candidat: ${data.stag}`, 15, 40);
+        doc.text(`Ecole: ${data.qualite}`, 15, 47);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 40);
+        doc.setFontSize(14); doc.text(`SCORE MOYEN: ${data.score}`, 150, 55);
+
+        const rows = Object.entries(notes);
+        doc.autoTable({ startY: 65, head: [['Compétence', 'Note']], body: rows, headStyles:{fillColor:[237, 27, 46]} });
+        
+        const finalY = doc.lastAutoTable.finalY + 10;
+        doc.text("Observations:", 15, finalY);
+        doc.setFontSize(9); doc.text(doc.splitTextToSize(data.obs, 180), 15, finalY + 7);
+        
+        doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 20, finalY + 30, 50, 20);
+        doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 140, finalY + 30, 50, 20);
+        
+        doc.save(`Evaluation_${data.stag}_Jour_${data.jour}.pdf`);
+        alert("Evaluation enregistrée !");
         location.reload();
     }
 
