@@ -16,29 +16,32 @@
         label { font-size: 10px; font-weight: bold; color: #666; display: block; margin-bottom: 3px; text-transform: uppercase; }
         select, textarea, input { padding: 10px; border: 1px solid #DDD; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; background: #FAFAFA; }
         .item-row { display: flex; flex-direction: column; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
-        .item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .item-label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex: 1; }
+        .item-label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
         .info-btn { background: #007bff; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; font-weight: bold; }
         .btns { display: flex; gap: 4px; }
         .btn-opt { border: 1px solid #CCC; background: white; padding: 8px 4px; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1; font-size: 10px; text-align: center; }
         .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
-        .score-badge { background: #333; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 12px; font-size: 16px; }
+        .score-badge { background: #333; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 12px; font-size: 16px; border: 2px solid var(--crb); }
         .sig-container { border: 1px dashed #CCC; background: #FFF; height: 100px; border-radius: 8px; touch-action: none; margin-top: 5px; }
         canvas { width: 100%; height: 100%; }
         .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .btn-main:disabled { background: #ccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="font-weight:900; color:var(--crb);">CARNET DE STAGE ATNUP 2026</div>
-    <div style="font-size: 10px; font-weight: bold; color: #555;">TABLEAU DE SUIVI DES SAVOIR-FAIRE</div>
+    <div style="font-weight:900; color:var(--crb); font-size: 18px;">CROIX-ROUGE DE BELGIQUE</div>
+    <div style="font-size: 11px; font-weight: bold; color: #555;">SUIVI TECHNIQUE ATNUP 2026</div>
 </div>
 
 <div class="container">
     <div class="card">
         <h2>1. Identification & Contexte</h2>
-        <div class="form-group"><label>Stagiaire</label><select id="stag_select" onchange="checkForm()"></select></div>
+        <div class="form-group">
+            <label>Stagiaire</label>
+            <select id="stag_select" onchange="checkForm()"></select>
+        </div>
         
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div class="form-group">
@@ -62,19 +65,25 @@
             <input type="text" id="stage_autre_val" placeholder="...">
         </div>
 
-        <div class="form-group"><label>Maître de Stage (MS)</label><select id="ms_select" onchange="checkForm()"></select></div>
-        <div class="form-group"><label>Chauffeur</label><select id="chauf_select"></select></div>
+        <div class="form-group">
+            <label>Maître de Stage (Évaluateur)</label>
+            <select id="ms_select" onchange="checkForm()"></select>
+        </div>
+        <div class="form-group">
+            <label>Chauffeur</label>
+            <select id="chauf_select"></select>
+        </div>
         
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="form-group"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
-            <div class="form-group"><label>Missions</label><input type="number" id="nb_missions" value="0"></div>
+            <div class="form-group"><label>Jour de stage n°</label><input type="number" id="jour_no" value="1"></div>
+            <div class="form-group"><label>Nombre de missions</label><input type="number" id="nb_missions" value="0"></div>
         </div>
     </div>
 
-    <div class="score-badge" id="live_score">NOTE GLOBALE : NE</div>
+    <div class="score-badge" id="live_score">COTE GLOBALE DU JOUR : NE</div>
 
     <div class="card">
-        <h2>2. Ambulance & Itinéraire</h2>
+        <h2>2. Ambulance & Logistique</h2>
         <div id="section_ambulance"></div>
     </div>
 
@@ -84,30 +93,39 @@
     </div>
 
     <div class="card">
-        <h2>4. Bilan & Signatures</h2>
-        <textarea id="obs" rows="3" placeholder="Remarques du maître de stage..." oninput="checkForm()"></textarea>
-        <div style="margin-top:10px;"><label>Signature MS</label><div class="sig-container"><canvas id="can_ms"></canvas></div></div>
-        <div style="margin-top:10px;"><label>Signature Stagiaire</label><div class="sig-container"><canvas id="can_st"></canvas></div></div>
-        <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER ET GÉNÉRER PDF</button>
+        <h2>4. Observations & Signatures</h2>
+        <label>Remarques du Maître de Stage (Évolution du jour)</label>
+        <textarea id="obs" rows="4" placeholder="Points forts, points à améliorer..." oninput="checkForm()"></textarea>
+        
+        <div style="margin-top:15px;">
+            <label>Signature du Maître de Stage</label>
+            <div class="sig-container"><canvas id="can_ms"></canvas></div>
+        </div>
+        <div style="margin-top:15px;">
+            <label>Signature du Stagiaire</label>
+            <div class="sig-container"><canvas id="can_st"></canvas></div>
+        </div>
+        
+        <button id="btn_send" class="btn-main" disabled onclick="submitAll()">VALIDER & GÉNÉRER PDF</button>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzisbZPCEXojgiPZQKl2rVm5JcmbZ8KDs6EY2PXVVnPkrz7o-ao1Obw1H4P57Xvrn9g/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHXq72DrRXZxgfXNRzHnQnD6OCPqRp_FHM9vTXC0WUEj1P7doJ-uB9BD7XQRUIW4-D/exec"; // <--- METTRE VOTRE LIEN GOOGLE SCRIPT ICI
 
     const defs = {
-        "Check up véhicule": "Vérification mécanique : Niveaux, pneus, éclairage, carrosserie.",
-        "Check up matériel": "Vérification du matériel embarqué et sacs d'intervention.",
-        "Inventaire complet": "Réalisation d'un inventaire approfondi selon la check-list VESUV.",
-        "Désinfection": "Respect des protocoles d'hygiène et entretien du matériel utilisé.",
-        "Itinéraire & GPS": "Utilisation du GPS et lecture de carte pour guider le chauffeur.",
-        "Documents": "Rédaction correcte de la feuille de route et utilisation de la tablette.",
-        "Relation équipe": "Communication adaptée et respectueuse avec l'équipage.",
-        "Relation Patient": "Empathie, dialogue adapté avec le patient et sa famille.",
-        "Bilan primaire": "Évaluation ABCDE et identification des menaces vitales.",
-        "Bilan secondaire": "Anamnèse (SAMPLE) et prise des paramètres (TA, Pouls, SpO2).",
-        "Oxygénothérapie": "Choix du dispositif et réglage du débit selon prescription.",
-        "Manutention": "Utilisation correcte du brancard/chaise et ergonomie (dos droit)."
+        "Check up véhicule": "Vérification mécanique complète : Niveaux (huile, lave-glace), état des pneus, carrosserie et fonctionnement de l'éclairage/gyrophares.",
+        "Check up matériel": "Vérification de la présence et du fonctionnement du matériel embarqué (défibrillateur, aspirateur de mucosités, sacs d'intervention).",
+        "Inventaire complet": "Réalisation d'un inventaire approfondi et rangement selon la check-list VESUV ou protocole local.",
+        "Désinfection": "Respect des protocoles d'hygiène pré/post intervention, entretien du matériel utilisé et de la cellule sanitaire.",
+        "Itinéraire & GPS": "Utilisation efficace du G.P.S., lecture de carte et capacité à guider le chauffeur en anticipant le trafic.",
+        "Documents": "Rédaction correcte et lisible de la feuille de route et rapport d'intervention (format papier ou tablette électronique).",
+        "Relation équipe": "Contact adapté, respectueux et professionnel avec ses collègues et l'équipe médicale (SMUR).",
+        "Relation Patient": "Empathie, écoute, dialogue rassurant et contact adapté avec le patient et sa famille (secret professionnel).",
+        "Bilan primaire": "Évaluation systématique selon l'ABCDE, identification et gestion des menaces vitales immédiates.",
+        "Bilan secondaire": "Anamnèse complète (SAMPLE/PQRSTU) et prise précise des paramètres vitaux (TA, Pouls, SpO2, Fréquence respi).",
+        "Oxygénothérapie": "Choix du dispositif adapté (lunettes, masque HC), réglage du débit et surveillance de l'efficacité du traitement.",
+        "Manutention": "Utilisation sécurisée du brancard, de la chaise portoir et respect des principes d'ergonomie pour la protection du dos."
     };
 
     const cat1 = ["Check up véhicule", "Check up matériel", "Inventaire complet", "Désinfection", "Itinéraire & GPS", "Documents"];
@@ -122,9 +140,7 @@
         list.forEach(key => {
             container.innerHTML += `
                 <div class="item-row" data-name="${key}">
-                    <div class="item-header">
-                        <div class="item-label"><button class="info-btn" onclick="alert('${defs[key]}')">i</button> ${key}</div>
-                    </div>
+                    <div class="item-label"><button class="info-btn" onclick="alert('${defs[key]}')">i</button> ${key}</div>
                     <div class="btns">
                         <button class="btn-opt" data-pts="1" data-val="SUF" onclick="optClick(this)">SUF</button>
                         <button class="btn-opt" data-pts="2" data-val="SAT" onclick="optClick(this)">SAT</button>
@@ -155,9 +171,9 @@
             if(avg < 1.5) label = "SUF";
             else if(avg < 2.5) label = "SAT";
             else if(avg < 3.5) label = "BIEN";
-            else label = "TB";
+            else label = "TRÈS BIEN (TB)";
         }
-        document.getElementById('live_score').innerText = `NOTE GLOBALE : ${label} (${avg || '--'}/4)`;
+        document.getElementById('live_score').innerText = `COTE GLOBALE DU JOUR : ${label} ${avg ? '('+avg+'/4)' : ''}`;
         return { label, avg };
     }
 
@@ -170,7 +186,7 @@
             fillMenu('stag_select', d.stagiaires);
             fillMenu('ms_select', d.convoyeurs);
             fillMenu('chauf_select', d.chauffeurs);
-        } catch(e) { console.log("Erreur synchro Sheets"); }
+        } catch(e) { console.log("Liaison base de données non établie."); }
     }
 
     function fillMenu(id, list) {
@@ -195,35 +211,43 @@
             const r = c.getBoundingClientRect();
             return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
         };
-        c.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); const p=getP(e); ctx.moveTo(p.x, p.y); });
-        c.addEventListener('mousemove', e => { if(drawing) { const p=getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } });
-        c.addEventListener('touchstart', e => { drawing = true; ctx.beginPath(); const p=getP(e); ctx.moveTo(p.x, p.y); e.preventDefault(); }, {passive:false});
-        c.addEventListener('touchmove', e => { if(drawing) { const p=getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } e.preventDefault(); }, {passive:false});
+        const start = e => { drawing = true; ctx.beginPath(); const p=getP(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
+        const move = e => { if(drawing) { const p=getP(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } if(e.touches) e.preventDefault(); };
+        c.addEventListener('mousedown', start); c.addEventListener('mousemove', move);
+        c.addEventListener('touchstart', start, {passive:false}); c.addEventListener('touchmove', move, {passive:false});
         window.addEventListener('mouseup', () => drawing = false);
     }
 
     async function submitAll() {
+        const btn = document.getElementById('btn_send');
+        btn.disabled = true; btn.innerText = "TRANSFERT EN COURS...";
+        
         const score = calcScore();
         const stag = document.getElementById('stag_select').value;
-        const typeStage = document.getElementById('stage_type').value === 'AUTRE' ? document.getElementById('stage_autre_val').value : document.getElementById('stage_type').value;
-        const qualite = document.getElementById('stag_qualite').value;
-        
+        const ms = document.getElementById('ms_select').value;
+        const typeS = document.getElementById('stage_type').value === 'AUTRE' ? document.getElementById('stage_autre_val').value : document.getElementById('stage_type').value;
+        const qual = document.getElementById('stag_qualite').value;
+        const jour = document.getElementById('jour_no').value;
+        const obs = document.getElementById('obs').value;
+
+        // Générer le PDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Header PDF
         doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255); doc.setFontSize(18); doc.text("RAPPORT DE STAGE ATNUP 2026", 105, 15, {align:'center'});
-        doc.setFontSize(14); doc.text(`NOTE GLOBALE : ${score.label}`, 105, 28, {align:'center'});
+        doc.setTextColor(255); doc.setFontSize(18); doc.text("RAPPORT JOURNALIER ATNUP 2026", 105, 15, {align:'center'});
+        doc.setFontSize(14); doc.text(`NOTE FINALE : ${score.label}`, 105, 28, {align:'center'});
 
         doc.setTextColor(0); doc.setFontSize(10);
         doc.text(`STAGIAIRE : ${stag}`, 20, 50);
-        doc.text(`TYPE : ${typeStage} (${qualite})`, 20, 57);
-        doc.text(`JOUR N° : ${document.getElementById('jour_no').value}`, 150, 50);
+        doc.text(`ÉVALUATEUR (MS) : ${ms}`, 20, 57);
+        doc.text(`TYPE DE STAGE : ${typeS} (${qual})`, 20, 64);
+        doc.text(`JOUR N° : ${jour}`, 150, 50);
         doc.text(`MISSIONS : ${document.getElementById('nb_missions').value}`, 150, 57);
-        doc.line(20, 62, 190, 62);
+        doc.line(20, 68, 190, 68);
 
-        let y = 75;
+        let y = 80;
+        doc.setFontSize(9);
         document.querySelectorAll('.item-row').forEach(row => {
             const val = row.querySelector('.btn-opt.active').dataset.val;
             doc.text(row.dataset.name, 25, y);
@@ -232,24 +256,30 @@
             y += 8;
         });
 
-        doc.setFont("helvetica", "bold"); doc.text("REMARQUES :", 20, y + 10);
+        doc.setFont("helvetica", "bold"); doc.text("COMMENTAIRES DU MAÎTRE DE STAGE :", 20, y + 10);
         doc.setFont("helvetica", "normal");
-        doc.text(doc.splitTextToSize(document.getElementById('obs').value, 170), 20, y + 18);
+        doc.text(doc.splitTextToSize(obs, 170), 20, y + 18);
 
-        doc.addImage(document.getElementById('can_ms').toDataURL(), 'PNG', 20, 245, 60, 25);
-        doc.addImage(document.getElementById('can_st').toDataURL(), 'PNG', 130, 245, 60, 25);
-        doc.text("Signature MS", 20, 243); doc.text("Signature Stagiaire", 130, 243);
+        doc.addImage(document.getElementById('can_ms').toDataURL(), 'PNG', 20, 250, 55, 25);
+        doc.addImage(document.getElementById('can_st').toDataURL(), 'PNG', 130, 250, 55, 25);
+        doc.text("Signature MS (Évaluateur)", 20, 248); doc.text("Signature Stagiaire", 130, 248);
 
-        doc.save(`Evaluation_${stag}_J${document.getElementById('jour_no').value}.pdf`);
+        doc.save(`Eval_${stag}_J${jour}.pdf`);
         
-        // Envoi Sheets
+        // Envoi vers Google Sheets
         const notes = {};
         document.querySelectorAll('.item-row').forEach(r => notes[r.dataset.name] = r.querySelector('.btn-opt.active').dataset.val);
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ 
-            stag, typeStage, qualite, jour: document.getElementById('jour_no').value, notes, score: score.label, obs: document.getElementById('obs').value 
-        })});
+        
+        await fetch(SCRIPT_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify({ 
+                stag, ms, chauf: document.getElementById('chauf_select').value, 
+                typeS, qual, jour, score: score.label, obs, notes 
+            })
+        });
 
-        alert("Terminé !");
+        alert("Évaluation transmise avec succès !");
         location.reload();
     }
 
