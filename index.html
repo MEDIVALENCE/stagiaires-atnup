@@ -1,201 +1,49 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CPSI ATNUP - Officiel</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        :root { --crb: #ED1B2E; --bg: #F4F7F9; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding-bottom: 30px; }
-        .header { background: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--crb); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-        .card { background: white; border-radius: 5px; padding: 20px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--crb); }
-        h2 { font-size: 13px; color: var(--crb); text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 8px; margin-bottom: 15px; font-weight: 800; }
-        .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-        label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 4px; }
-        input, select, textarea { padding: 12px; border: 1px solid #CCC; border-radius: 4px; font-size: 14px; }
-        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F3F3F3; }
-        .btns { display: flex; gap: 5px; }
-        .btn-opt { border: 1px solid #DDD; background: #FFF; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-opt.active { background: var(--crb); color: white; border-color: var(--crb); }
-        .sig-container { border: 1px solid #DDD; background: #FAFAFA; height: 130px; touch-action: none; border-radius: 4px; margin-top: 5px; }
-        canvas { width: 100%; height: 100%; }
-        .btn-main { background: var(--crb); color: white; width: 100%; padding: 18px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        #admin_modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:2000; padding:20px; box-sizing:border-box; overflow-y: auto; }
-    </style>
-</head>
-<body>
-
-<div id="admin_modal">
-    <button onclick="document.getElementById('admin_modal').style.display='none'" style="width:100%; padding:15px; margin-bottom:20px; font-weight:bold;">← RETOUR</button>
-    <div class="card">
-        <h2>Ajouter Personnel</h2>
-        <div class="form-group"><label>Type</label><select id="adm_type"><option value="convoyeurs">Maître de Stage</option><option value="chauffeurs">Chauffeur</option><option value="stagiaires">Stagiaire</option></select></div>
-        <div class="form-group"><label>Nom Prénom</label><input type="text" id="adm_nom"></div>
-        <button class="btn-main" onclick="saveStaff()">Synchroniser</button>
-    </div>
-</div>
-
-<div class="header">
-    <div style="font-weight:900; color:var(--crb);">CROIX-ROUGE DE BELGIQUE</div>
-    <button onclick="document.getElementById('admin_modal').style.display='block'" style="font-size:10px; background:none; border:none; text-decoration:underline; color:#666;">⚙️ Gérer le personnel</button>
-</div>
-
-<div class="container">
-    <div class="card">
-        <h2>1. Identification</h2>
-        <div class="form-group"><label>Stagiaire</label><select id="stag_select"></select></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="form-group"><label>MS (Convoyeur)</label><select id="conv"></select></div>
-            <div class="form-group"><label>Chauffeur</label><select id="chauf"></select></div>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="form-group"><label>Vecteur</label><select id="vec"><option>ATNUP</option><option>MED</option><option>AMU</option></select></div>
-            <div class="form-group"><label>Jour</label><input type="number" id="jour" value="1"></div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>2. Grille de Compétences</h2>
-        <div id="items_list"></div>
-    </div>
-
-    <div class="card">
-        <h2>3. Observations & Signatures</h2>
-        <div class="form-group">
-            <label>Commentaires détaillés</label>
-            <textarea id="notes" style="height:100px;" placeholder="Écrivez vos observations ici..."></textarea>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
-            <div><label>Signature MS</label><div class="sig-container"><canvas id="sig_ms"></canvas></div></div>
-            <div><label>Signature Stagiaire</label><div class="sig-container"><canvas id="sig_st"></canvas></div></div>
-        </div>
-        <button class="btn-main" id="btn_final" onclick="processAll()">VALIDER & GÉNÉRER PDF</button>
-    </div>
-</div>
-
-<script>
-    // URL DE VOTRE SCRIPT (MISE À JOUR)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdX9XhT4RKKTORcn52d9glgF7Gbo8Dyl7u4PdlqjbAcw4RycFmE7DxiqAXY4xqzm9N/exec";
+function setupSig(id) {
+    const canvas = document.getElementById(id);
+    const ctx = canvas.getContext('2d');
     
-    const items = ["Check-up ambulance", "Inventaire matériel", "Désinfection", "Itinéraire & GPS", "Feuille de route", "Bilan Patient", "Paramètres vitaux", "Oxygénothérapie", "Manutention", "Transfert Médicalisé", "Motivation", "Empathie", "Esprit d'équipe"];
+    // Ajuste la taille réelle du dessin à la taille affichée
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    let drawing = false;
 
-    async function load() {
-        try {
-            const r = await fetch(SCRIPT_URL);
-            const d = await r.json();
-            fill('conv', d.convoyeurs); fill('chauf', d.chauffeurs); fill('stag_select', d.stagiaires);
-        } catch(e) { console.log("Erreur chargement listes"); }
-    }
-
-    function fill(id, l) {
-        const s = document.getElementById(id);
-        s.innerHTML = '<option value="">-- Choisir --</option>';
-        if(l) l.forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`);
-    }
-
-    async function saveStaff() {
-        const t = document.getElementById('adm_type').value;
-        const n = document.getElementById('adm_nom').value;
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "ADD_STAFF", type: t, nom: n }) });
-        alert("Sync terminée"); load();
-    }
-
-    const grid = document.getElementById('items_list');
-    items.forEach(it => {
-        grid.innerHTML += `<div class="item-row"><span style="font-size:13px;">${it}</span><div class="btns">
-            <button class="btn-opt" onclick="sel(this)">+</button>
-            <button class="btn-opt" onclick="sel(this)">++</button>
-            <button class="btn-opt" onclick="sel(this)">+++</button>
-            <button class="btn-opt active" onclick="sel(this)">N/E</button>
-        </div></div>`;
-    });
-
-    function sel(btn) {
-        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-
-    function setupSig(id) {
-        const canvas = document.getElementById(id); const ctx = canvas.getContext('2d');
-        canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
-        let drawing = false;
-        const getP = e => { 
-            const r = canvas.getBoundingClientRect(); 
-            const cx = e.touches ? e.touches[0].clientX : e.clientX; 
-            const cy = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: cx - r.left, y: cy - r.top };
+    const getP = e => {
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches ? e.touches[0] : e;
+        return {
+            x: touch.clientX - rect.left,
+            y: touch.clientY - rect.top
         };
-        const start = e => { drawing=true; ctx.beginPath(); const p=getP(e); ctx.moveTo(p.x, p.y); e.preventDefault(); };
-        const move = e => { if(drawing){ const p=getP(e); ctx.lineTo(p.x, p.y); ctx.lineWidth=2; ctx.stroke(); } e.preventDefault(); };
-        canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', move, {passive:false});
-        canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move);
-        window.addEventListener('mouseup', () => drawing=false); window.addEventListener('touchend', () => drawing=false);
-    }
+    };
 
-    async function processAll() {
-        const btn = document.getElementById('btn_final');
-        const stag = document.getElementById('stag_select').value;
-        const obsValue = document.getElementById('notes').value;
-        if(!stag) return alert("Sélectionnez un stagiaire");
-        
-        btn.innerText = "GÉNÉRATION..."; btn.disabled = true;
+    const start = e => {
+        drawing = true;
+        ctx.beginPath();
+        const p = getP(e);
+        ctx.moveTo(p.x, p.y);
+        if (e.cancelable) e.preventDefault();
+    };
 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+    const move = e => {
+        if (!drawing) return;
+        const p = getP(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.stroke();
+        if (e.cancelable) e.preventDefault();
+    };
 
-        // PDF Header
-        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255); doc.setFontSize(16); doc.text("RAPPORT D'ÉVALUATION ATNUP", 105, 25, {align:'center'});
+    const stop = () => { drawing = false; };
 
-        // Data
-        doc.setTextColor(0); doc.setFontSize(10);
-        doc.text(`Stagiaire : ${stag}`, 20, 50);
-        doc.text(`Équipe : ${document.getElementById('conv').value} / ${document.getElementById('chauf').value}`, 20, 57);
-        doc.text(`Date : ${new Date().toLocaleDateString()}`, 150, 50);
+    // Événements Tactiles (Mobile)
+    canvas.addEventListener('touchstart', start, { passive: false });
+    canvas.addEventListener('touchmove', move, { passive: false });
+    canvas.addEventListener('touchend', stop);
 
-        // Grille
-        let y = 75;
-        doc.setFont("helvetica", "bold"); doc.text("COMPÉTENCES", 20, 70);
-        document.querySelectorAll('.item-row').forEach(row => {
-            const label = row.querySelector('span').innerText;
-            const val = row.querySelector('.btn-opt.active').innerText;
-            doc.setFont("helvetica", "normal"); doc.text(label, 25, y);
-            doc.setFont("helvetica", "bold"); doc.text(val, 180, y, {align:'right'});
-            y += 8;
-        });
-
-        // Observations
-        doc.setFont("helvetica", "bold"); doc.text("OBSERVATIONS", 20, y + 10);
-        doc.setFont("helvetica", "normal");
-        const lines = doc.splitTextToSize(obsValue || "Néant", 170);
-        doc.text(lines, 20, y + 18);
-
-        // Signatures
-        const sigY = 250;
-        doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 20, sigY, 50, 20);
-        doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 130, sigY, 50, 20);
-
-        doc.save(`Eval_${stag}.pdf`);
-        
-        // Envoi vers Sheets
-        await fetch(SCRIPT_URL, { 
-            method: 'POST', 
-            mode: 'no-cors', 
-            body: JSON.stringify({
-                stagiaire: stag,
-                convoyeur: document.getElementById('conv').value,
-                chauffeur: document.getElementById('chauf').value,
-                notes: obsValue // <--- CECI ENVOIE LES COMMENTAIRES
-            })
-        });
-
-        alert("Validé et envoyé !");
-        btn.innerText = "VALIDER & GÉNÉRER PDF"; btn.disabled = false;
-    }
-
-    window.onload = () => { setupSig('sig_ms'); setupSig('sig_st'); load(); };
-</script>
-</body>
-</html> 
+    // Événements Souris (PC)
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', stop);
+}
