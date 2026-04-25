@@ -3,53 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CRB - Évaluation Candidat</title>
+    <title>CRB - Évaluation</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --crb: #ED1B2E; --dark: #1a1a1a; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 500px; padding-bottom: 30px; }
-        .header { text-align: center; margin-bottom: 15px; background: white; padding: 15px; border-radius: 15px; position: relative; border-bottom: 4px solid var(--crb); }
-        .header img { height: 45px; }
-        .settings-btn { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; text-decoration: none; color: #666; }
-        .score-box { background: var(--crb); color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; font-size: 26px; font-weight: 900; box-shadow: 0 4px 10px rgba(237, 27, 46, 0.3); }
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        h2 { font-size: 14px; color: var(--crb); text-transform: uppercase; margin-bottom: 15px; border-left: 4px solid var(--crb); padding-left: 10px; }
-        label { font-size: 11px; font-weight: 800; color: #555; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 12px; font-size: 14px; box-sizing: border-box; }
-        .item-row { padding: 15px 0; border-bottom: 1px solid #eee; }
-        .item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .item-label { font-size: 16px; font-weight: 800; color: var(--dark); }
-        .btn-info { background: #eee; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold; cursor: pointer; color: #666; }
-        .btns-eval { display: flex; gap: 5px; }
-        .btn-val { flex: 1; padding: 12px 2px; border: 1px solid #ddd; background: #fff; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer; }
-        .btn-val.active { background: var(--dark); color: white; border-color: var(--dark); }
-        .btn-val.active[data-pts="0"] { background: #999; }
-        .sig-box { border: 2px dashed #ccc; height: 120px; background: #fff; border-radius: 10px; touch-action: none; }
-        .btn-submit { width: 100%; background: var(--crb); color: white; border: none; padding: 20px; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(237, 27, 46, 0.4); }
-        .footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; line-height: 1.6; }
-        .footer a { color: var(--crb); text-decoration: none; font-weight: bold; }
-        #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); margin: 0; padding: 10px; }
+        
+        .app-container { width: 100%; max-width: 500px; margin: auto; }
+        
+        /* HEADER ROUGE CRB */
+        .header-top { background: var(--crb); color: white; padding: 20px 15px; border-radius: 15px 15px 0 0; text-align: center; }
+        .header-top h1 { margin: 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
+        .header-top p { margin: 5px 0 0; font-size: 14px; opacity: 0.9; }
+
+        .header-logo { background: white; padding: 15px; text-align: center; border-radius: 0 0 15px 15px; margin-bottom: 15px; position: relative; }
+        .header-logo img { height: 40px; }
+        .settings-btn { position: absolute; top: 10px; right: 15px; font-size: 20px; text-decoration: none; }
+
+        /* SCORE */
+        .score-box { background: var(--dark); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 15px; border: 3px solid var(--crb); }
+        .score-val { font-size: 32px; font-weight: 900; color: var(--crb); }
+
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h2 { font-size: 14px; color: var(--crb); border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase; }
+
+        label { font-size: 11px; font-weight: bold; color: #666; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 12px; font-size: 16px; background: #fff; }
+
+        /* ITEMS COULEURS */
+        .item-row { background: #f9f9f9; padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid var(--crb); }
+        .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .item-label { font-size: 15px; font-weight: bold; color: var(--dark); }
+        
+        .btns-eval { display: flex; gap: 4px; }
+        .btn-val { flex: 1; padding: 12px 2px; border: 1px solid #ddd; background: white; border-radius: 8px; font-size: 10px; font-weight: 800; }
+        
+        /* Couleurs des notes */
+        .btn-val.active[data-pts="1"] { background: #ffcccc; border-color: red; color: red; }
+        .btn-val.active[data-pts="2"] { background: #fff3cd; border-color: #ffc107; color: #856404; }
+        .btn-val.active[data-pts="3"] { background: #d4edda; border-color: #28a745; color: #155724; }
+        .btn-val.active[data-pts="4"] { background: #cce5ff; border-color: #007bff; color: #004085; }
+        .btn-val.active[data-pts="0"] { background: #666; border-color: #666; color: white; }
+
+        /* SIGNATURES IPHONE FIX */
+        .sig-container { border: 2px dashed #ccc; border-radius: 10px; height: 150px; background: #fff; position: relative; overflow: hidden; touch-action: none; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+
+        .btn-submit { width: 100%; background: var(--crb); color: white; border: none; padding: 20px; border-radius: 15px; font-size: 18px; font-weight: bold; margin-top: 10px; }
+        
+        .footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; padding-bottom: 20px; }
+        #loading-overlay { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
     </style>
 </head>
 <body>
 
 <div id="loading-overlay">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png" height="60">
-    <p style="font-weight:bold; color:var(--crb); margin-top:20px;">Chargement sécurisé...</p>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png" height="50">
+    <p>Connexion sécurisée...</p>
 </div>
 
 <div class="app-container">
-    <div class="header">
-        <a href="javascript:void(0)" onclick="alert('Coordination : Laurent JASPARD\nTél: 0471/29.07.15')" class="settings-btn">⚙️</a>
+    <div class="header-top">
+        <h1>Croix-Rouge de Belgique</h1>
+        <p>Évaluation journalière des candidats</p>
+    </div>
+    <div class="header-logo">
+        <a href="javascript:void(0)" onclick="alert('Laurent JASPARD\n0471/29.07.15')" class="settings-btn">⚙️</a>
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Croix-Rouge_de_Belgique_Logo.svg/1200px-Croix-Rouge_de_Belgique_Logo.svg.png">
     </div>
 
-    <div id="live_score" class="score-box">SCORE : NE / 4</div>
+    <div class="score-box">
+        <label style="color:white">Note moyenne</label>
+        <div id="live_score" class="score-val">NE / 4</div>
+    </div>
 
     <div class="card">
-        <h2>Informations Mission</h2>
+        <h2>Données de mission</h2>
         <label>Stagiaire</label>
         <select id="stag_select" onchange="checkForm()"></select>
         
@@ -62,11 +93,11 @@
         </select>
 
         <div style="display:flex; gap:10px;">
-            <div style="flex:1;"><label>Type de Stage</label><select id="type_stage"><option value="AMU">AMU</option><option value="ATNUP">ATNUP</option></select></div>
-            <div style="flex:1;"><label>Numéro du Jour</label><input type="number" id="jour_no" value="1"></div>
+            <div style="flex:1;"><label>Type</label><select id="type_stage"><option value="AMU">AMU</option><option value="ATNUP">ATNUP</option></select></div>
+            <div style="flex:1;"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
         </div>
 
-        <label>Évaluateur (Convoyeur MS)</label>
+        <label>Évaluateur (Convoyeur)</label>
         <select id="ms_select" onchange="checkForm()"></select>
         
         <label>Chauffeur</label>
@@ -74,63 +105,64 @@
     </div>
 
     <div class="card">
-        <h2>Compétences du jour</h2>
+        <h2>Compétences</h2>
         <div id="grid_eval"></div>
     </div>
 
     <div class="card">
-        <h2>Validation finale</h2>
-        <label>Commentaires / Remarques</label>
-        <textarea id="obs" rows="4" placeholder="Points d'attention..."></textarea>
+        <h2>Commentaires & Signatures</h2>
+        <textarea id="obs" rows="4" placeholder="Observations..."></textarea>
         
         <label>Signature Évaluateur</label>
-        <div class="sig-box"><canvas id="sig_ms"></canvas></div>
-        <br>
-        <label>Signature Stagiaire</label>
-        <div class="sig-box"><canvas id="sig_st"></canvas></div>
-        <br>
-        <button id="btn_send" class="btn-submit" disabled onclick="process()">TRANSMETTRE AU SHEETS</button>
+        <div class="sig-container"><canvas id="sig_ms"></canvas></div>
+        <button onclick="clearSig('sig_ms')" style="font-size:10px; margin-top:5px;">Effacer</button>
+        <br><br>
+        <label>Signature Candidat</label>
+        <div class="sig-container"><canvas id="sig_st"></canvas></div>
+        <button onclick="clearSig('sig_st')" style="font-size:10px; margin-top:5px;">Effacer</button>
+        <br><br>
+        <button id="btn_send" class="btn-submit" disabled onclick="process()">VALIDER & GÉNÉRER PDF</button>
     </div>
 
     <div class="footer">
         © MEDIVALENCE 2026 - Laurent Jaspard<br>
-        Coordination et évaluation des stages : <br>
-        <a href="tel:0471290715">Laurent JASPARD - 0471/29.07.15</a>
+        <a href="tel:0471290715">Contact : 0471/29.07.15</a>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7GPTJk8f8Ozz2ZqQ4fi2dcjJrJt224cuduvSRRhtcAY4TFhvCbch65Z-XOIFCAofr/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7GPTJk8f8Ozz2ZqQ4fi2dcjJrJt224cuduvSRRhtcAY4TFhvCbch65Z-XOIFCAofr/exec"; // <--- REMPLACER ICI
 
     const items = [
-        { n: "Check up véhicule", d: "Niveaux, état carrosserie, propreté cabine." },
-        { n: "Check up matériel", d: "Oxygène, brancard, sacs d'intervention." },
-        { n: "Inventaire complet", d: "Péremptions, consommables." },
-        { n: "Désinfection", d: "Cellule sanitaire, hygiène mains." },
-        { n: "Itinéraire & GPS", d: "Lecture carte, terminal, trajet." },
-        { n: "Administratif", d: "Feuille de route, rapport, mutuelle." },
-        { n: "Relation équipe", d: "Communication, entraide." },
-        { n: "Relation Patient", d: "Rassurance, empathie." },
-        { n: "Bilan primaire", d: "ABCDE, fonctions vitales." },
-        { n: "Bilan secondaire", d: "Anamnèse, examen physique." },
-        { n: "Oxygène", d: "Calcul autonomie, débit, masque." },
-        { n: "Manutention", d: "Ergonomie, brancard, chaise." }
+        {n: "Check up véhicule", h: "Niveaux, carrosserie, propreté."},
+        {n: "Check up matériel", h: "O2, brancard, sacs."},
+        {n: "Inventaire complet", h: "Péremptions, stocks."},
+        {n: "Désinfection", h: "Hygiène cellule et mains."},
+        {n: "Itinéraire & GPS", h: "Lecture carte, terminal."},
+        {n: "Administratif", h: "Feuille de route, rapports."},
+        {n: "Relation équipe", h: "Communication, entraide."},
+        {n: "Relation Patient", h: "Empathie, rassurance."},
+        {n: "Bilan primaire", h: "ABCDE, fonctions vitales."},
+        {n: "Bilan secondaire", h: "Anamnèse, examen physique."},
+        {n: "Oxygène", h: "Débit, autonomie, masque."},
+        {n: "Manutention", h: "Ergonomie, sécurité."}
     ];
 
     async function loadData() {
         try {
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
-            fill(document.getElementById('stag_select'), data.stagiaires);
-            fill(document.getElementById('ms_select'), data.convoyeurs);
-            fill(document.getElementById('chauf_select'), data.chauffeurs);
+            fillDrop('stag_select', data.stagiaires);
+            fillDrop('ms_select', data.convoyeurs);
+            fillDrop('chauf_select', data.chauffeurs);
             document.getElementById('loading-overlay').style.display='none';
-        } catch(e) { alert("Erreur de liaison !"); }
+        } catch(e) { alert("Erreur de chargement des listes."); }
     }
 
-    function fill(sel, list) {
-        sel.innerHTML = '<option value="">-- Sélectionner --</option>';
-        list.forEach(n => { if(n) sel.innerHTML += `<option value="${n}">${n}</option>`; });
+    function fillDrop(id, list) {
+        const s = document.getElementById(id);
+        s.innerHTML = '<option value="">-- Choisir --</option>';
+        list.forEach(n => s.innerHTML += `<option value="${n}">${n}</option>`);
     }
 
     function initGrid() {
@@ -140,7 +172,7 @@
                 <div class="item-row">
                     <div class="item-header">
                         <span class="item-label">${it.n}</span>
-                        <button class="btn-info" onclick="alert('${it.d}')">i</button>
+                        <button class="btn-info" onclick="alert('${it.h}')">?</button>
                     </div>
                     <div class="btns-eval" data-key="${it.n}">
                         <button class="btn-val" data-pts="1" onclick="setVal(this)">SUF</button>
@@ -156,8 +188,7 @@
     function setVal(btn) {
         Array.from(btn.parentElement.children).forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        updateScore();
-        checkForm();
+        updateScore(); checkForm();
     }
 
     function updateScore() {
@@ -166,36 +197,70 @@
             let p=parseInt(b.dataset.pts); if(p>0){ t+=p; c++; }
         });
         const res = c>0 ? (t/c).toFixed(1) : "NE";
-        document.getElementById('live_score').innerText = `SCORE : ${res} / 4`;
+        document.getElementById('live_score').innerText = `${res} / 4`;
         return res;
     }
 
     function checkForm() {
-        const ok = document.getElementById('stag_select').value && 
-                   document.getElementById('ms_select').value && 
-                   document.getElementById('chauf_select').value;
+        const ok = document.getElementById('stag_select').value && document.getElementById('ms_select').value;
         document.getElementById('btn_send').disabled = !ok;
     }
 
+    // SIGNATURES - FIX IPHONE (Prevent scrolling while signing)
     function setupCanvas(id) {
-        const c = document.getElementById(id); const ctx = c.getContext('2d');
-        const r = window.devicePixelRatio || 1;
-        c.width = c.offsetWidth * r; c.height = c.offsetHeight * r;
-        ctx.scale(r, r); ctx.lineWidth = 2; ctx.lineJoin = 'round';
-        let d = false;
-        const p = e => { const b = c.getBoundingClientRect(); return { x: (e.touches ? e.touches[0].clientX : e.clientX) - b.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - b.top }; };
-        c.onmousedown = e => { d=true; ctx.beginPath(); const v=p(e); ctx.moveTo(v.x,v.y); };
-        c.onmousemove = e => { if(!d) return; const v=p(e); ctx.lineTo(v.x,v.y); ctx.stroke(); };
-        window.onmouseup = () => d=false;
-        c.ontouchstart = e => { d=true; ctx.beginPath(); const v=p(e); ctx.moveTo(v.x,v.y); e.preventDefault(); };
-        c.ontouchmove = e => { if(!d) return; const v=p(e); ctx.lineTo(v.x,v.y); ctx.stroke(); e.preventDefault(); };
+        const canvas = document.getElementById(id);
+        const ctx = canvas.getContext('2d');
+        const ratio = window.devicePixelRatio || 1;
+        
+        function resize() {
+            canvas.width = canvas.parentElement.offsetWidth * ratio;
+            canvas.height = canvas.parentElement.offsetHeight * ratio;
+            ctx.scale(ratio, ratio);
+            ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.strokeStyle = "#000";
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let drawing = false;
+        const getPos = e => {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        };
+
+        const start = e => { 
+            drawing = true; ctx.beginPath(); 
+            const p = getPos(e); ctx.moveTo(p.x, p.y); 
+            if(e.touches) e.preventDefault(); 
+        };
+        const move = e => { 
+            if(!drawing) return; 
+            const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); 
+            if(e.touches) e.preventDefault(); 
+        };
+        const stop = () => drawing = false;
+
+        canvas.addEventListener('mousedown', start);
+        canvas.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', stop);
+        canvas.addEventListener('touchstart', start, {passive: false});
+        canvas.addEventListener('touchmove', move, {passive: false});
+        canvas.addEventListener('touchend', stop);
+    }
+
+    function clearSig(id) {
+        const c = document.getElementById(id);
+        c.getContext('2d').clearRect(0,0,c.width,c.height);
     }
 
     async function process() {
-        const btn = document.getElementById('btn_send'); btn.innerText = "Envoi en cours..."; btn.disabled = true;
-        const notes = {}; 
+        const btn = document.getElementById('btn_send');
+        btn.innerText = "Enregistrement..."; btn.disabled = true;
+
+        const notes = {};
         document.querySelectorAll('.btns-eval').forEach(el => notes[el.dataset.key] = el.querySelector('.active').innerText);
-        
+
         const data = {
             stag: document.getElementById('stag_select').value,
             evalNom: document.getElementById('ms_select').value,
@@ -208,30 +273,41 @@
             notes: notes
         };
 
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        // 1. Envoi au Sheets
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        } catch(e) {}
+
+        // 2. PDF avec correctif iPhone (Ouvrir dans un nouvel onglet)
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
         
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.setFillColor(237, 27, 46); doc.rect(0,0,210,30,'F');
-        doc.setTextColor(255); doc.setFontSize(18); doc.text("EVALUATION STAGIAIRE - CROIX-ROUGE", 105, 15, {align:'center'});
-        
-        doc.setTextColor(0); doc.setFontSize(11);
-        doc.text(`Candidat: ${data.stag}`, 15, 40);
-        doc.text(`Ecole: ${data.qualite}`, 15, 47);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 40);
-        doc.setFontSize(14); doc.text(`SCORE MOYEN: ${data.score}`, 150, 55);
+        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255); doc.setFontSize(18); doc.text("CROIX-ROUGE DE BELGIQUE", 105, 20, {align:'center'});
+        doc.setFontSize(12); doc.text("ÉVALUATION JOURNALIÈRE", 105, 30, {align:'center'});
+
+        doc.setTextColor(0); doc.setFontSize(10);
+        doc.text(`Candidat: ${data.stag}`, 15, 50);
+        doc.text(`Évaluateur: ${data.evalNom}`, 15, 57);
+        doc.text(`Score: ${data.score}`, 150, 50);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 57);
 
         const rows = Object.entries(notes);
-        doc.autoTable({ startY: 65, head: [['Compétence', 'Note']], body: rows, headStyles:{fillColor:[237, 27, 46]} });
+        doc.autoTable({ startY: 65, head: [['Critère', 'Note']], body: rows, headStyles:{fillColor:[237, 27, 46]} });
         
         const finalY = doc.lastAutoTable.finalY + 10;
         doc.text("Observations:", 15, finalY);
         doc.setFontSize(9); doc.text(doc.splitTextToSize(data.obs, 180), 15, finalY + 7);
         
-        doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 20, finalY + 30, 50, 20);
-        doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 140, finalY + 30, 50, 20);
+        try {
+            doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 15, finalY + 30, 60, 25);
+            doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 130, finalY + 30, 60, 25);
+        } catch(e) {}
+
+        // Sauvegarde compatible iPhone
+        doc.save(`Evaluation_${data.stag}.pdf`);
         
-        doc.save(`Evaluation_${data.stag}_Jour_${data.jour}.pdf`);
-        alert("Evaluation enregistrée !");
+        alert("Enregistré ! Le PDF a été téléchargé.");
         location.reload();
     }
 
