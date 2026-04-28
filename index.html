@@ -1,344 +1,418 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CRB - Évaluation</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <style>
-        :root { --crb: #ED1B2E; --bleu: #0056b3; --vert: #28a745; --bg: #f0f4f8; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            font-family: -apple-system, sans-serif; 
-            background: #d1d9e0; 
-            margin: 0; 
-            display: flex; 
-            justify-content: center;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CRB Expert v6.8 PDF Dynamique</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{--crb:#ED1B2E;--dark:#2c3e50;--bg:#f4f7f6;--ins:#ED1B2E;--sat:#DAA520;--bien:#0052CC;--tb:#228B22}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);margin:0;padding-bottom:80px;color:#2d3748}
+.header{background:var(--crb);color:white;text-align:center;padding:15px;box-shadow:0 3px 10px rgba(0,0,0,.12)}
+.header h1{margin:0;font-size:18px;font-weight:900;text-transform:uppercase}.header h2{margin:5px 0 0;font-size:14px;font-weight:400}
+.header .doc-title{margin-top:10px;font-size:12px;font-weight:800;background:rgba(0,0,0,.12);padding:5px;border-radius:4px;text-transform:uppercase}
+.container{max-width:650px;margin:auto;padding:10px}.card{background:white;padding:18px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.08);margin-bottom:15px}
+.grid-id{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:span 2}.coord-box{grid-column:span 2;background:#f8f9fa;border:1px solid #e2e8f0;padding:10px;border-radius:8px;text-align:center;font-size:11px;color:#4a5568;margin-bottom:10px}
+label{display:block;font-size:10px;font-weight:800;color:#4a5568;text-transform:uppercase;margin-top:10px}
+select,input,textarea{width:100%;padding:11px;margin-top:4px;border:1px solid #cbd5e0;border-radius:8px;font-size:14px;background:white}textarea{resize:vertical}
+h3{color:var(--crb);border-left:4px solid var(--crb);padding:5px 10px;font-size:13px;margin:20px 0 10px;text-transform:uppercase;background:#fff5f5}
+.item-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #edf2f7;gap:8px}.item-label{font-size:12px;flex:1;line-height:1.25}
+.btn-toggle{width:112px;min-height:38px;padding:9px 5px;border:none;border-radius:6px;font-weight:bold;font-size:8px;cursor:pointer;text-transform:uppercase;white-space:normal;line-height:1.1}
+.ne{background:#edf2f7;color:#718096}.acquis{background:#48bb78;color:white}.non{background:#f56565;color:white}
+.score-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:6px}.btn-s{padding:10px 2px;border:1px solid #e2e8f0;background:white;border-radius:6px;font-size:9px;font-weight:bold;cursor:pointer}
+.btn-s[data-m="INS"].active{background:var(--ins);color:white;border-color:var(--ins)}.btn-s[data-m="SUF"].active,.btn-s[data-m="SAT"].active{background:var(--sat);color:white;border-color:var(--sat)}.btn-s[data-m="BIEN"].active{background:var(--bien);color:white;border-color:var(--bien)}.btn-s[data-m="T.B"].active{background:var(--tb);color:white;border-color:var(--tb)}
+.sig-wrap{border:2px dashed #cbd5e0;height:150px;margin-top:8px;border-radius:10px;background:white;overflow:hidden}canvas{width:100%;height:100%;touch-action:none;display:block}
+.btn-main{width:100%;padding:16px;border:none;border-radius:10px;color:white;font-weight:800;margin-top:10px;cursor:pointer;text-transform:uppercase;font-size:14px}
+.nav{position:fixed;bottom:0;width:100%;display:flex;background:white;border-top:1px solid #e2e8f0;height:65px;z-index:1000}.nav button{flex:1;border:none;background:none;font-weight:800;color:#a0aec0;font-size:11px;cursor:pointer}.nav button.active{color:var(--crb);border-top:4px solid var(--crb)}
+.footer-copy{text-align:center;font-size:10px;color:#a0aec0;padding:20px 0;font-weight:bold}.hidden{display:none!important}
+@media(max-width:520px){.grid-id{grid-template-columns:1fr}.full,.coord-box{grid-column:span 1}}
 
-        .app-container { 
-            width: 100%; 
-            max-width: 450px; 
-            background: var(--bg);
-            min-height: 100vh;
-            padding: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        
-        .header-top { 
-            background: var(--crb); 
-            color: white; 
-            padding: 20px 10px; 
-            border-radius: 15px; 
-            text-align: center; 
-            margin-bottom: 10px;
-        }
-        .header-top h1 { margin: 0; font-size: 16px; letter-spacing: 1px; font-weight: 900; }
-        .header-top h2 { margin: 8px 0 0; font-size: 13px; font-weight: 400; text-transform: uppercase; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 8px; }
+.export-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 62, 80, 0.86);
+  color: white;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+.export-box {
+  background: white;
+  color: #2d3748;
+  border-radius: 18px;
+  padding: 24px;
+  max-width: 360px;
+  width: 92%;
+  box-shadow: 0 20px 45px rgba(0,0,0,.25);
+}
+.spinner {
+  width: 54px;
+  height: 54px;
+  border: 6px solid #fed7d7;
+  border-top-color: #ED1B2E;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 14px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.export-title {
+  font-weight: 900;
+  font-size: 16px;
+  color: #ED1B2E;
+  text-transform: uppercase;
+}
+.export-sub {
+  font-size: 13px;
+  margin-top: 8px;
+  line-height: 1.4;
+  color: #4a5568;
+}
 
-        .settings-bar { display: flex; justify-content: flex-end; padding: 0 5px 10px; }
-        .settings-btn { font-size: 24px; border:none; background:none; cursor: pointer; filter: grayscale(1); }
-
-        .score-box { 
-            background: var(--bleu); 
-            color: white; 
-            padding: 15px; 
-            border-radius: 12px; 
-            text-align: center; 
-            margin-bottom: 15px; 
-            box-shadow: 0 4px 10px rgba(0,86,179,0.2);
-        }
-        .score-label { font-size: 10px; text-transform: uppercase; opacity: 0.9; margin-bottom: 5px; display: block; }
-        .score-num { font-size: 32px; font-weight: 900; }
-
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid #e0e6ed; }
-        .card h3 { font-size: 13px; color: var(--bleu); margin: 0 0 12px 0; text-transform: uppercase; display: flex; align-items: center; }
-        .card h3::before { content: "•"; margin-right: 8px; color: var(--crb); font-size: 20px; }
-
-        label { font-size: 10px; font-weight: 700; color: #555; display: block; margin-bottom: 4px; text-transform: uppercase; }
-        select, input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; font-size: 15px; background: #fff; }
-
-        .item-row { 
-            background: #fff; 
-            border: 1px solid #eee; 
-            padding: 10px; 
-            border-radius: 10px; 
-            margin-bottom: 10px; 
-            border-left: 5px solid var(--vert);
-        }
-        .item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .item-label { font-size: 14px; font-weight: 700; color: #333; }
-        
-        .info-bubble {
-            background: #f0f0f0;
-            color: var(--bleu);
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            border: 1px solid #ddd;
-        }
-
-        .btns-eval { display: flex; gap: 4px; }
-        .btn-val { flex: 1; padding: 10px 0; border: 1px solid #ddd; background: #fdfdfd; border-radius: 6px; font-size: 10px; font-weight: 800; color: #777; }
-        .btn-val.active[data-pts="1"] { background: var(--crb) !important; color: white !important; border-color: var(--crb); }
-        .btn-val.active[data-pts="2"] { background: #ffc107 !important; color: #000 !important; border-color: #ffc107; }
-        .btn-val.active[data-pts="3"] { background: #8bc34a !important; color: white !important; border-color: #8bc34a; }
-        .btn-val.active[data-pts="4"] { background: var(--vert) !important; color: white !important; border-color: var(--vert); }
-        .btn-val.active[data-pts="0"] { background: #6c757d !important; color: white !important; border-color: #6c757d; }
-
-        .sig-wrapper { border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; background: #fff; }
-        .sig-pad { height: 130px; width: 100%; position: relative; touch-action: none; }
-        canvas { width: 100%; height: 100%; }
-        .sig-controls { display: flex; justify-content: space-between; padding: 6px; background: #f8f9fa; border-top: 1px solid #eee; }
-        .btn-sig { padding: 6px 12px; font-size: 11px; font-weight: bold; border-radius: 5px; border: 1px solid #ccc; background: white; }
-
-        .btn-submit { width: 100%; background: var(--vert); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 10px rgba(40,167,69,0.2); }
-        .btn-submit:disabled { background: #ccc; box-shadow: none; }
-
-        #loading-overlay { position: fixed; inset:0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--crb); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+</style>
 </head>
 <body>
+<div class="header"><h1>Croix-Rouge de Belgique</h1><h2>Bruxelles-Capitale</h2><div class="doc-title">Formulaire d'évaluation du stagiaire</div></div>
+<div class="container">
+<section id="p1" class="page">
+<div class="card"><div class="coord-box"><b>Coordination des stages :</b> Laurent Jaspard - 0471/29.07.15</div><div class="grid-id">
+<div class="full"><label>Date de l'évaluation</label><input type="date" id="date"></div>
+<div class="full"><label>Nom du stagiaire</label><select id="cand" onchange="syncCandidateFields()"></select><input id="cand_other" class="hidden" type="text" placeholder="Nom du stagiaire"></div>
+<div class="full"><label>Évaluateur / Formateur</label><select id="eval" onchange="syncEvaluatorFields()"></select><input id="eval_other" class="hidden" type="text" placeholder="Nom du formateur"></div>
+<div class="full"><label>École / Institution</label><select id="ecole"><option>CPSI</option><option>ISEI</option><option>PRIGOGINE</option><option>IFAPME</option></select></div>
+<div><label>Type de stage</label><select id="profil"><option>ATNUP</option><option>AMU</option><option>INFIRMIER</option><option>Autre</option></select></div>
+<div><label>Jour N°</label><select id="jour"></select></div>
+<div class="full"><label>Nombre de missions</label><select id="missions"></select></div>
+</div></div>
+<button class="btn-main" style="background:var(--dark)" onclick="go(2)">Critères techniques ➔</button>
+<div class="footer-copy">© Médivalence 2026 - Laurent Jaspard</div>
+</section>
+<section id="p2" class="page" style="display:none"><div class="card" id="tech_ui"></div><button class="btn-main" style="background:var(--dark)" onclick="go(3)">Bilan final ➔</button><div class="footer-copy">© Médivalence 2026 - Laurent Jaspard</div></section>
+<section id="p3" class="page" style="display:none"><div class="card"><div id="bilan_ui"></div><div id="live_score" style="text-align:center;font-size:22px;font-weight:900;color:var(--crb);margin:15px 0;background:#fff5f5;padding:10px;border-radius:10px;border:1px solid #fed7d7">Note : 0.0 / 10</div><label>Observations & remarques <span style="color:#ED1B2E">*</span></label>
+<textarea id="obs" rows="3" required placeholder="Observations obligatoires : points forts, points à améliorer, contexte..."></textarea>
+<button type="button" class="btn-main" style="background:#2c3e50;padding:12px;font-size:12px" onclick="startDictation()">🎙️ Dicter les observations</button>
+<div id="dict_status" style="font-size:11px;color:#718096;margin-top:6px;text-align:center"></div><label id="l_sig1">Signature Formateur</label><div class="sig-wrap"><canvas id="sig1"></canvas></div><label id="l_sig2">Signature Stagiaire</label><div class="sig-wrap"><canvas id="sig2"></canvas></div><button class="btn-main" style="background:#718096" onclick="clearSignatures()">Effacer signatures</button><button id="btn_final" class="btn-main" style="background:var(--crb)" onclick="cloturer()">✅ Clôturer & générer PDF</button><div id="sheet_status" style="font-size:11px;color:#718096;text-align:center;margin-top:8px"></div></div><div class="footer-copy">© Médivalence 2026 - Laurent Jaspard</div></section>
+</div>
 
-<div id="loading-overlay">
+<div id="export_overlay" class="export-overlay">
+  <div class="export-box">
     <div class="spinner"></div>
-    <p style="font-weight: bold; color: #555;">Synchronisation sécurisée...</p>
+    <div class="export-title">Export en cours</div>
+    <div class="export-sub" id="export_overlay_text">
+      Génération du PDF, enregistrement Drive et synchronisation Sheets.<br>
+      Merci de ne pas fermer cette page.
+    </div>
+  </div>
 </div>
 
-<div class="app-container">
-    <div class="header-top">
-        <h1>CROIX-ROUGE DE BELGIQUE</h1>
-        <h2>ÉVALUATION JOURNALIÈRE DU CANDIDAT</h2>
-    </div>
-
-    <div class="settings-bar">
-        <button class="settings-btn" onclick="toggleModal()">⚙️</button>
-    </div>
-
-    <div class="score-box">
-        <span class="score-label">Moyenne Compétences</span>
-        <div id="live_score" class="score-num">NE / 4</div>
-    </div>
-
-    <div class="card">
-        <h3>Identification</h3>
-        <label>Candidat / Stagiaire</label><select id="stag_select" onchange="checkForm()"></select>
-        <label>Évaluateur (Convoyeur)</label><select id="ms_select" onchange="checkForm()"></select>
-        <label>Chauffeur</label><select id="chauf_select" onchange="checkForm()"></select>
-        
-        <div style="display:flex; gap:10px;">
-            <div style="flex:1;"><label>École</label><select id="ecole_select"><option>CPSI</option><option>PRIGOGINE</option><option>IFAPME</option><option>AUTRE</option></select></div>
-            <div style="flex:1;"><label>Jour n°</label><input type="number" id="jour_no" value="1"></div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>Compétences</h3>
-        <div id="grid_eval"></div>
-    </div>
-
-    <div class="card">
-        <h3>Finalisation</h3>
-        <textarea id="obs" rows="3" placeholder="Observations du jour (points forts, points à améliorer)..."></textarea>
-        
-        <label>Signature Évaluateur</label>
-        <div class="sig-wrapper">
-            <div class="sig-pad"><canvas id="sig_ms"></canvas></div>
-            <div class="sig-controls">
-                <button class="btn-sig" id="lock_ms" onclick="toggleLock('sig_ms', this)">DÉVERROUILLER</button>
-                <button class="btn-sig" onclick="clearSig('sig_ms')">Effacer</button>
-            </div>
-        </div>
-
-        <label>Signature Candidat</label>
-        <div class="sig-wrapper">
-            <div class="sig-pad"><canvas id="sig_st"></canvas></div>
-            <div class="sig-controls">
-                <button class="btn-sig" id="lock_st" onclick="toggleLock('sig_st', this)">DÉVERROUILLER</button>
-                <button class="btn-sig" onclick="clearSig('sig_st')">Effacer</button>
-            </div>
-        </div>
-
-        <button id="btn_send" class="btn-submit" disabled onclick="process()">VALIDER & EXTRAIRE PDF</button>
-    </div>
-</div>
-
+<nav class="nav"><button onclick="go(1)" id="n1" class="active">IDENTITÉ</button><button onclick="go(2)" id="n2">TECHNIQUE</button><button onclick="go(3)" id="n3">BILAN</button></nav>
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOUEXQpzJTrRk_XZmrzVaRDcKYvLxQLK1rXQGURt-qBPb743vsbVenumwjmzdcT1B7/exec";
+const API="https://script.google.com/macros/s/AKfycbw1Zd0yFr6h_XLv4QM2QsJ6B7quDLZyewUtCVZ2uloHkxHpONY_J8L28kY6qDCi3ZEP/exec";
+const structureTech={
+"Ambulance":["Check up mécanique du véhicule","Check up du matériel embarqué","Check up approfondi et inventaire complet","Contrôle de fonctionnement","Désinfection de l'ambulance","Respect et entretien du matériel"],
+"Itinéraire":["Utilisation du G.P.S.","Réalisation d'un itinéraire"],
+"Documents — rédaction correcte":["Feuille de route","Rapport d'intervention","Feuille de course","Rapport de transfert spécifique","Procédure d'ouverture de scellé"],
+"Relation et communication":["Contact adapté avec l'équipe ambulancière","Contact adapté avec l’équipe médicale","Prise de renseignement et dossier","Contact avec le patient et famille","Dialogue avec le patient"],
+"Prise en charge":["Approche du patient et prise de renseignements","Evaluation du bilan primaire","Bilan secondaire et anamnèse complète si nécessaire","Prise SpO2 / Pouls - utilisation du Pulse-oxymètre","Administration continue de l’oxygène dans le cadre d’un traitement par oxygène du patient","Prise d'une tension artérielle","Manipulation du patient selon techniques connues","Rapport pertinent au dispatching si nécessaire","Rapport complet et détaillé au service accueillant","Evaluation du risque et demande de renfort"],
+"ATNUP Premiers soins — Domicile / Maison de repos":[
+"Approche du patient et prise de renseignements",
+"Evaluation et bilan primaire",
+"Bilan secondaire et anamnèse complète",
+"Prise SpO2 / Pouls - utilisation du Pulse-oxymètre",
+"Prise d'une tension artérielle",
+"Prise d'une glycémie",
+"Prise d'une fréquence respiratoire",
+"Evaluation d'un score de Glasgow",
+"Calme, maîtrise et psychologie",
+"Manipulation du patient selon techniques connues",
+"Mise en confiance de la famille du patient",
+"Rapport correct à la régulation ou centrale/dispatching",
+"Rapport complet et détaillé au service des urgences",
+"Evaluation du risque et demande de renfort",
+"Appel au SMUR"
+],
+"Transfert médicalisé — Stage infirmier":["Contact avec l'équipe médicale","Prise du matériel nécessaire","Manipulation du patient","Utilisation du matériel médical","Prise des paramètres demandés","Assure les gestes demandés par le médecin"]};
+const bilanItems=[
+"Check-up ambulance",
+"Inventaire matériel",
+"Désinfection",
+"Itinéraire & GPS",
+"Feuille de route",
+"Bilan patient",
+"Paramètres vitaux",
+"Oxygénothérapie",
+"Manutention",
+"Transfert médicalisé",
+"Motivation",
+"Empathie"
+];
 
-    const items = [
-        {id: "Vhc", n: "Check up véhicule", d: "Vérification des niveaux, pneus, carrosserie, propreté et plein de carburant."},
-        {id: "Mat", n: "Check up matériel", d: "Test du monitoring, O2, aspiration, matériel de réanimation et bon état du brancard."},
-        {id: "Inv", n: "Inventaire complet", d: "Remplacement du matériel utilisé et vérification des dates de péremption des médicaments/consommables."},
-        {id: "Hyg", n: "Désinfection / Hygiène", d: "Respect des protocoles de nettoyage de la cellule, lavage des mains et tenue propre."},
-        {id: "Nav", n: "Itinéraire & GPS", d: "Utilisation efficace du terminal, anticipation du trajet et conduite sécuritaire."},
-        {id: "Adm", n: "Administratif", d: "Remplissage rigoureux de la feuille de route et du rapport d'intervention (SIAMU)."},
-        {id: "Equ", n: "Relation équipe", d: "Communication claire avec le binôme, esprit d'initiative et entraide dans les tâches."},
-        {id: "Pat", n: "Relation Patient", d: "Qualité de l'accueil, rassurance, discrétion et respect du secret professionnel."},
-        {id: "Bi1", n: "Bilan primaire", d: "Mise en sécurité, évaluation de la conscience, respiration, circulation (ABCDE)."},
-        {id: "Bi2", n: "Bilan secondaire", d: "Anamnèse complète (SAMPLE), recherche de douleurs et examen physique détaillé."},
-        {id: "Oxy", n: "Oxygénothérapie", d: "Connaissance des débits, choix du masque et surveillance de la saturation (SpO2)."},
-        {id: "Man", n: "Manutention", d: "Utilisation correcte du matériel de portage et respect des règles d'ergonomie (dos)."}
-    ];
+const bilanHelp={
+"Check-up ambulance":"Est capable de remarquer les anomalies et d’y remédier.",
+"Inventaire matériel":"Maîtrise du VESUV.",
+"Désinfection":"Comprend le pourquoi de la désinfection et en maîtrise les gestes.",
+"Itinéraire & GPS":"Est capable de guider son chauffeur.",
+"Feuille de route":"Complète la feuille de route et utilise la tablette.",
+"Bilan patient":"Fait l’anamnèse succincte pour savoir pourquoi le patient est transporté.",
+"Paramètres vitaux":"Est capable de prendre les paramètres vitaux dans les règles de l’art.",
+"Oxygénothérapie":"Comprend la raison et effectue les gestes correctement.",
+"Manutention":"Maîtrise de la manipulation du brancard et/ou de la chaise.",
+"Transfert médicalisé":"Assiste le médecin en fonction des demandes en restant dans son cadre.",
+"Motivation":"S’implique dans le stage et montre une attitude proactive.",
+"Empathie":"Adopte une attitude respectueuse, rassurante et adaptée au patient."
+};
+const sigData={sig1:"",sig2:""};
+let exportInProgress=false;
+window.onload=async()=>{document.getElementById('date').valueAsDate=new Date();fillNumbers('jour',1,20);fillNumbers('missions',0,20);await loadLists();buildTech();buildBilan();setupSig("sig1");setupSig("sig2");};
+function fillNumbers(id,min,max){const s=document.getElementById(id);s.innerHTML="";for(let i=min;i<=max;i++)s.options[s.options.length]=new Option(i,i)}
+async function loadLists(){const cand=document.getElementById("cand"),evals=document.getElementById("eval");cand.innerHTML='<option value="">Chargement...</option>';evals.innerHTML='<option value="">Chargement...</option>';try{const r=await fetch(API+"?action=config");const d=await r.json();if(!d.ok)throw new Error(d.error||"Erreur configuration Sheets");cand.innerHTML='<option value="">Choisir...</option>';(d.stagiaires||[]).forEach(s=>{const opt=new Option(s.nom,s.nom);opt.dataset.ecole=s.ecole||"";opt.dataset.profil=s.typeStage||"";cand.add(opt)});cand.add(new Option("Autre stagiaire à préciser","__AUTRE__"));evals.innerHTML='<option value="">Choisir...</option>';(d.formateurs||[]).forEach(f=>evals.add(new Option(f.nom,f.nom)));evals.add(new Option("Autre formateur à préciser","__AUTRE__"))}catch(e){console.warn(e);cand.innerHTML='<option value="">Choisir...</option><option value="__AUTRE__">Autre stagiaire à préciser</option>';evals.innerHTML='<option value="">Choisir...</option><option value="__AUTRE__">Autre formateur à préciser</option>';alert("Connexion Sheets impossible pour les listes. Mode manuel activé.")}}
+function syncCandidateFields(){const select=document.getElementById("cand"),other=document.getElementById("cand_other"),opt=select.options[select.selectedIndex];if(select.value==="__AUTRE__"){other.classList.remove("hidden");other.value="";other.focus()}else{other.classList.add("hidden");other.value=select.value||"";if(opt&&opt.dataset.ecole)document.getElementById("ecole").value=opt.dataset.ecole;if(opt&&opt.dataset.profil){const val=opt.dataset.profil,profil=document.getElementById("profil");profil.value=Array.from(profil.options).some(o=>o.value===val)?val:"Autre"}}}
+function syncEvaluatorFields(){const select=document.getElementById("eval"),other=document.getElementById("eval_other");if(select.value==="__AUTRE__"){other.classList.remove("hidden");other.value="";other.focus()}else{other.classList.add("hidden");other.value=select.value||""}}
+function getCand(){return document.getElementById("cand").value==="__AUTRE__"?document.getElementById("cand_other").value.trim():document.getElementById("cand").value}
+function getEval(){return document.getElementById("eval").value==="__AUTRE__"?document.getElementById("eval_other").value.trim():document.getElementById("eval").value}
+function escapeHtml(str){return String(str).replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[s]))}
+function buildTech(){let h="<div style=\"background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:8px;font-size:11px;color:#4a5568;margin-bottom:10px;text-align:center\">ℹ️ Chaque clic sur un bouton change l’état : Non évalué → Acquis → Non acquis → Non évalué.</div>";for(let c in structureTech){h+=`<h3>${c}</h3>`;structureTech[c].forEach(i=>{h+=`<div class="item-row" data-cat="${escapeHtml(c)}" data-item="${escapeHtml(i)}"><div class="item-label">${escapeHtml(i)}</div><button class="btn-toggle ne" data-status="Non évalué" title="Chaque clic change l’état : Non évalué → Acquis → Non acquis → Non évalué" onclick="tgl(this)">NON ÉVALUÉ</button></div>`})}document.getElementById('tech_ui').innerHTML=h}
+function buildBilan(){document.getElementById('bilan_ui').innerHTML=bilanItems.map(i=>`<label>${escapeHtml(i)}</label><div style="background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:7px 9px;margin-top:5px;font-size:11px;color:#4a5568;line-height:1.35">💬 ${escapeHtml(bilanHelp[i]||"")}</div><div class="score-grid" data-crit="${escapeHtml(i)}">${[["INS",2],["SUF",5],["SAT",5],["BIEN",8],["T.B",10]].map(([m,v])=>`<button class="btn-s" data-m="${m}" data-score="${v}" onclick="setS(this)">${m}</button>`).join('')}</div>`).join('')}
+function tgl(b){const current=b.dataset.status||"Non évalué";if(current==="Non évalué"){b.dataset.status="Acquis";b.innerText="ACQUIS";b.className="btn-toggle acquis"}else if(current==="Acquis"){b.dataset.status="Non acquis";b.innerText="NON ACQUIS";b.className="btn-toggle non"}else{b.dataset.status="Non évalué";b.innerText="NON ÉVALUÉ";b.className="btn-toggle ne"}}
+function setS(b){Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active'));b.classList.add('active');updateScore()}
+function updateScore(){let t=0,c=0;document.querySelectorAll('.btn-s.active').forEach(a=>{t+=parseInt(a.dataset.score||"0",10);c++});document.getElementById('live_score').innerText="Note : "+(c?(t/c).toFixed(1):"0.0")+" / 10"}
+function go(p){document.querySelectorAll('.page').forEach(x=>x.style.display='none');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));document.getElementById('p'+p).style.display='block';document.getElementById('n'+p).classList.add('active');if(p===3){document.getElementById('l_sig1').innerText="Sign. Formateur : "+(getEval()||"");document.getElementById('l_sig2').innerText="Sign. Stagiaire : "+(getCand()||"");setTimeout(()=>{resizeCanvas("sig1");resizeCanvas("sig2")},80);setTimeout(()=>{resizeCanvas("sig1");resizeCanvas("sig2")},250)}window.scrollTo(0,0)}
+function resizeCanvas(id){const c=document.getElementById(id),r=c.parentElement.getBoundingClientRect();if(!r.width||!r.height)return;const old=sigData[id]||(c.width>10?c.toDataURL("image/png"):""),ratio=window.devicePixelRatio||1;c.width=Math.round(r.width*ratio);c.height=Math.round(r.height*ratio);c.style.width=r.width+"px";c.style.height=r.height+"px";const ctx=c.getContext("2d");ctx.setTransform(ratio,0,0,ratio,0,0);ctx.lineWidth=2;ctx.strokeStyle="#000";ctx.lineCap="round";ctx.lineJoin="round";if(old&&old.length>300){const img=new Image();img.onload=()=>{ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(img,0,0,c.width,c.height);ctx.setTransform(ratio,0,0,ratio,0,0)};img.src=old}}
+function setupSig(id){const c=document.getElementById(id),ctx=c.getContext("2d");let draw=false;const pos=e=>{const r=c.getBoundingClientRect(),x=e.touches?e.touches[0].clientX:e.clientX,y=e.touches?e.touches[0].clientY:e.clientY;return{x:x-r.left,y:y-r.top}};const start=e=>{resizeCanvas(id);draw=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);if(e.touches)e.preventDefault()};const move=e=>{if(!draw)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();if(e.touches)e.preventDefault()};const end=e=>{if(!draw)return;draw=false;sigData[id]=c.toDataURL("image/png");if(e&&e.touches)e.preventDefault()};c.addEventListener("mousedown",start);c.addEventListener("mousemove",move);c.addEventListener("touchstart",start,{passive:false});c.addEventListener("touchmove",move,{passive:false});window.addEventListener("mouseup",end);window.addEventListener("touchend",end,{passive:false})}
+function clearSignatures(){["sig1","sig2"].forEach(id=>{const c=document.getElementById(id),ctx=c.getContext("2d");ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);ctx.restore();sigData[id]=""})}
+function getTechData(){return Array.from(document.querySelectorAll('#tech_ui .item-row')).map(r=>({categorie:r.dataset.cat,item:r.dataset.item,statut:r.querySelector('.btn-toggle').dataset.status||"Non évalué"}))}
+function getBilanData(){return Array.from(document.querySelectorAll('.score-grid')).map(g=>{const active=g.querySelector('.btn-s.active');return{critere:g.dataset.crit,score:active?active.dataset.score:"",libelle:active?active.dataset.m:""}})}
+function groupByStatus(){const g={"Acquis":{},"Non acquis":{},"Non évalué":{}};getTechData().forEach(x=>{if(!g[x.statut])g[x.statut]={};if(!g[x.statut][x.categorie])g[x.statut][x.categorie]=[];g[x.statut][x.categorie].push(x.item)});return g}
+function buildColumnLines(grouped,status){const lines=[];Object.keys(structureTech).forEach(cat=>{const arr=grouped[status]?.[cat]||[];if(arr.length){lines.push({text:cat,header:true});arr.forEach(item=>lines.push({text:"• "+item,header:false}))}});return lines.length?lines:[{text:"—",header:false}]}
+function estimateLineCount(doc, lines, w) {
+  let total = 1;
+  lines.forEach((line, idx) => {
+    if (line.header) {
+      if (idx !== 0) total += 1;
+      total += doc.splitTextToSize(line.text, w - 7).length + 0.5;
+    } else {
+      total += doc.splitTextToSize(line.text, w - 8).length + 0.25;
+    }
+  });
+  return total;
+}
 
-    let activePads = { sig_ms: false, sig_st: false };
+function paginateColumnLines(doc, lines, w, maxHeight) {
+  const pages = [];
+  let current = [];
+  let currentUnits = 0;
+  const maxUnits = Math.max(14, Math.floor(maxHeight / 3.3));
 
-    window.onload = () => {
-        initGrid();
-        setupCanvas('sig_ms');
-        setupCanvas('sig_st');
-        loadData();
-    };
+  lines.forEach((line, idx) => {
+    let units = 0;
+    if (line.header) {
+      units = doc.splitTextToSize(line.text, w - 7).length + 1.6;
+      if (current.length && currentUnits + units > maxUnits) {
+        pages.push(current);
+        current = [];
+        currentUnits = 0;
+      }
+      current.push(line);
+      currentUnits += units;
+    } else {
+      units = doc.splitTextToSize(line.text, w - 8).length + 0.55;
+      if (current.length && currentUnits + units > maxUnits) {
+        pages.push(current);
+        current = [];
+        currentUnits = 0;
+      }
+      current.push(line);
+      currentUnits += units;
+    }
+  });
 
-    function initGrid() {
-        const grid = document.getElementById('grid_eval');
-        items.forEach(it => {
-            grid.innerHTML += `
-                <div class="item-row">
-                    <div class="item-header">
-                        <span class="item-label">${it.n}</span>
-                        <div class="info-bubble" onclick="alert('${it.d.replace(/'/g, "\\'")}')">?</div>
-                    </div>
-                    <div class="btns-eval" data-key="${it.n}">
-                        <button class="btn-val" data-pts="1" onclick="setVal(this)">SUF</button>
-                        <button class="btn-val" data-pts="2" onclick="setVal(this)">SAT</button>
-                        <button class="btn-val" data-pts="3" onclick="setVal(this)">B</button>
-                        <button class="btn-val" data-pts="4" onclick="setVal(this)">TB</button>
-                        <button class="btn-val active" data-pts="0" onclick="setVal(this)">NE</button>
-                    </div>
-                </div>`;
-        });
+  if (current.length) pages.push(current);
+  return pages.length ? pages : [[{ text: "—", header: false }]];
+}
+
+function drawColumn(doc, title, lines, x, y, w, h, color) {
+  doc.setDrawColor(215,220,225);
+  doc.setFillColor(255,255,255);
+  doc.roundedRect(x,y,w,h,2.5,2.5,"FD");
+
+  doc.setFillColor(color[0],color[1],color[2]);
+  doc.roundedRect(x,y,w,9,2.5,2.5,"F");
+  doc.setTextColor(255);
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(8.5);
+  doc.text(title,x+w/2,y+6.2,{align:"center"});
+
+  let cy=y+13;
+  const bottom=y+h-3;
+
+  lines.forEach((line,idx)=>{
+    if(cy>bottom)return;
+
+    if(line.header){
+      if(idx!==0)cy+=3.2;
+      doc.setTextColor(color[0],color[1],color[2]);
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(6.8);
+      doc.splitTextToSize(line.text,w-7).forEach(t=>{
+        if(cy<=bottom)doc.text(t,x+3,cy);
+        cy+=3.6;
+      });
+      cy+=1.2;
+    }else{
+      doc.setTextColor(45,55,65);
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(6.15);
+      doc.splitTextToSize(line.text,w-8).forEach((t,i)=>{
+        if(cy<=bottom)doc.text(t,x+3+(i?3.2:0),cy);
+        cy+=3.15;
+      });
+      cy+=.75;
+    }
+  });
+}
+
+function drawDynamicObjectivePages(doc, grouped, pageW, pageH, margin, startY, bottomLimit) {
+  const statusDefs = [
+    { status:"Acquis", title:"ACQUIS", color:[46,160,90] },
+    { status:"Non acquis", title:"NON ACQUIS", color:[220,70,70] },
+    { status:"Non évalué", title:"NON ÉVALUÉ", color:[105,115,125] }
+  ];
+
+  const active = statusDefs
+    .map(def => ({...def, lines: buildColumnLines(grouped, def.status)}))
+    .filter(def => !(def.lines.length === 1 && def.lines[0].text === "—"));
+
+  if(!active.length) {
+    return startY;
+  }
+
+  const gap = 5;
+  const availableH = bottomLimit - startY;
+  const colW = (pageW - 2*margin - gap*(active.length-1)) / active.length;
+
+  // Paginer chaque statut séparément, puis dessiner page par page.
+  const paged = active.map(def => ({
+    ...def,
+    pages: paginateColumnLines(doc, def.lines, colW, availableH)
+  }));
+
+  const maxPages = Math.max(...paged.map(p => p.pages.length));
+
+  for(let p=0; p<maxPages; p++) {
+    if(p>0) {
+      doc.addPage("a4","landscape");
+      drawPdfHeader(doc, pageW, margin, `OBJECTIFS — SUITE ${p+1}`);
     }
 
-    async function loadData() {
-        try {
-            const res = await fetch(SCRIPT_URL);
-            const data = await res.json();
-            fillSelect('stag_select', data.stagiaires);
-            fillSelect('ms_select', data.convoyeurs);
-            fillSelect('chauf_select', data.chauffeurs);
-            document.getElementById('loading-overlay').style.display = 'none';
-        } catch (e) { alert("Erreur de connexion aux serveurs Google."); }
-    }
+    let x = margin;
+    paged.forEach(def => {
+      const title = maxPages > 1 ? `${def.title}${def.pages.length > 1 ? " ("+(p+1)+"/"+def.pages.length+")" : ""}` : def.title;
+      drawColumn(doc, title, def.pages[p] || [{text:"—",header:false}], x, startY, colW, availableH, def.color);
+      x += colW + gap;
+    });
+  }
 
-    function fillSelect(id, list) {
-        const sel = document.getElementById(id);
-        sel.innerHTML = '<option value="">-- Sélection --</option>';
-        list.forEach(item => sel.innerHTML += `<option value="${item}">${item}</option>`);
-    }
+  return bottomLimit;
+}
 
-    function setVal(btn) {
-        Array.from(btn.parentElement.children).forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        updateScore();
-        checkForm();
-    }
+function drawPdfHeader(doc, pageW, margin, rightTitle) {
+  doc.setFillColor(237,27,46);
+  doc.rect(0,0,pageW,23,"F");
+  doc.setTextColor(255);
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(14.5);
+  doc.text("CROIX-ROUGE DE BELGIQUE",margin,9);
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(8.5);
+  doc.text("Bruxelles-Capitale — Évaluation journalière du stagiaire",margin,16);
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(10);
+  doc.text(rightTitle || "FORMULAIRE D'ÉVALUATION — PDF PRO",pageW-margin,9,{align:"right"});
+}
 
-    function updateScore() {
-        let t = 0, c = 0;
-        document.querySelectorAll('.btn-val.active').forEach(b => {
-            let p = parseInt(b.dataset.pts);
-            if(p > 0) { t += p; c++; }
-        });
-        const score = c > 0 ? (t/c).toFixed(1) : "NE";
-        document.getElementById('live_score').innerText = score + " / 4";
-        return score;
-    }
+function getNoteText(){return document.getElementById('live_score').innerText}
+function getNoteValue(){const m=getNoteText().match(/([0-9.]+)\s*\/\s*10/);return m?m[1]:"0.0"}
+function getDomain(label){if(["Check-up ambulance","Inventaire matériel","Désinfection","Itinéraire & GPS","Feuille de route"].includes(label))return"Technique";if(["Bilan patient","Paramètres vitaux","Oxygénothérapie","Manutention","Transfert médicalisé"].includes(label))return"Médical";return"Relationnel"}
+function getDomainScores(){const res={Technique:[],Médical:[],Relationnel:[]};getBilanData().forEach(x=>{if(!x.score)return;res[getDomain(x.critere)].push(parseInt(x.score,10))});const avg=arr=>arr.length?(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1):"-";return{Technique:avg(res.Technique),Médical:avg(res.Médical),Relationnel:avg(res.Relationnel)}}
 
-    function checkForm() {
-        const ok = document.getElementById('stag_select').value && document.getElementById('ms_select').value;
-        document.getElementById('btn_send').disabled = !ok;
-    }
+function startDictation(){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const status = document.getElementById("dict_status");
+  const obs = document.getElementById("obs");
 
-    function toggleLock(id, btn) {
-        activePads[id] = !activePads[id];
-        btn.innerText = activePads[id] ? "VERROUILLER" : "DÉVERROUILLER";
-        btn.style.background = activePads[id] ? "var(--vert)" : "white";
-        btn.style.color = activePads[id] ? "white" : "black";
-        document.body.style.overflow = activePads[id] ? 'hidden' : 'auto';
-    }
+  if(!SpeechRecognition){
+    status.innerText = "Dictée non disponible sur ce navigateur. Sur iPhone, utilise le micro du clavier iOS.";
+    obs.focus();
+    return;
+  }
 
-    function setupCanvas(id) {
-        const canvas = document.getElementById(id);
-        const ctx = canvas.getContext('2d');
-        const ratio = window.devicePixelRatio || 1;
-        canvas.width = canvas.parentElement.offsetWidth * ratio;
-        canvas.height = canvas.parentElement.offsetHeight * ratio;
-        ctx.scale(ratio, ratio);
-        ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.strokeStyle = "#000";
+  const rec = new SpeechRecognition();
+  rec.lang = "fr-BE";
+  rec.continuous = false;
+  rec.interimResults = false;
 
-        let drawing = false;
-        const getPos = e => {
-            const rect = canvas.getBoundingClientRect();
-            const cx = e.touches ? e.touches[0].clientX : e.clientX;
-            const cy = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: cx - rect.left, y: cy - rect.top };
-        };
+  status.innerText = "🎙️ Écoute en cours...";
+  rec.start();
 
-        const start = e => { if(!activePads[id]) return; drawing=true; ctx.beginPath(); const p=getPos(e); ctx.moveTo(p.x, p.y); if(e.touches) e.preventDefault(); };
-        const move = e => { if(!drawing || !activePads[id]) return; const p=getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if(e.touches) e.preventDefault(); };
-        const stop = () => drawing = false;
+  rec.onresult = e => {
+    const txt = e.results[0][0].transcript;
+    obs.value = (obs.value.trim() ? obs.value.trim() + " " : "") + txt;
+    status.innerText = "Dictée ajoutée.";
+  };
 
-        canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
-        canvas.addEventListener('touchstart', start, {passive: false}); canvas.addEventListener('touchmove', move, {passive: false}); canvas.addEventListener('touchend', stop);
-    }
+  rec.onerror = () => {
+    status.innerText = "Dictée interrompue. Tu peux aussi utiliser le micro du clavier smartphone.";
+  };
 
-    function clearSig(id) {
-        const c = document.getElementById(id);
-        c.getContext('2d').clearRect(0,0,c.width,c.height);
-    }
+  rec.onend = () => {
+    if(status.innerText === "🎙️ Écoute en cours...") status.innerText = "Dictée terminée.";
+  };
+}
 
-    async function process() {
-        const stag = document.getElementById('stag_select').value;
-        const eval = document.getElementById('ms_select').value;
-        const btn = document.getElementById('btn_send');
-        btn.innerText = "Génération du rapport..."; btn.disabled = true;
 
-        const notes = {};
-        document.querySelectorAll('.btns-eval').forEach(el => notes[el.dataset.key] = el.querySelector('.active').innerText);
+function showExportOverlay(msg){
+  const o=document.getElementById("export_overlay");
+  const t=document.getElementById("export_overlay_text");
+  if(t && msg) t.innerHTML=msg;
+  if(o) o.style.display="flex";
+}
+function hideExportOverlay(){
+  const o=document.getElementById("export_overlay");
+  if(o) o.style.display="none";
+}
 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        doc.setFillColor(237, 27, 46); doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255); doc.setFontSize(18); doc.text("CROIX-ROUGE DE BELGIQUE", 105, 20, {align:'center'});
-        doc.setFontSize(12); doc.text("ÉVALUATION JOURNALIÈRE DU CANDIDAT", 105, 30, {align:'center'});
-
-        doc.setTextColor(0); doc.setFontSize(11);
-        doc.text(`Candidat: ${stag}`, 15, 50);
-        doc.text(`Évaluateur: ${eval}`, 15, 57);
-        doc.text(`Moyenne: ${updateScore()}/4`, 150, 50);
-        doc.text(`Date: ${new Date().toLocaleDateString('fr-BE')}`, 150, 57);
-
-        doc.autoTable({ startY: 65, head: [['Compétence', 'Évaluation']], body: Object.entries(notes), headStyles:{fillColor:[0, 86, 179]} });
-        
-        const finalY = doc.lastAutoTable.finalY + 10;
-        doc.setFontSize(10); doc.text("Observations:", 15, finalY);
-        doc.setFontSize(9); doc.text(doc.splitTextToSize(document.getElementById('obs').value || "Aucune observation particulière.", 180), 15, finalY + 7);
-        
-        doc.setFontSize(10);
-        doc.text(`Évaluateur: ${eval}`, 15, finalY + 35); 
-        doc.text(`Candidat: ${stag}`, 130, finalY + 35); 
-        
-        try {
-            doc.addImage(document.getElementById('sig_ms').toDataURL(), 'PNG', 15, finalY + 40, 60, 25);
-            doc.addImage(document.getElementById('sig_st').toDataURL(), 'PNG', 130, finalY + 40, 60, 25);
-        } catch(e) {}
-
-        doc.save(`Eval_CRB_${stag}_${new Date().toLocaleDateString('fr-BE')}.pdf`);
-        alert("Enregistrement réussi !");
-        location.reload();
-    }
+async function cloturer(){if(exportInProgress)return;exportInProgress=true;const btn=document.getElementById('btn_final'),cand=getCand();if(!cand){exportInProgress=false;return alert("Stagiaire manquant !");}if(!getEval()){exportInProgress=false;return alert("Formateur manquant !");}if(!document.getElementById("obs").value.trim()){alert("Les observations sont obligatoires.");go(3);document.getElementById("obs").focus();exportInProgress=false;return;}btn.innerText="⏳ Génération...";btn.disabled=true;showExportOverlay("Génération du PDF en cours...<br>Merci de patienter.");try{const{jsPDF}=window.jspdf;const doc=new jsPDF({orientation:"landscape",unit:"mm",format:"a4",compress:true});const pageW=297,pageH=210,margin=8;drawPdfHeader(doc,pageW,margin,"FORMULAIRE D'ÉVALUATION — PDF PRO");doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.text(`Date : ${document.getElementById("date").value||"-"}`,pageW-margin,16,{align:"right"});const infoY=28;doc.setDrawColor(220,225,230);doc.setFillColor(250,251,252);doc.roundedRect(margin,infoY,pageW-2*margin,22,2.5,2.5,"FD");const info=[["Nom",cand],["École",document.getElementById("ecole").value],["Type de stage",document.getElementById("profil").value],["Formateur",getEval()],["Jour n°",document.getElementById("jour").value],["Missions",document.getElementById("missions").value]],widths=[62,32,56,60,28,31];let ix=margin+4;info.forEach((pair,idx)=>{doc.setFont("helvetica","bold");doc.setTextColor(237,27,46);doc.setFontSize(6.8);doc.text(pair[0].toUpperCase(),ix,infoY+7);doc.setFont("helvetica","normal");doc.setTextColor(35,45,55);doc.setFontSize(8.2);doc.text(doc.splitTextToSize(String(pair[1]||"-"),widths[idx]-4).slice(0,2),ix,infoY+14);ix+=widths[idx]});const grouped=groupByStatus(),colY=55;drawDynamicObjectivePages(doc,grouped,pageW,pageH,margin,colY,150);const bottomY=154;doc.setFillColor(250,251,252);doc.setDrawColor(220,225,230);doc.roundedRect(margin,bottomY,94,47,2.5,2.5,"FD");doc.setTextColor(237,27,46);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("ÉVALUATION GÉNÉRALE",margin+3,bottomY+6);
+let by=bottomY+12;
+getBilanData().forEach(b=>{
+  if(by>bottomY+43)return;
+  const lib=b.libelle?`${b.libelle} (${b.score}/10)`:"Non coté";
+  doc.setFont("helvetica","normal");
+  doc.setTextColor(45,55,65);
+  doc.setFontSize(5.9);
+  const crit=doc.splitTextToSize(b.critere,58);
+  doc.text(crit.slice(0,1),margin+3,by);
+  doc.setFont("helvetica","bold");
+  doc.setTextColor(35,45,55);
+  doc.text(lib,margin+91,by,{align:"right"});
+  by+=3.15;
+});const obsX=107;doc.setFillColor(250,251,252);doc.setDrawColor(220,225,230);doc.roundedRect(obsX,bottomY,92,47,2.5,2.5,"FD");doc.setTextColor(237,27,46);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("OBSERVATIONS",obsX+3,bottomY+6);doc.setTextColor(45,55,65);doc.setFont("helvetica","normal");doc.setFontSize(6.7);doc.text(doc.splitTextToSize(document.getElementById("obs").value.trim()||"-",86).slice(0,11),obsX+3,bottomY+12);const sigX=202,scores=getDomainScores();doc.setFillColor(250,251,252);doc.setDrawColor(220,225,230);doc.roundedRect(sigX,bottomY,87,47,2.5,2.5,"FD");doc.setTextColor(237,27,46);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("SCORE & SIGNATURES",sigX+3,bottomY+6);doc.setFontSize(10);doc.text(getNoteText(),sigX+43.5,bottomY+14,{align:"center"});doc.setFont("helvetica","normal");doc.setFontSize(6.3);doc.setTextColor(65,75,85);doc.text(`Technique : ${scores.Technique}/10`,sigX+4,bottomY+20);doc.text(`Médical : ${scores.Médical}/10`,sigX+33,bottomY+20);doc.text(`Relationnel : ${scores.Relationnel}/10`,sigX+61,bottomY+20);const sig1=sigData.sig1||document.getElementById("sig1").toDataURL("image/png"),sig2=sigData.sig2||document.getElementById("sig2").toDataURL("image/png");doc.setTextColor(45,55,65);doc.setFontSize(6.2);doc.text("Formateur : "+getEval(),sigX+3,bottomY+29);doc.rect(sigX+3,bottomY+31,36,12);if(sig1&&sig1.length>300)doc.addImage(sig1,"PNG",sigX+3,bottomY+31,36,12);doc.text("Stagiaire : "+cand,sigX+45,bottomY+29);doc.rect(sigX+45,bottomY+31,36,12);if(sig2&&sig2.length>300)doc.addImage(sig2,"PNG",sigX+45,bottomY+31,36,12);doc.setFont("helvetica","normal");doc.setFontSize(6.2);doc.setTextColor(145);doc.text("Document d’aide au suivi pédagogique — © Médivalence 2026 - Laurent Jaspard",pageW/2,pageH-5,{align:"center"});const pdfBase64=doc.output("datauristring").split(",")[1];const payload={identification:{nom:cand,ecole:document.getElementById("ecole").value,typeStage:document.getElementById("profil").value,formateur:getEval(),jourNo:document.getElementById("jour").value,nbMissions:document.getElementById("missions").value,date:document.getElementById("date").value},items:getTechData(),evaluationGenerale:getBilanData().map(x=>({item:x.critere,score:x.score,libelle:x.libelle})),note:getNoteValue(),noteTexte:getNoteText(),observations:document.getElementById("obs").value.trim(),pdf:pdfBase64};try{
+  await fetch(API,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(Object.assign({action:"save"}, payload))
+  });
+  document.getElementById("sheet_status").innerText="Envoi vers Sheets lancé. Vérifie l’onglet Evaluations et le dossier Drive PDF."; document.getElementById("sheet_status").innerText="Envoi vers Sheets lancé : le PDF sera enregistré dans Drive et son lien dans l’onglet Evaluations."; alert("PDF généré et envoi vers Sheets lancé. Le lien PDF sera dans l’onglet Evaluations.");
+}catch(e){
+  console.warn("Synchro Sheets impossible, PDF généré localement.",e);
+  alert("PDF généré, mais synchronisation Sheets non confirmée. Vérifie le déploiement Apps Script et les autorisations Drive/Sheets.");
+}doc.save(`Evaluation_CRB_${cand.replace(/[^\wÀ-ÿ-]+/g,"_")}_J${document.getElementById("jour").value}.pdf`)}catch(e){console.error(e);alert("Erreur génération PDF : "+e.message)}hideExportOverlay();hideExportOverlay();exportInProgress=false;btn.innerText="✅ Clôturer & générer PDF";btn.disabled=false}
 </script>
 </body>
 </html>
